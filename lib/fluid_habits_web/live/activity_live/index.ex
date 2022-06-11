@@ -5,8 +5,16 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
   alias FluidHabits.Activities.Activity
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :activities, list_activities())}
+  def mount(_params, session, socket) do
+    # get user by session token, store in socket
+
+    user = FluidHabits.Accounts.get_user_by_session_token(session["user_token"])
+
+    {:ok,
+     assign(socket,
+       activities: list_activities(),
+       current_user: user
+     )}
   end
 
   @impl true

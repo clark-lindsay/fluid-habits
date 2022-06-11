@@ -1,7 +1,7 @@
 defmodule FluidHabits.ActivitiesTest do
   use FluidHabits.DataCase
 
-  alias FluidHabits.Activities
+  alias FluidHabits.{Activities, AccountsFixtures}
 
   describe "activities" do
     alias FluidHabits.Activities.Activity
@@ -9,6 +9,12 @@ defmodule FluidHabits.ActivitiesTest do
     import FluidHabits.ActivitiesFixtures
 
     @invalid_attrs %{description: nil, name: nil}
+
+    setup do
+      valid_user = AccountsFixtures.user_fixture()
+
+      %{valid_user: valid_user}
+    end
 
     test "list_activities/0 returns all activities" do
       activity = activity_fixture()
@@ -20,16 +26,16 @@ defmodule FluidHabits.ActivitiesTest do
       assert Activities.get_activity!(activity.id) == activity
     end
 
-    test "create_activity/1 with valid data creates a activity" do
+    test "create_activity/1 with valid data creates a activity", %{valid_user: valid_user} do
       valid_attrs = %{description: "some description", name: "some name"}
 
-      assert {:ok, %Activity{} = activity} = Activities.create_activity(valid_attrs)
+      assert {:ok, %Activity{} = activity} = Activities.create_activity(valid_user, valid_attrs)
       assert activity.description == "some description"
       assert activity.name == "some name"
     end
 
-    test "create_activity/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Activities.create_activity(@invalid_attrs)
+    test "create_activity/1 with invalid data returns error changeset", %{valid_user: valid_user} do
+      assert {:error, %Ecto.Changeset{}} = Activities.create_activity(valid_user, @invalid_attrs)
     end
 
     test "update_activity/2 with valid data updates the activity" do

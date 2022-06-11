@@ -7,6 +7,7 @@ defmodule FluidHabits.Activities do
   alias FluidHabits.Repo
 
   alias FluidHabits.Activities.Activity
+  alias FluidHabits.Accounts.User
 
   @doc """
   Returns the list of activities.
@@ -40,17 +41,20 @@ defmodule FluidHabits.Activities do
   @doc """
   Creates a activity.
 
+  Requires a valid user, that the activity will belong to.
+
   ## Examples
 
-      iex> create_activity(%{field: value})
+      iex> create_activity(user, %{field: value})
       {:ok, %Activity{}}
 
-      iex> create_activity(%{field: bad_value})
+      iex> create_activity(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity(attrs \\ %{}) do
-    %Activity{}
+  def create_activity(%User{} = user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:activities, attrs)
     |> Activity.changeset(attrs)
     |> Repo.insert()
   end

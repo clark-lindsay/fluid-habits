@@ -4,17 +4,22 @@ defmodule FluidHabits.ActivitiesFixtures do
   entities via the `FluidHabits.Activities` context.
   """
 
+  alias FluidHabits.AccountsFixtures
+
   @doc """
   Generate a activity.
   """
   def activity_fixture(attrs \\ %{}) do
-    {:ok, activity} =
+    user = AccountsFixtures.user_fixture()
+
+    activity_attrs =
       attrs
       |> Enum.into(%{
         description: "some description",
         name: "some name"
       })
-      |> FluidHabits.Activities.create_activity()
+
+    {:ok, activity} = FluidHabits.Activities.create_activity(user, activity_attrs)
 
     activity
   end

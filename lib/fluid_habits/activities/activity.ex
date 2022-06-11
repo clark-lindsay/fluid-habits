@@ -13,7 +13,8 @@ defmodule FluidHabits.Activities.Activity do
   @doc false
   def changeset(activity, attrs) do
     activity
-    |> cast(attrs, [:name, :description])
+    |> cast(attrs, [:name, :description, :user_id])
     |> validate_required([:name, :description])
+    |> assoc_constraint(:user)
   end
 end

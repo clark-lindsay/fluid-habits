@@ -41,7 +41,7 @@ defmodule FluidHabitsWeb.ActivityLive.FormComponent do
   end
 
   defp save_activity(socket, :new, activity_params) do
-    case Activities.create_activity(activity_params) do
+    case Activities.create_activity(socket.assigns.current_user, activity_params) do
       {:ok, _activity} ->
         {:noreply,
          socket

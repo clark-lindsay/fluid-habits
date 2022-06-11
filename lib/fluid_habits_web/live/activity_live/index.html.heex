@@ -4,6 +4,7 @@
   <.modal return_to={Routes.activity_index_path(@socket, :index)}>
     <.live_component
       module={FluidHabitsWeb.ActivityLive.FormComponent}
+      current_user={@current_user}
       id={@activity.id || :new}
       title={@page_title}
       action={@live_action}
