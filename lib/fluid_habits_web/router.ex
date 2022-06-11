@@ -23,6 +23,17 @@ defmodule FluidHabitsWeb.Router do
     get "/", PageController, :index
   end
 
+  scope "/activities", FluidHabitsWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/", ActivityLive.Index, :index
+    live "/new", ActivityLive.Index, :new
+    live "/:id/edit", ActivityLive.Index, :edit
+
+    live "/:id", ActivityLive.Show, :show
+    live "/:id/show/edit", ActivityLive.Show, :edit
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", FluidHabitsWeb do
   #   pipe_through :api
