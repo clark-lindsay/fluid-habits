@@ -5,6 +5,7 @@ defmodule FluidHabits.Activities.Activity do
   schema "activities" do
     field :description, :string
     field :name, :string
+    belongs_to :user, FluidHabits.Accounts.User
 
     timestamps()
   end
