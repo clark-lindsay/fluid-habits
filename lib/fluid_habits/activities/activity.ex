@@ -16,7 +16,7 @@ defmodule FluidHabits.Activities.Activity do
   def changeset(activity, attrs) do
     activity
     |> cast(attrs, [:name, :description, :user_id])
-    |> validate_required([:name, :description])
+    |> validate_required([:name, :description, :user_id])
     |> assoc_constraint(:user)
   end
 end

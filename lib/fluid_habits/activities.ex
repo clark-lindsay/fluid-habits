@@ -54,7 +54,7 @@ defmodule FluidHabits.Activities do
   """
   def create_activity(%User{} = user, attrs \\ %{}) do
     user
-    |> Ecto.build_assoc(:activities, attrs)
+    |> Ecto.build_assoc(:activities, %Activity{})
     |> Activity.changeset(attrs)
     |> Repo.insert()
   end
