@@ -4,7 +4,7 @@ defmodule FluidHabits.AchievementLevels do
   """
 
   import Ecto.Query, warn: false
-  alias FluidHabits.Repo
+  alias FluidHabits.{Repo, Activities}
 
   alias FluidHabits.AchievementLevels.AchievementLevel
 
@@ -49,8 +49,9 @@ defmodule FluidHabits.AchievementLevels do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_achievement_level(attrs \\ %{}) do
-    %AchievementLevel{}
+  def create_achievement_level(%Activities.Activity{} = activity, attrs \\ %{}) do
+    activity
+    |> Ecto.build_assoc(:achievement_levels, %AchievementLevel{})
     |> AchievementLevel.changeset(attrs)
     |> Repo.insert()
   end

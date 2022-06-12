@@ -7,13 +7,18 @@ defmodule FluidHabits.AchievementLevels.AchievementLevel do
     field :name, :string
     field :value, :integer
 
+    belongs_to :activity, FluidHabits.Activities.Activity
+
     timestamps()
   end
 
   @doc false
   def changeset(achievement_level, attrs) do
     achievement_level
-    |> cast(attrs, [:name, :description, :value])
-    |> validate_required([:name, :description, :value])
+    |> cast(attrs, [:name, :description, :value, :activity_id])
+    |> validate_required([:name, :description, :value, :activity_id])
+    |> assoc_constraint(:activity,
+      message: "An achievement level must be associated to an existing activity"
+    )
   end
 end

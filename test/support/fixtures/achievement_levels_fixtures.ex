@@ -4,18 +4,24 @@ defmodule FluidHabits.AchievementLevelsFixtures do
   entities via the `FluidHabits.AchievementLevels` context.
   """
 
+  alias FluidHabits.ActivitiesFixtures
+
   @doc """
   Generate a achievement_level.
   """
   def achievement_level_fixture(attrs \\ %{}) do
-    {:ok, achievement_level} =
+    activity = ActivitiesFixtures.activity_fixture()
+
+    achievement_level_attrs =
       attrs
       |> Enum.into(%{
         description: "some description",
         name: "some name",
-        value: 42
+        value: 2
       })
-      |> FluidHabits.AchievementLevels.create_achievement_level()
+
+    {:ok, achievement_level} =
+      FluidHabits.AchievementLevels.create_achievement_level(activity, achievement_level_attrs)
 
     achievement_level
   end

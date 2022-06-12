@@ -5,7 +5,9 @@ defmodule FluidHabits.Activities.Activity do
   schema "activities" do
     field :description, :string
     field :name, :string
+
     belongs_to :user, FluidHabits.Accounts.User
+    has_many :achievement_levels, FluidHabits.AchievementLevels.AchievementLevel
 
     timestamps()
   end
