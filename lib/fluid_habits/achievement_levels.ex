@@ -40,12 +40,14 @@ defmodule FluidHabits.AchievementLevels do
   @doc """
   Creates a achievement_level.
 
+  Requires a valid activity, that the achievement_level will belong to.
+
   ## Examples
 
-      iex> create_achievement_level(%{field: value})
+      iex> create_achievement_level(activity, %{field: value})
       {:ok, %AchievementLevel{}}
 
-      iex> create_achievement_level(%{field: bad_value})
+      iex> create_achievement_level(activity, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
