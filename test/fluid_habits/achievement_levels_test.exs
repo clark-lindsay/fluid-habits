@@ -1,5 +1,5 @@
 defmodule FluidHabits.AchievementLevelsTest do
-  use FluidHabits.DataCase
+  use FluidHabits.DataCase, async: true
 
   alias FluidHabits.AchievementLevels
 
@@ -9,6 +9,7 @@ defmodule FluidHabits.AchievementLevelsTest do
     import FluidHabits.AchievementLevelsFixtures
 
     @invalid_attrs %{description: nil, name: nil, value: nil}
+    @valid_attrs %{description: "some description", name: "some name", value: 2}
 
     test "list_achievement_levels/0 returns all achievement_levels" do
       achievement_level = achievement_level_fixture()
@@ -22,14 +23,13 @@ defmodule FluidHabits.AchievementLevelsTest do
 
     test "create_achievement_level/1 with valid data creates a achievement_level" do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
-      valid_attrs = %{description: "some description", name: "some name", value: 42}
 
       assert {:ok, %AchievementLevel{} = achievement_level} =
-               AchievementLevels.create_achievement_level(activity, valid_attrs)
+               AchievementLevels.create_achievement_level(activity, @valid_attrs)
 
       assert achievement_level.description == "some description"
       assert achievement_level.name == "some name"
-      assert achievement_level.value == 42
+      assert achievement_level.value == 2
     end
 
     test "create_achievement_level/1 with invalid data returns error changeset" do
@@ -39,13 +39,39 @@ defmodule FluidHabits.AchievementLevelsTest do
                AchievementLevels.create_achievement_level(activity, @invalid_attrs)
     end
 
+    test "create_achievement_level/1 with value < 1 or > 3 returns error changeset" do
+      activity = FluidHabits.ActivitiesFixtures.activity_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               AchievementLevels.create_achievement_level(
+                 activity,
+                 Map.merge(@valid_attrs, %{value: 0})
+               )
+
+      assert {:error, %Ecto.Changeset{}} =
+               AchievementLevels.create_achievement_level(
+                 activity,
+                 Map.merge(@valid_attrs, %{value: 4})
+               )
+    end
+
+    test "create_achievement_level/1 with non-integer value returns error changeset" do
+      activity = FluidHabits.ActivitiesFixtures.activity_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               AchievementLevels.create_achievement_level(
+                 activity,
+                 Map.merge(@valid_attrs, %{value: 2.5})
+               )
+    end
+
     test "update_achievement_level/2 with valid data updates the achievement_level" do
       achievement_level = achievement_level_fixture()
 
       update_attrs = %{
         description: "some updated description",
         name: "some updated name",
-        value: 43
+        value: 3
       }
 
       assert {:ok, %AchievementLevel{} = achievement_level} =
@@ -53,7 +79,7 @@ defmodule FluidHabits.AchievementLevelsTest do
 
       assert achievement_level.description == "some updated description"
       assert achievement_level.name == "some updated name"
-      assert achievement_level.value == 43
+      assert achievement_level.value == 3
     end
 
     test "update_achievement_level/2 with invalid data returns error changeset" do

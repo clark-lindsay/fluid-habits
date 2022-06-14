@@ -3,11 +3,11 @@ defmodule FluidHabits.AchievementLevels.AchievementLevel do
   import Ecto.Changeset
 
   schema "achievement_levels" do
-    field :description, :string
-    field :name, :string
-    field :value, :integer
+    field(:description, :string)
+    field(:name, :string)
+    field(:value, :integer)
 
-    belongs_to :activity, FluidHabits.Activities.Activity
+    belongs_to(:activity, FluidHabits.Activities.Activity)
 
     timestamps()
   end
@@ -17,6 +17,7 @@ defmodule FluidHabits.AchievementLevels.AchievementLevel do
     achievement_level
     |> cast(attrs, [:name, :description, :value, :activity_id])
     |> validate_required([:name, :description, :value, :activity_id])
+    |> validate_inclusion(:value, 1..3)
     |> assoc_constraint(:activity,
       message: "An achievement level must be associated to an existing activity"
     )
