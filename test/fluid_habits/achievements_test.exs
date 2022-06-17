@@ -19,9 +19,10 @@ defmodule FluidHabits.AchievementsTest do
     end
 
     test "create_achievement/1 with valid data creates a achievement" do
+      valid_activity = FluidHabits.ActivitiesFixtures.activity_fixture()
       valid_attrs = %{}
 
-      assert {:ok, %Achievement{}} = Achievements.create_achievement(valid_attrs)
+      assert {:ok, %Achievement{}} = Achievements.create_achievement(valid_activity, valid_attrs)
     end
 
     test "update_achievement/2 with valid data updates the achievement" do

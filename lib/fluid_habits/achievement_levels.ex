@@ -38,7 +38,7 @@ defmodule FluidHabits.AchievementLevels do
   def get_achievement_level!(id), do: Repo.get!(AchievementLevel, id)
 
   @doc """
-  Creates a achievement_level.
+  Creates an achievement_level.
 
   Requires a valid activity, that the achievement_level will belong to.
 

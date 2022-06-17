@@ -8,10 +8,13 @@ defmodule FluidHabits.AchievementsFixtures do
   Generate a achievement.
   """
   def achievement_fixture(attrs \\ %{}) do
-    {:ok, achievement} =
+    activity = FluidHabits.ActivitiesFixtures.activity_fixture()
+
+    achievement_attrs =
       attrs
       |> Enum.into(%{})
-      |> FluidHabits.Achievements.create_achievement()
+
+    {:ok, achievement} = FluidHabits.Achievements.create_achievement(activity, achievement_attrs)
 
     achievement
   end
