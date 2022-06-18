@@ -63,5 +63,25 @@ defmodule FluidHabits.ActivitiesTest do
       activity = activity_fixture()
       assert %Ecto.Changeset{} = Activities.change_activity(activity)
     end
+
+    test "eligible_for_achievements?/1 returns true when there are 3 or more achievement levels associated" do
+      activity = activity_fixture()
+
+      Enum.each(1..3, fn _ ->
+        FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      end)
+
+      assert Activities.eligible_for_achievements?(activity) == true
+    end
+
+    test "eligible_for_achievements?/1 returns false when there are < 3 achievement levels associated" do
+      activity = activity_fixture()
+
+      Enum.each(1..2, fn _ ->
+        FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      end)
+
+      refute Activities.eligible_for_achievements?(activity)
+    end
   end
 end

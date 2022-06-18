@@ -105,4 +105,18 @@ defmodule FluidHabits.Activities do
   def change_activity(%Activity{} = activity, attrs \\ %{}) do
     Activity.changeset(activity, attrs)
   end
+
+  @doc """
+  Checks that there are 3 or more `%FluidHabits.AchievementLevels.AchievementLevel{}`-s
+  associated with the given activity
+  """
+  def eligible_for_achievements?(%Activity{id: id}) do
+    import Ecto.Query, only: [from: 2]
+
+    query =
+      from ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
+        where: ach_lvl.activity_id == ^id
+
+    Repo.aggregate(query, :count) >= 3
+  end
 end

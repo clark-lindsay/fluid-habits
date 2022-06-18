@@ -10,7 +10,7 @@ defmodule FluidHabits.AchievementLevelsFixtures do
   Generate a achievement_level.
   """
   def achievement_level_fixture(attrs \\ %{}) do
-    activity = ActivitiesFixtures.activity_fixture()
+    activity = attrs[:activity] || ActivitiesFixtures.activity_fixture()
 
     achievement_level_attrs =
       attrs
