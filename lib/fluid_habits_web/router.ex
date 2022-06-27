@@ -32,6 +32,7 @@ defmodule FluidHabitsWeb.Router do
 
     live "/:id", ActivityLive.Show, :show
     live "/:id/show/edit", ActivityLive.Show, :edit
+    live "/:id/show/add-ach-lvl", ActivityLive.Show, :add_ach_lvl
   end
 
   # Other scopes may use custom stacks.

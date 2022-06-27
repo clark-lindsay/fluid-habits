@@ -1,5 +1,5 @@
 defmodule FluidHabitsWeb.ActivityLiveTest do
-  use FluidHabitsWeb.ConnCase
+  use FluidHabitsWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
   import FluidHabits.ActivitiesFixtures
@@ -105,6 +105,25 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       assert html =~ "Activity updated successfully"
       assert html =~ "some updated description"
+    end
+
+    test "adds new achievement level with modal", %{conn: conn, activity: activity} do
+      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+
+      assert show_live |> element("a", "Add Achievement Level") |> render_click() =~
+               "Add Achievement Level"
+
+      assert_patch(show_live, Routes.activity_show_path(conn, :add_ach_lvl, activity))
+
+      {:ok, _live_view, html} =
+        show_live
+        |> form("#achievement-level-form",
+          achievement_level: %{description: "some description", name: "some name", value: 1}
+        )
+        |> render_submit()
+        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+
+      assert html =~ "Achievement Level created successfully"
     end
   end
 end
