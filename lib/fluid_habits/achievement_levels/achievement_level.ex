@@ -8,6 +8,7 @@ defmodule FluidHabits.AchievementLevels.AchievementLevel do
     field(:value, :integer)
 
     belongs_to(:activity, FluidHabits.Activities.Activity)
+    has_many :achievements, FluidHabits.Achievements.Achievement
 
     timestamps()
   end

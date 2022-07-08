@@ -22,6 +22,13 @@ defmodule FluidHabits.Activities do
     Repo.all(Activity)
   end
 
+  def list_achievement_levels(%Activity{id: id} = _activity) do
+    Repo.all(
+      from ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
+        where: ach_lvl.activity_id == ^id
+    )
+  end
+
   @doc """
   Gets a single activity.
 

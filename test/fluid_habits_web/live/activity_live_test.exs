@@ -125,5 +125,27 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       assert html =~ "Achievement Level created successfully"
     end
+
+    test "adds new achievement with modal", %{conn: conn, activity: activity} do
+      achievement_level =
+        FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+
+      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+
+      assert show_live |> element("a", ~r/^Add Achievement$/) |> render_click() =~
+               "Add Achievement"
+
+      assert_patch(show_live, Routes.activity_show_path(conn, :add_achievement, activity))
+
+      {:ok, _live_view, html} =
+        show_live
+        |> form("#achievement-form",
+          achievement: %{achievement_level_id: achievement_level.id}
+        )
+        |> render_submit()
+        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+
+      assert html =~ "Achievement created successfully"
+    end
   end
 end

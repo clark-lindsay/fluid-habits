@@ -24,6 +24,19 @@
     />
   </.modal>
 <% end %>
+<%= if @live_action in [:add_achievement] do %>
+  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)}>
+    <.live_component
+      module={FluidHabitsWeb.AchievementLive.FormComponent}
+      id={@activity.id}
+      title={@page_title}
+      action={@live_action}
+      activity={@activity}
+      achievement_levels={@achievement_levels}
+      return_to={Routes.activity_show_path(@socket, :show, @activity)}
+    />
+  </.modal>
+<% end %>
 
 <%= unless FluidHabits.Activities.eligible_for_achievements?(@activity) do %>
   <div>
@@ -49,6 +62,12 @@
 <span>
   <%= live_patch("Add Achievement Level",
     to: Routes.activity_show_path(@socket, :add_ach_lvl, @activity),
+    class: "button"
+  ) %>
+</span>
+<span>
+  <%= live_patch("Add Achievement",
+    to: Routes.activity_show_path(@socket, :add_achievement, @activity),
     class: "button"
   ) %>
 </span>
