@@ -30,10 +30,9 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
 
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"achievement_level" => achivement_level_params}, socket) do
-    case AchievementLevels.create_achievement_level(
-           socket.assigns.activity,
-           achivement_level_params
-         ) do
+    case achivement_level_params
+         |> Map.put("activity_id", socket.assigns.activity.id)
+         |> AchievementLevels.create_achievement_level() do
       {:ok, _achievement_level} ->
         {:noreply,
          socket

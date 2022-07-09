@@ -25,7 +25,9 @@ defmodule FluidHabits.AchievementLevelsTest do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
 
       assert {:ok, %AchievementLevel{} = achievement_level} =
-               AchievementLevels.create_achievement_level(activity, @valid_attrs)
+               AchievementLevels.create_achievement_level(
+                 Map.put(@valid_attrs, :activity_id, activity.id)
+               )
 
       assert achievement_level.description == "some description"
       assert achievement_level.name == "some name"
@@ -36,33 +38,32 @@ defmodule FluidHabits.AchievementLevelsTest do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
 
       assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(activity, @invalid_attrs)
+               AchievementLevels.create_achievement_level(
+                 Map.put(@invalid_attrs, :activity_id, activity.id)
+)
     end
 
     test "create_achievement_level/1 with value < 1 or > 3 returns error changeset" do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
+      valid_attrs = Map.merge(@valid_attrs, %{activity_id: activity.id})
 
       assert {:error, %Ecto.Changeset{}} =
                AchievementLevels.create_achievement_level(
-                 activity,
-                 Map.merge(@valid_attrs, %{value: 0})
+                 Map.merge(valid_attrs, %{value: 0})
                )
 
       assert {:error, %Ecto.Changeset{}} =
                AchievementLevels.create_achievement_level(
-                 activity,
-                 Map.merge(@valid_attrs, %{value: 4})
+                 Map.merge(valid_attrs, %{value: 4})
                )
     end
 
     test "create_achievement_level/1 with non-integer value returns error changeset" do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
+      valid_attrs = Map.merge(@valid_attrs, %{activity_id: activity.id})
 
       assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(
-                 activity,
-                 Map.merge(@valid_attrs, %{value: 2.5})
-               )
+               AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 2.5}))
     end
 
     test "update_achievement_level/2 with valid data updates the achievement_level" do

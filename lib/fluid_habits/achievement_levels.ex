@@ -4,7 +4,7 @@ defmodule FluidHabits.AchievementLevels do
   """
 
   import Ecto.Query, warn: false
-  alias FluidHabits.{Repo, Activities}
+  alias FluidHabits.Repo
 
   alias FluidHabits.AchievementLevels.AchievementLevel
 
@@ -40,20 +40,19 @@ defmodule FluidHabits.AchievementLevels do
   @doc """
   Creates an achievement_level.
 
-  Requires a valid activity, that the achievement_level will belong to.
+  Requires a valid Activity, that the AchievementLevel will belong to.
 
   ## Examples
 
-      iex> create_achievement_level(activity, %{field: value})
+      iex> create_achievement_level(%{field: value, activity_id: activity.id})
       {:ok, %AchievementLevel{}}
 
-      iex> create_achievement_level(activity, %{field: bad_value})
+      iex> create_achievement_level(%{field: bad_value, activity_id: activity.id})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_achievement_level(%Activities.Activity{} = activity, attrs \\ %{}) do
-    activity
-    |> Ecto.build_assoc(:achievement_levels, %AchievementLevel{})
+  def create_achievement_level(attrs \\ %{}) do
+    %AchievementLevel{}
     |> AchievementLevel.changeset(attrs)
     |> Repo.insert()
   end
