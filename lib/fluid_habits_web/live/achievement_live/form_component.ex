@@ -29,8 +29,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"achievement" => achievement_params}, socket) do
     case Achievements.create_achievement(
-           socket.assigns.activity,
-           achievement_params
+           Map.put(achievement_params, "activity_id", socket.assigns.activity.id)
          ) do
       {:ok, _achievement_} ->
         {:noreply,

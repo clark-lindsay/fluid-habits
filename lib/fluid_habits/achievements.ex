@@ -40,21 +40,19 @@ defmodule FluidHabits.Achievements do
   @doc """
   Creates an achievement.
 
-  Requires a valid activity, that the achievement will belong to.
+  Requires a valid Activity and a valid AchievementLevel that the achievement will relate to.
 
   ## Examples
 
-      iex> create_achievement(activity, %{field: value})
+      iex> create_achievement(activity, %{field: value, activity_id: act.id, achievement_level_id: ach_lvl.id})
       {:ok, %Achievement{}}
 
-      iex> create_achievement(activity, %{field: bad_value})
+      iex> create_achievement(activity, %{field: bad_value, activity_id: act.id, achievement_level_id: ach_lvl.id})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_achievement(%FluidHabits.Activities.Activity{} = activity, attrs \\ %{}) do
-    activity
-    |> Ecto.build_assoc(:achievements, %Achievement{})
-    |> Achievement.changeset(attrs)
+  def create_achievement(attrs \\ %{}) do
+    Achievement.changeset(%Achievement{}, attrs)
     |> Repo.insert()
   end
 

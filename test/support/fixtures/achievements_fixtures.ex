@@ -16,9 +16,9 @@ defmodule FluidHabits.AchievementsFixtures do
 
     achievement_attrs =
       attrs
-      |> Enum.into(%{achievement_level_id: achievement_level.id})
+      |> Enum.into(%{activity_id: activity.id, achievement_level_id: achievement_level.id})
 
-    {:ok, achievement} = FluidHabits.Achievements.create_achievement(activity, achievement_attrs)
+    {:ok, achievement} = FluidHabits.Achievements.create_achievement(achievement_attrs)
 
     achievement
   end
