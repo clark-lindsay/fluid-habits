@@ -2,7 +2,6 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.Activities
-  alias FluidHabits.AchievementLevels.AchievementLevel
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,18 +11,13 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     activity = Activities.get_activity!(id)
+    achievement_levels = Activities.list_achievement_levels(activity)
 
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:activity, activity)
-     |> assign(
-       :achievement_levels,
-       Activities.list_achievement_levels(activity)
-       |> Enum.map(fn %AchievementLevel{} = ach_lvl ->
-         [key: ach_lvl.name, value: ach_lvl.id]
-       end)
-     )}
+     |> assign(:achievement_levels, achievement_levels)}
   end
 
   defp page_title(:show), do: "Show Activity"

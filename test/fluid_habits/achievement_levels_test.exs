@@ -40,7 +40,7 @@ defmodule FluidHabits.AchievementLevelsTest do
       assert {:error, %Ecto.Changeset{}} =
                AchievementLevels.create_achievement_level(
                  Map.put(@invalid_attrs, :activity_id, activity.id)
-)
+               )
     end
 
     test "create_achievement_level/1 with value < 1 or > 3 returns error changeset" do
@@ -48,14 +48,10 @@ defmodule FluidHabits.AchievementLevelsTest do
       valid_attrs = Map.merge(@valid_attrs, %{activity_id: activity.id})
 
       assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(
-                 Map.merge(valid_attrs, %{value: 0})
-               )
+               AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 0}))
 
       assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(
-                 Map.merge(valid_attrs, %{value: 4})
-               )
+               AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 4}))
     end
 
     test "create_achievement_level/1 with non-integer value returns error changeset" do

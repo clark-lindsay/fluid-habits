@@ -23,4 +23,8 @@ defmodule FluidHabits.AchievementLevels.AchievementLevel do
       message: "An achievement level must be associated to an existing activity"
     )
   end
+
+  def to_select_option(achievement_level = %__MODULE__{}) do
+    [key: achievement_level.name, value: achievement_level.id]
+  end
 end
