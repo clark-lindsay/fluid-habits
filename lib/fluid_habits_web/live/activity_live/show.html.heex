@@ -33,7 +33,10 @@
       action={@live_action}
       activity={@activity}
       achievement_levels={
-        Enum.map(@achievement_levels, &FluidHabits.AchievementLevels.AchievementLevel.to_select_option/1)
+        Enum.map(
+          @achievement_levels,
+          &FluidHabits.AchievementLevels.AchievementLevel.to_select_option/1
+        )
       }
       return_to={Routes.activity_show_path(@socket, :show, @activity)}
     />
@@ -75,3 +78,10 @@
 </span>
 |
 <span><%= live_redirect("Back", to: Routes.activity_index_path(@socket, :index)) %></span>
+
+<h2>Achievements:</h2>
+<ul>
+  <%= for achievement <- @recent_achievements do %>
+    <FluidHabitsWeb.AchievementLive.Achievement.to_list_item achievement={achievement} />
+  <% end %>
+</ul>

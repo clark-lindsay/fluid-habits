@@ -29,6 +29,21 @@ defmodule FluidHabits.Activities do
     )
   end
 
+  def list_achievements_since(%Activity{id: id} = _activity, since) do
+    alias FluidHabits.Achievements.AchievementQueries
+
+    query =
+      FluidHabits.Achievements.Achievement
+      |> AchievementQueries.since(since)
+      |> AchievementQueries.desc_by(:inserted_at)
+
+    Repo.all(
+      from achievement in query,
+        where: achievement.activity_id == ^id
+    )
+    |> Repo.preload(:achievement_level)
+  end
+
   @doc """
   Gets a single activity.
 
