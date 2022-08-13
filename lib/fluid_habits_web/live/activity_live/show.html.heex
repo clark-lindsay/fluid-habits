@@ -82,6 +82,6 @@
 <h2>Achievements:</h2>
 <ul>
   <%= for achievement <- @recent_achievements do %>
-    <FluidHabitsWeb.AchievementLive.AchievementComponents.to_list_item achievement={achievement} />
+    <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} />
   <% end %>
 </ul>

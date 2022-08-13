@@ -1,4 +1,4 @@
-defmodule FluidHabitsWeb.AchievementLevelLive.AchievementLevelComponents do
+defmodule FluidHabitsWeb.Components.AchievementLevelComponents do
   use Phoenix.Component
 
   def to_list_item(assigns) do
