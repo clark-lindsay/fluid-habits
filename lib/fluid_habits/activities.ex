@@ -29,18 +29,14 @@ defmodule FluidHabits.Activities do
     )
   end
 
-  def list_achievements_since(%Activity{id: id} = _activity, since) do
-    alias FluidHabits.Achievements.AchievementQueries
+  def list_achievements_since(activity = %Activity{}, since) do
+    alias FluidHabits.Achievements.{Achievement, AchievementQueries}
 
-    query =
-      FluidHabits.Achievements.Achievement
-      |> AchievementQueries.since(since)
-      |> AchievementQueries.desc_by(:inserted_at)
-
-    Repo.all(
-      from achievement in query,
-        where: achievement.activity_id == ^id
-    )
+    Achievement
+    |> AchievementQueries.since(since)
+    |> AchievementQueries.desc_by(:inserted_at)
+    |> AchievementQueries.for_activity(activity)
+    |> Repo.all()
     |> Repo.preload(:achievement_level)
   end
 

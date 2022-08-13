@@ -6,7 +6,7 @@ defmodule FluidHabits.ActivitiesTest do
   describe "activities" do
     alias FluidHabits.Activities.Activity
 
-    import FluidHabits.ActivitiesFixtures
+    import FluidHabits.{ActivitiesFixtures, AchievementsFixtures}
 
     @invalid_attrs %{description: nil, name: nil}
 
@@ -19,6 +19,15 @@ defmodule FluidHabits.ActivitiesTest do
     test "list_activities/0 returns all activities" do
       activity = activity_fixture()
       assert Activities.list_activities() == [activity]
+    end
+
+    test "list_achievements_since/2 returns only achievements for the given activity" do
+      activity = activity_fixture()
+      %{id: associated_achievement_id} = achievement_fixture(%{activity: activity})
+      _unrelated_achievement = achievement_fixture()
+
+      assert [%{id: ^associated_achievement_id}] =
+               Activities.list_achievements_since(activity, ~N[2000-01-01 00:00:00])
     end
 
     test "get_activity!/1 returns the activity with given id" do
