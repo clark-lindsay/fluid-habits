@@ -130,7 +130,11 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       achievement_level =
         FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
 
-      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      achievement_plus_date_time_match = ~r/#{achievement_level.name}\s+@\s\d+/
+
+      {:ok, show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+
+      refute html =~ achievement_plus_date_time_match
 
       assert show_live |> element("a", ~r/^Add Achievement$/) |> render_click() =~
                "Add Achievement"
@@ -146,6 +150,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
 
       assert html =~ "Achievement created successfully"
+      assert html =~ achievement_plus_date_time_match
     end
   end
 end
