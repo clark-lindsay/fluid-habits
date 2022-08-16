@@ -4,8 +4,9 @@ defmodule FluidHabits.Achievements do
   """
 
   import Ecto.Query, warn: false
-  alias FluidHabits.Repo
 
+  alias Ecto.Multi
+  alias FluidHabits.Repo
   alias FluidHabits.Achievements.{Achievement, AchievementQueries}
 
   @doc """
@@ -56,8 +57,23 @@ defmodule FluidHabits.Achievements do
 
   """
   def create_achievement(attrs \\ %{}) do
-    Achievement.changeset(%Achievement{}, attrs)
-    |> Repo.insert()
+    changeset = Achievement.changeset(%Achievement{}, attrs)
+
+    multi =
+      Multi.new()
+      |> Multi.insert(:achievement_insert, changeset)
+      |> Multi.run(:is_activity_eligible, fn _repo,
+                                             %{achievement_insert: %{activity_id: activity_id}} ->
+        if FluidHabits.Activities.eligible_for_achievements?(%{id: activity_id}) do
+          {:ok, true}
+        else
+          {:error, :ineligible_for_achievements}
+        end
+      end)
+
+    {:ok, %{achievement_insert: achievement}} = Repo.transaction(multi)
+
+    {:ok, achievement}
   end
 
   @doc """

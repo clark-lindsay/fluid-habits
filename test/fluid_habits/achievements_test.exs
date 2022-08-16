@@ -9,10 +9,18 @@ defmodule FluidHabits.AchievementsTest do
     import FluidHabits.AchievementsFixtures
 
     setup do
-      activity = FluidHabits.ActivitiesFixtures.activity_fixture()
+      alias FluidHabits.{ActivitiesFixtures, Activities, AchievementLevelsFixtures}
+
+      activity = ActivitiesFixtures.activity_fixture()
 
       achievement_level =
-        FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+
+      # create additional achievement_levels to meet
+      # achievement eligibility requirements
+      for _iteration <- Range.new(1, Activities.min_ach_levels_for_ach_eligibility()) do
+        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      end
 
       %{activity: activity, achievement_level: achievement_level}
     end

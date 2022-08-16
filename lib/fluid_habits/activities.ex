@@ -9,6 +9,8 @@ defmodule FluidHabits.Activities do
   alias FluidHabits.Activities.Activity
   alias FluidHabits.Accounts.User
 
+  @min_ach_levels_for_ach_eligibility 3
+
   @doc """
   Returns the list of activities.
 
@@ -128,13 +130,15 @@ defmodule FluidHabits.Activities do
   Checks that there are 3 or more `%FluidHabits.AchievementLevels.AchievementLevel{}`-s
   associated with the given activity
   """
-  def eligible_for_achievements?(%Activity{id: id}) do
+  def eligible_for_achievements?(%{id: id}) do
     import Ecto.Query, only: [from: 2]
 
     query =
       from ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
         where: ach_lvl.activity_id == ^id
 
-    Repo.aggregate(query, :count) >= 3
+    Repo.aggregate(query, :count) >= @min_ach_levels_for_ach_eligibility
   end
+
+  def min_ach_levels_for_ach_eligibility(), do: @min_ach_levels_for_ach_eligibility
 end

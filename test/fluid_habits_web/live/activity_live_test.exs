@@ -127,8 +127,14 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     end
 
     test "adds new achievement with modal", %{conn: conn, activity: activity} do
+      alias FluidHabits.{Activities, AchievementLevelsFixtures}
+
       achievement_level =
-        FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+
+      for _iteration <- Range.new(1, Activities.min_ach_levels_for_ach_eligibility()) do
+        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      end
 
       achievement_plus_date_time_match = ~r/#{achievement_level.name}\s+@\s\d+/
 
