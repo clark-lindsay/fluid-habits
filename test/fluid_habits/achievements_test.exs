@@ -69,22 +69,5 @@ defmodule FluidHabits.AchievementsTest do
       assert %Ecto.Changeset{} = Achievements.change_achievement(achievement)
     end
 
-    test "list_achievements_since/1 returns only achievements after given datetime",
-         %{achievement_level: _, activity: _} = context do
-      achievement = achievement_fixture(context)
-      pivot_date_time = NaiveDateTime.utc_now()
-
-      one_day_in_seconds = 1 * 60 * 60 * 24
-
-      assert(
-        Achievements.list_achievements_since(
-          NaiveDateTime.add(pivot_date_time, -one_day_in_seconds, :second)
-        ) == [achievement]
-      )
-
-      assert(
-        Achievements.list_achievements_since(NaiveDateTime.add(pivot_date_time, 1, :second)) == []
-      )
-    end
   end
 end

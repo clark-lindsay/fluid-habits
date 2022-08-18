@@ -7,7 +7,7 @@ defmodule FluidHabits.Achievements do
 
   alias Ecto.Multi
   alias FluidHabits.Repo
-  alias FluidHabits.Achievements.{Achievement, AchievementQueries}
+  alias FluidHabits.Achievements.Achievement
 
   @doc """
   Returns the list of achievements.
@@ -20,10 +20,6 @@ defmodule FluidHabits.Achievements do
   """
   def list_achievements() do
     Repo.all(Achievement)
-  end
-
-  def list_achievements_since(naive_date_time = %NaiveDateTime{}) do
-    Repo.all(AchievementQueries.since(Achievement, naive_date_time))
   end
 
   @doc """

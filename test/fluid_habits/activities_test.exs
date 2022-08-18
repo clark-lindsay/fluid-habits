@@ -30,6 +30,22 @@ defmodule FluidHabits.ActivitiesTest do
                Activities.list_achievements_since(activity, ~N[2000-01-01 00:00:00])
     end
 
+    test "list_achievements_since/2 returns only `limit` # of achievements" do
+      activity = activity_fixture()
+
+      for _iteration <- 1..2 do
+        achievement_fixture(%{activity: activity})
+      end
+
+      assert Activities.list_achievements_since(
+               activity,
+               ~N[2000-01-01 00:00:00],
+               limit: 1
+             )
+             |> Enum.count() ==
+               1
+    end
+
     test "get_activity!/1 returns the activity with given id" do
       activity = activity_fixture()
       assert Activities.get_activity!(activity.id) == activity

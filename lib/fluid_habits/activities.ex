@@ -31,12 +31,16 @@ defmodule FluidHabits.Activities do
     )
   end
 
-  def list_achievements_since(activity = %Activity{}, since) do
+  def list_achievements_since(activity = %Activity{}, since, options \\ []) do
     alias FluidHabits.Achievements.{Achievement, AchievementQueries}
+
+    default_options = [limit: 10]
+    options = Keyword.merge(default_options, options)
 
     Achievement
     |> AchievementQueries.since(since)
     |> AchievementQueries.desc_by(:inserted_at)
+    |> AchievementQueries.limit(options[:limit])
     |> AchievementQueries.for_activity(activity)
     |> Repo.all()
     |> Repo.preload(:achievement_level)

@@ -12,4 +12,6 @@ defmodule FluidHabits.Achievements.AchievementQueries do
   def for_activity(queryable, %{id: activity_id} = %FluidHabits.Activities.Activity{}) do
     from(ach in queryable, where: ach.activity_id == ^activity_id)
   end
+
+  def limit(queryable, max), do: from(queryable, limit: ^max)
 end
