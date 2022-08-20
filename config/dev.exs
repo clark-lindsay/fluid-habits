@@ -26,7 +26,8 @@ config :fluid_habits, FluidHabitsWeb.Endpoint,
   secret_key_base: "xg9aRsk2I0zfSTfX2EN0HLWZj9WvL+SCkI27lGleWd5uuzqPSXUgt9DrYkGj/85F",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support

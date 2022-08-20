@@ -68,6 +68,5 @@ defmodule FluidHabits.AchievementsTest do
 
       assert %Ecto.Changeset{} = Achievements.change_achievement(achievement)
     end
-
   end
 end
