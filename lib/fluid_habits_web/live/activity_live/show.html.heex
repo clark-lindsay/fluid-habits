@@ -1,11 +1,10 @@
 <h1>Show Activity</h1>
 
 <%= if @live_action in [:edit] do %>
-  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)}>
+  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.ActivityLive.FormComponent}
       id={@activity.id}
-      title={@page_title}
       action={@live_action}
       activity={@activity}
       return_to={Routes.activity_show_path(@socket, :show, @activity)}
@@ -13,11 +12,10 @@
   </.modal>
 <% end %>
 <%= if @live_action in [:add_ach_lvl] do %>
-  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)}>
+  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.AchievementLevelLive.FormComponent}
       id={@activity.id}
-      title={@page_title}
       action={@live_action}
       activity={@activity}
       return_to={Routes.activity_show_path(@socket, :show, @activity)}
@@ -25,11 +23,10 @@
   </.modal>
 <% end %>
 <%= if @live_action in [:add_achievement] do %>
-  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)}>
+  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.AchievementLive.FormComponent}
       id={@activity.id}
-      title={@page_title}
       action={@live_action}
       activity={@activity}
       achievement_levels={

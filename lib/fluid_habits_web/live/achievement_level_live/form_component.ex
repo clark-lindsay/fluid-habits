@@ -48,8 +48,6 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <h2><%= @title %></h2>
-
       <.form
         let={f}
         for={@changeset}

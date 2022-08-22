@@ -99,6 +99,9 @@ defmodule FluidHabitsWeb do
       import FluidHabitsWeb.ErrorHelpers
       import FluidHabitsWeb.Gettext
       alias FluidHabitsWeb.Router.Helpers, as: Routes
+
+      # use all Petal Components
+      use PetalComponents
     end
   end
 

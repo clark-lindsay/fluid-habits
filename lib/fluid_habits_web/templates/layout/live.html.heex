@@ -1,25 +1,19 @@
-<main class="container">
-  <%= unless is_nil(live_flash(@flash, :info)) do %>
-    <p
-      class="p4 border-2 border-solid rounded border-blue-300 bg-blue-200 text-blue-400"
-      role="alert"
-      phx-click="lv:clear-flash"
-      phx-value-key="info"
-    >
-      <%= live_flash(@flash, :info) %>
-    </p>
-  <% end %>
+<.container class="my-10">
+  <.alert
+    color="info"
+    class="mb-5"
+    label={live_flash(@flash, :info)}
+    phx-click="lv:clear-flash"
+    phx-value-key="info"
+  />
 
-  <%= unless is_nil(live_flash(@flash, :error)) do %>
-    <p
-      class="p4 border-2 border-solid rounded border-red-300 bg-red-200 text-red-400"
-      role="alert"
-      phx-click="lv:clear-flash"
-      phx-value-key="error"
-    >
-      <%= live_flash(@flash, :error) %>
-    </p>
-  <% end %>
+  <.alert
+    color="danger"
+    class="mb-5"
+    label={live_flash(@flash, :error)}
+    phx-click="lv:clear-flash"
+    phx-value-key="error"
+  />
 
   <%= @inner_content %>
-</main>
+</.container>
