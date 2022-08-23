@@ -40,4 +40,10 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   defp page_title(:edit), do: "Edit Activity"
   defp page_title(:add_ach_lvl), do: "Add Achievement Level"
   defp page_title(:add_achievement), do: "Add Achievement"
+
+  defp button_classes(:primary),
+    do: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
+
+  defp button_classes(:secondary),
+    do: "my-2 px-4 py-1 bg-secondary-500 hover:bg-secondary-600 text-white rounded-lg"
 end

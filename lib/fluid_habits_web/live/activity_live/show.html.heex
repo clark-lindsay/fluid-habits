@@ -1,5 +1,3 @@
-<h1>Show Activity</h1>
-
 <%= if @live_action in [:edit] do %>
   <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
@@ -40,45 +38,44 @@
   </.modal>
 <% end %>
 
+<.h2><%= @activity.name %></.h2>
 <%= unless FluidHabits.Activities.eligible_for_achievements?(@activity) do %>
   <div>
     <strong>This activity is not currently eligible for achievements</strong>
     <p>Please add at least one achievement level each for values 1, 2, and 3.</p>
   </div>
 <% end %>
-<ul>
-  <li>
-    <strong>Name:</strong>
-    <%= @activity.name %>
-  </li>
+<.container>
+  <.p>
+<%= @activity.description %>
+</.p>
+</.container>
 
-  <li>
-    <strong>Description:</strong>
-    <%= @activity.description %>
-  </li>
-</ul>
-
+<.container>
 <span>
-  <%= live_patch("Edit", to: Routes.activity_show_path(@socket, :edit, @activity), class: "button") %>
+<%= live_patch("Edit", to: Routes.activity_show_path(@socket, :edit, @activity), class: "button #{button_classes(:primary)}") %>
 </span>
 <span>
-  <%= live_patch("Add Achievement Level",
-    to: Routes.activity_show_path(@socket, :add_ach_lvl, @activity),
-    class: "button"
-  ) %>
+<%= live_patch("Add Achievement Level",
+  to: Routes.activity_show_path(@socket, :add_ach_lvl, @activity),
+  class: "button #{button_classes(:primary)}"
+) %>
 </span>
 <span>
-  <%= live_patch("Add Achievement",
-    to: Routes.activity_show_path(@socket, :add_achievement, @activity),
-    class: "button"
-  ) %>
+<%= live_patch("Add Achievement",
+  to: Routes.activity_show_path(@socket, :add_achievement, @activity),
+  class: "button #{button_classes(:primary)}"
+) %>
 </span>
 |
-<span><%= live_redirect("Back", to: Routes.activity_index_path(@socket, :index)) %></span>
+<span><%= live_redirect("Back", to: Routes.activity_index_path(@socket, :index), class: "button #{button_classes(:secondary)}") %></span>
+</.container>
 
-<h2>Achievements:</h2>
+<.container class="my-2">
+<.h3>Achievements:</.h3>
 <ul>
-  <%= for achievement <- @recent_achievements do %>
-    <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} />
+<%= for achievement <- @recent_achievements do %>
+  <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} />
   <% end %>
-</ul>
+  </ul>
+</.container>
