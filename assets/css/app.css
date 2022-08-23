@@ -5,7 +5,7 @@
 /* Suggested styles from Petal Components for better error styling */
 
 .select-wrapper select {
-  @apply text-sm border-gray-300 rounded-md shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:focus:border-blue-500 dark:bg-gray-800 dark:text-gray-300 focus:outline-none ;
+  @apply text-sm border-gray-300 rounded-md shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-500 dark:bg-gray-800 dark:text-gray-300 focus:outline-none ;
 }
 
 label.has-error:not(.phx-no-feedback) {
