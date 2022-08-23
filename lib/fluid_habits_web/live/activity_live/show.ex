@@ -5,12 +5,12 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
   @day_in_seconds 60 * 60 * 24
 
-  @impl true
+  @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
     {:ok, socket}
   end
 
-  @impl true
+  @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _, socket) do
     activity = Activities.get_activity!(id)
     achievement_levels = Activities.list_achievement_levels(activity)
@@ -27,6 +27,13 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
      |> assign(:activity, activity)
      |> assign(:achievement_levels, achievement_levels)
      |> assign(:recent_achievements, recent_achievements)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("close_modal", _, socket) do
+    route_to_show = Routes.activity_show_path(socket, :show, socket.assigns.activity)
+
+    {:noreply, push_patch(socket, to: route_to_show)}
   end
 
   defp page_title(:show), do: "Show Activity"
