@@ -56,21 +56,16 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <%= label(f, :name) %>
-        <%= text_input(f, :name) %>
-        <%= error_tag(f, :name) %>
+        <.form_field type="text_input" form={f} field={:name} placeholder="name" />
 
-        <%= label(f, :description) %>
-        <%= text_input(f, :description) %>
-        <%= error_tag(f, :description) %>
+        <.form_field type="text_input" form={f} field={:description} placeholder="description" />
 
-        <%= label(f, :value) %>
-        <%= text_input(f, :value) %>
-        <%= error_tag(f, :value) %>
+        <.form_field type="select" options={["1": 1, "2": 2, "3": 3]} form={f} field={:value} />
 
-        <div>
-          <%= submit("Save", phx_disable_with: "Saving...") %>
-        </div>
+        <%= submit("Save",
+          phx_disable_with: "Saving...",
+          class: "my-2 px-4 py-1 bg-blue-500 text-white rounded-lg"
+        ) %>
       </.form>
     </div>
     """
