@@ -1,4 +1,4 @@
-<h1>Listing Activities</h1>
+<.h2>Activities</.h2>
 
 <%= if @live_action in [:new, :edit] do %>
   <.modal return_to={Routes.activity_index_path(@socket, :index)} title={@page_title}>
@@ -13,40 +13,54 @@
   </.modal>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
+<.container>
+  <.table class="my-4">
+    <.th>
+      <.tr>
+        <.th>Name</.th>
+        <.th>Description</.th>
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="activities">
-    <%= for activity <- @activities do %>
-      <tr id={"activity-#{activity.id}"}>
-        <td><%= activity.name %></td>
-        <td><%= activity.description %></td>
+        <.th></.th>
+      </.tr>
+    </.th>
+    <div id="activities">
+      <%= for activity <- @activities do %>
+        <.tr id={"activity-#{activity.id}"}>
+          <.td><%= activity.name %></.td>
+          <.td><%= activity.description %></.td>
 
-        <td>
-          <span>
-            <%= live_redirect("Show", to: Routes.activity_show_path(@socket, :show, activity)) %>
-          </span>
-          <span>
-            <%= live_patch("Edit", to: Routes.activity_index_path(@socket, :edit, activity)) %>
-          </span>
-          <span>
-            <%= link("Delete",
-              to: "#",
-              phx_click: "delete",
-              phx_value_id: activity.id,
-              data: [confirm: "Are you sure?"]
-            ) %>
-          </span>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+          <.td>
+            <.button
+              label="Show"
+              link_type="live_redirect"
+              to={Routes.activity_show_path(@socket, :show, activity)}
+              color="primary"
+            />
 
-<span><%= live_patch("New Activity", to: Routes.activity_index_path(@socket, :new)) %></span>
+            <.button
+              label="Edit"
+              link_type="live_patch"
+              to={Routes.activity_index_path(@socket, :edit, activity)}
+              color="primary"
+            />
+
+            <.button
+              label="Delete"
+              color="danger"
+              phx_click="delete"
+              phx_value_id={activity.id}
+              data={[confirm: "Are you sure?"]}
+            />
+          </.td>
+        </.tr>
+      <% end %>
+    </div>
+  </.table>
+
+  <.button
+    label="New Activity"
+    link_type="live_patch"
+    to={Routes.activity_index_path(@socket, :new)}
+    color="primary"
+  />
+</.container>

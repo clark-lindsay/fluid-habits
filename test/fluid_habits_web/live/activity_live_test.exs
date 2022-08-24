@@ -48,7 +48,9 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     test "updates activity in listing", %{conn: conn, activity: activity} do
       {:ok, index_live, _html} = live(conn, Routes.activity_index_path(conn, :index))
 
-      assert index_live |> element("#activity-#{activity.id} a", "Edit") |> render_click() =~
+      assert index_live
+             |> element("#activity-#{activity.id} a", ~r/^\s+Edit\s+$/)
+             |> render_click() =~
                "Edit Activity"
 
       assert_patch(index_live, Routes.activity_index_path(conn, :edit, activity))
@@ -70,7 +72,10 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     test "deletes activity in listing", %{conn: conn, activity: activity} do
       {:ok, index_live, _html} = live(conn, Routes.activity_index_path(conn, :index))
 
-      assert index_live |> element("#activity-#{activity.id} a", "Delete") |> render_click()
+      assert index_live
+             |> element("#activity-#{activity.id} button", ~r/^\s+Delete\s+$/)
+             |> render_click()
+
       refute has_element?(index_live, "#activity-#{activity.id}")
     end
   end
@@ -88,7 +93,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     test "updates activity within modal", %{conn: conn, activity: activity} do
       {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
+      assert show_live |> element("a", ~r/^\s+Edit\s+$/) |> render_click() =~
                "Edit Activity"
 
       assert_patch(show_live, Routes.activity_show_path(conn, :edit, activity))
@@ -142,7 +147,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       refute html =~ achievement_plus_date_time_match
 
-      assert show_live |> element("a", ~r/^Add Achievement$/) |> render_click() =~
+      assert show_live |> element("a", ~r/^\s+Add Achievement\s+$/) |> render_click() =~
                "Add Achievement"
 
       assert_patch(show_live, Routes.activity_show_path(conn, :add_achievement, activity))

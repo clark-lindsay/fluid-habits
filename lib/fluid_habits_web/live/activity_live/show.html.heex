@@ -47,35 +47,44 @@
 <% end %>
 <.container>
   <.p>
-<%= @activity.description %>
-</.p>
+    <%= @activity.description %>
+  </.p>
 </.container>
 
 <.container>
-<span>
-<%= live_patch("Edit", to: Routes.activity_show_path(@socket, :edit, @activity), class: "button #{button_classes(:primary)}") %>
-</span>
-<span>
-<%= live_patch("Add Achievement Level",
-  to: Routes.activity_show_path(@socket, :add_ach_lvl, @activity),
-  class: "button #{button_classes(:primary)}"
-) %>
-</span>
-<span>
-<%= live_patch("Add Achievement",
-  to: Routes.activity_show_path(@socket, :add_achievement, @activity),
-  class: "button #{button_classes(:primary)}"
-) %>
-</span>
-|
-<span><%= live_redirect("Back", to: Routes.activity_index_path(@socket, :index), class: "button #{button_classes(:secondary)}") %></span>
+  <.button
+    label="Edit"
+    link_type="live_patch"
+    to={Routes.activity_show_path(@socket, :edit, @activity)}
+    color="primary"
+  />
+
+  <.button
+    label="Add Achievement Level"
+    link_type="live_patch"
+    to={Routes.activity_show_path(@socket, :add_ach_lvl, @activity)}
+    color="primary"
+  />
+
+  <.button
+    label="Add Achievement"
+    link_type="live_patch"
+    to={Routes.activity_show_path(@socket, :add_achievement, @activity)}
+    color="primary"
+  /> |
+  <.button
+    label="Back"
+    link_type="live_redirect"
+    to={Routes.activity_index_path(@socket, :index)}
+    color="secondary"
+  />
 </.container>
 
 <.container class="my-2">
-<.h3>Achievements:</.h3>
-<ul>
-<%= for achievement <- @recent_achievements do %>
-  <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} />
-  <% end %>
+  <.h3>Achievements:</.h3>
+  <ul>
+    <%= for achievement <- @recent_achievements do %>
+      <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} />
+    <% end %>
   </ul>
 </.container>
