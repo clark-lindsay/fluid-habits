@@ -1,12 +1,9 @@
-<main class="container">
-  <p
-    class="empty:hidden p4 border-2 border-solid rounded border-blue-300 bg-blue-200 text-blue-400"
-    role="alert"
-  >
-    <%= get_flash(@conn, :info) %>
-  </p>
-  <p class="p4 border-2 border-solid rounded border-red-300 bg-red-200 text-red-400" role="alert">
-    <%= get_flash(@conn, :error) %>
-  </p>
-  <%= @inner_content %>
+<main>
+  <.container>
+    <.alert color="info" class="mb-5" label={get_flash(@conn, :info)} />
+
+    <.alert color="danger" class="mb-5" label={get_flash(@conn, :error)} />
+
+    <%= @inner_content %>
+  </.container>
 </main>
