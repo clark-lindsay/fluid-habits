@@ -8,8 +8,8 @@ defmodule FluidHabitsWeb.UserRegistrationControllerTest do
       conn = get(conn, Routes.user_registration_path(conn, :new))
       response = html_response(conn, 200)
       assert response =~ "<h1>Register</h1>"
-      assert response =~ "Log in</a>"
-      assert response =~ "Register</a>"
+      assert response =~ ~r/Log in<\/a>/
+      assert response =~ ~r/Register<\/button>/
     end
 
     test "redirects if already logged in", %{conn: conn} do
@@ -35,8 +35,8 @@ defmodule FluidHabitsWeb.UserRegistrationControllerTest do
       conn = get(conn, "/")
       response = html_response(conn, 200)
       assert response =~ email
-      assert response =~ "Settings</a>"
-      assert response =~ "Log out</a>"
+      assert response =~ "Settings"
+      assert response =~ "Log Out"
     end
 
     test "render errors for invalid data", %{conn: conn} do

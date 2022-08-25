@@ -1,10 +1,30 @@
-<ul>
+<div class="flex flex-col justify-end">
   <%= if @current_user do %>
-    <li><%= @current_user.email %></li>
-    <li><%= link("Settings", to: Routes.user_settings_path(@conn, :edit)) %></li>
-    <li><%= link("Log out", to: Routes.user_session_path(@conn, :delete), method: :delete) %></li>
+    <div class="text-gray-700"><%= @current_user.email %></div>
+    <div class="flex justify-end">
+      <.link to={Routes.user_settings_path(@conn, :edit)} class="grow-0">
+        <div class="flex items-center  text-gray-600">
+          <Heroicons.Outline.cog class="inline h-4 w-4" />Settings
+        </div>
+      </.link>
+    </div>
+    <div class="flex justify-end">
+      <.link to={Routes.user_session_path(@conn, :delete)} method={:delete}>
+        <div class="flex items-center  text-gray-600">
+          <Heroicons.Outline.arrow_left class="inline h-4 w-4" />Log Out
+        </div>
+      </.link>
+    </div>
   <% else %>
-    <li><%= link("Register", to: Routes.user_registration_path(@conn, :new)) %></li>
-    <li><%= link("Log in", to: Routes.user_session_path(@conn, :new)) %></li>
+    <.link to={Routes.user_registration_path(@conn, :new)}>
+      <div class="flex items-center  text-gray-600">
+        <Heroicons.Outline.user class="inline h-4 w-4" />Register
+      </div>
+    </.link>
+    <.link to={Routes.user_session_path(@conn, :new)}>
+      <div class="flex items-center  text-gray-600">
+        <Heroicons.Outline.lock_open class="inline h-4 w-4" />Log In
+      </div>
+    </.link>
   <% end %>
-</ul>
+</div>
