@@ -3,26 +3,26 @@
     <div class="text-gray-700"><%= @current_user.email %></div>
     <div class="flex justify-end">
       <.link to={Routes.user_settings_path(@conn, :edit)} class="grow-0">
-        <div class="flex items-center  text-gray-600">
+        <div class="flex items-center  text-gray-600 hover:text-secondary-400">
           <Heroicons.Outline.cog class="inline h-4 w-4 mr-1" />Settings
         </div>
       </.link>
     </div>
     <div class="flex justify-end">
       <.link to={Routes.user_session_path(@conn, :delete)} method={:delete}>
-        <div class="flex items-center  text-gray-600">
+        <div class="flex items-center  text-gray-600 hover:text-secondary-400">
           <Heroicons.Outline.logout class="inline h-4 w-4 mr-1" />Log Out
         </div>
       </.link>
     </div>
   <% else %>
     <.link to={Routes.user_registration_path(@conn, :new)}>
-      <div class="flex items-center  text-gray-600">
+      <div class="flex items-center  text-gray-600 hover:text-secondary-400">
         <Heroicons.Outline.user class="inline h-4 w-4 mr-1" />Register
       </div>
     </.link>
     <.link to={Routes.user_session_path(@conn, :new)}>
-      <div class="flex items-center  text-gray-600">
+      <div class="flex items-center  text-gray-600 hover:text-secondary-400">
         <Heroicons.Outline.lock_open class="inline h-4 w-4 mr-1" />Log In
       </div>
     </.link>
