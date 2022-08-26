@@ -21,7 +21,34 @@
         <nav class="flex w-full justify-between">
           <ul>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link("LiveDashboard", to: Routes.live_dashboard_path(@conn, :home)) %></li>
+              <li>
+                <.link
+                  to={Routes.live_dashboard_path(@conn, :home)}
+                  link_type="live_patch"
+                  label="LiveDashboard"
+                  class="text-purple-500"
+                />
+              </li>
+            <% end %>
+            <%= if @current_user do %>
+              <li>
+                <.link to="/" link_type="live_redirect" class="grow-0">
+                  <div class="flex items-center  text-gray-600">
+                    <Heroicons.Outline.home class="inline h-4 w-4 mr-1" />Home
+                  </div>
+                </.link>
+              </li>
+              <li>
+                <.link
+                  to={Routes.activity_index_path(@conn, :index)}
+                  link_type="live_redirect"
+                  class="grow-0"
+                >
+                  <div class="flex items-center  text-gray-600">
+                    <Heroicons.Outline.lightning_bolt class="inline h-4 w-4 mr-1" />Activities
+                  </div>
+                </.link>
+              </li>
             <% end %>
           </ul>
           <%= render("_user_menu.html", assigns) %>
