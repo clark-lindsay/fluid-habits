@@ -64,7 +64,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
 
         <%= submit("Save",
           phx_disable_with: "Saving...",
-          class: "my-2 px-4 py-1 bg-blue-500 text-white rounded-lg"
+          class: "my-2 px-4 py-1 bg-primary-500 text-white rounded-lg"
         ) %>
       </.form>
     </div>

@@ -9,8 +9,14 @@ defmodule FluidHabitsWeb.UserSettingsControllerTest do
   describe "GET /users/settings" do
     test "renders settings page", %{conn: conn} do
       conn = get(conn, Routes.user_settings_path(conn, :edit))
-      response = html_response(conn, 200)
-      assert response =~ "<h1>Settings</h1>"
+
+      response =
+        html_response(conn, 200)
+        |> Floki.parse_document!()
+        |> Floki.find("h2")
+        |> Floki.text()
+
+      assert response =~ "Settings"
     end
 
     test "redirects if user is not logged in" do
@@ -50,7 +56,12 @@ defmodule FluidHabitsWeb.UserSettingsControllerTest do
         })
 
       response = html_response(old_password_conn, 200)
-      assert response =~ "<h1>Settings</h1>"
+
+      assert response
+             |> Floki.parse_document!()
+             |> Floki.find("h2")
+             |> Floki.text() =~ "Settings"
+
       assert response =~ "should be at least 12 character(s)"
       assert response =~ "does not match password"
       assert response =~ "is not valid"
@@ -83,7 +94,12 @@ defmodule FluidHabitsWeb.UserSettingsControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "<h1>Settings</h1>"
+
+      assert response
+             |> Floki.parse_document!()
+             |> Floki.find("h2")
+             |> Floki.text() =~ "Settings"
+
       assert response =~ "must have the @ sign and no spaces"
       assert response =~ "is not valid"
     end
