@@ -1,29 +1,42 @@
-<h1>Log in</h1>
+<.container class="my-4">
+  <.h2>Log in</.h2>
 
-<.form let={f} for={@conn} action={Routes.user_session_path(@conn, :create)} as={:user}>
-  <%= if @error_message do %>
-    <div class="alert alert-danger">
-      <p><%= @error_message %></p>
+  <.form let={f} for={@conn} action={Routes.user_session_path(@conn, :create)} as={:user}>
+    <%= if @error_message do %>
+      <div class="alert alert-danger">
+        <p><%= @error_message %></p>
+      </div>
+    <% end %>
+
+    <.form_field form={f} type="email_input" field={:email} required={true} />
+
+    <.form_field form={f} type="password_input" field={:password} required={true} />
+
+    <.form_field
+      form={f}
+      label="Keep me logged in for 60 days"
+      type="checkbox"
+      field={:remember_me}
+    />
+
+    <div>
+      <%= submit("Log in",
+        phx_disable_with: "Loggin in...",
+        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
+      ) %>
     </div>
-  <% end %>
-
-  <%= label(f, :email) %>
-  <%= email_input(f, :email, required: true) %>
-
-  <%= label(f, :password) %>
-  <%= password_input(f, :password, required: true) %>
-
-  <%= label(f, :remember_me, "Keep me logged in for 60 days") %>
-  <%= checkbox(f, :remember_me) %>
+  </.form>
 
   <div>
-    <%= submit("Log in") %>
+    <.link to={Routes.user_registration_path(@conn, :new)}>
+      <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+        <Heroicons.Outline.user class="inline h-4 w-4 mr-1" />Register
+      </div>
+    </.link>
+    <.link to={Routes.user_reset_password_path(@conn, :new)}>
+      <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+        <Heroicons.Outline.question_mark_circle class="inline h-4 w-4 mr-1" />Forgot your password?
+      </div>
+    </.link>
   </div>
-</.form>
-
-<p>
-  <%= link("Register", to: Routes.user_registration_path(@conn, :new)) %> | <%= link(
-    "Forgot your password?",
-    to: Routes.user_reset_password_path(@conn, :new)
-  ) %>
-</p>
+</.container>

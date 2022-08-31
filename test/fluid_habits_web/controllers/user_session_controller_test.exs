@@ -10,10 +10,11 @@ defmodule FluidHabitsWeb.UserSessionControllerTest do
   describe "GET /users/log_in" do
     test "renders log in page", %{conn: conn} do
       conn = get(conn, Routes.user_session_path(conn, :new))
-      response = html_response(conn, 200)
-      assert response =~ "<h1>Log in</h1>"
-      assert response =~ "Register</a>"
-      assert response =~ "Forgot your password?</a>"
+      response = html_response(conn, 200) |> Floki.parse_document!()
+
+      assert Floki.find(response, "h2") |> Floki.text() =~ "Log in"
+      assert Floki.find(response, "a") |> Floki.text() =~ "Register"
+      assert Floki.find(response, "a") |> Floki.text() =~ "Forgot your password?"
     end
 
     test "redirects if already logged in", %{conn: conn, user: user} do
@@ -74,9 +75,10 @@ defmodule FluidHabitsWeb.UserSessionControllerTest do
           "user" => %{"email" => user.email, "password" => "invalid_password"}
         })
 
-      response = html_response(conn, 200)
-      assert response =~ "<h1>Log in</h1>"
-      assert response =~ "Invalid email or password"
+      response = html_response(conn, 200) |> Floki.parse_document!()
+
+      assert Floki.find(response, "h2") |> Floki.text() =~ "Log in"
+      assert Floki.find(response, ".alert") |> Floki.text() =~ "Invalid email or password"
     end
   end
 

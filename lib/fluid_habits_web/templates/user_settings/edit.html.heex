@@ -8,80 +8,80 @@
     for={@email_changeset}
     action={Routes.user_settings_path(@conn, :update)}
     id="update_email"
-    >
+  >
     <%= if @email_changeset.action do %>
       <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+        <p>Oops, something went wrong! Please check the errors below.</p>
       </div>
-      <% end %>
+    <% end %>
 
     <%= hidden_input(f, :action, name: "action", value: "update_email") %>
 
     <.form_field form={f} type="email_input" field={:email} required={true} />
     <.form_field
-    form={f}
-    label="Current Password"
-    type="password_input"
-    field={:current_password}
-    required={true}
-    ,
-    name="current_password"
-    id="current_password_for_email"
+      form={f}
+      label="Current Password"
+      type="password_input"
+      field={:current_password}
+      required={true}
+      ,
+      name="current_password"
+      id="current_password_for_email"
     />
 
     <div>
-    <%= submit("Change email",
-      phx_disable_with: "Changing email...",
-      class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
-    ) %>
+      <%= submit("Change email",
+        phx_disable_with: "Changing email...",
+        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
+      ) %>
     </div>
-    </.form>
+  </.form>
 
-    <.h3>Change password</.h3>
+  <.h3>Change password</.h3>
 
-    <.form
+  <.form
     let={f}
     for={@password_changeset}
     action={Routes.user_settings_path(@conn, :update)}
     id="update_password"
-    >
+  >
     <%= if @password_changeset.action do %>
       <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+        <p>Oops, something went wrong! Please check the errors below.</p>
       </div>
-      <% end %>
+    <% end %>
 
     <%= hidden_input(f, :action, name: "action", value: "update_password") %>
 
     <.form_field
-    form={f}
-    label="New Password"
-    type="password_input"
-    field={:password}
-    required={true}
+      form={f}
+      label="New Password"
+      type="password_input"
+      field={:password}
+      required={true}
     />
     <.form_field
-    form={f}
-    label="Confirm New Password"
-    type="password_input"
-    field={:password_confirmation}
-    required={true}
+      form={f}
+      label="Confirm New Password"
+      type="password_input"
+      field={:password_confirmation}
+      required={true}
     />
     <.form_field
-    form={f}
-    label="Current Password"
-    type="password_input"
-    field={:current_password}
-    required={true}
-    name="current_password"
-    id="current_password_for_password"
+      form={f}
+      label="Current Password"
+      type="password_input"
+      field={:current_password}
+      required={true}
+      name="current_password"
+      id="current_password_for_password"
     />
 
     <div>
-    <%= submit("Change password",
-      phx_disable_with: "Changing password...",
-      class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
-    ) %>
+      <%= submit("Change password",
+        phx_disable_with: "Changing password...",
+        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
+      ) %>
     </div>
   </.form>
 </.container>
