@@ -7,20 +7,10 @@
     phx-change="validate"
     phx-submit="save"
   >
-    <div class="my-2">
-      <%= label(f, :name, class: "block") %>
-      <%= text_input(f, :name) %>
-      <%= error_tag(f, :name) %>
-    </div>
+    <.form_field type="text_input" form={f} field={:name} />
 
-    <div class="my-2">
-      <%= label(f, :description, class: "block") %>
-      <%= text_input(f, :description) %>
-      <%= error_tag(f, :description) %>
-    </div>
+    <.form_field type="text_input" form={f} field={:description} />
 
-    <div>
-      <.submit_button label="Save" phx_disable_with="Saving..." />
-    </div>
+    <.submit_button label="Save" phx_disable_with="Saving..." />
   </.form>
 </div>
