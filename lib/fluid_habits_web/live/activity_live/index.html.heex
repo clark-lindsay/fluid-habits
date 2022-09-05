@@ -26,27 +26,29 @@
     <div id="activities">
       <%= for activity <- @activities do %>
         <.tr id={"activity-#{activity.id}"}>
-          <.td><%= activity.name %></.td>
+          <.td>
+            <.link
+              to={Routes.activity_show_path(@socket, :show, activity)}
+              label={activity.name}
+              link_type="live_redirect"
+              class="text-primary-400 hover:text-primary-600"
+            />
+          </.td>
           <.td><%= activity.description %></.td>
 
           <.td>
-            <.button
-              label="Show"
-              link_type="live_redirect"
-              to={Routes.activity_show_path(@socket, :show, activity)}
-              color="primary"
-            />
-
             <.button
               label="Edit"
               link_type="live_patch"
               to={Routes.activity_index_path(@socket, :edit, activity)}
               color="primary"
+              class="m-1"
             />
 
             <.button
               label="Delete"
               color="danger"
+              class="m-1"
               phx_click="delete"
               phx_value_id={activity.id}
               data={[confirm: "Are you sure?"]}
