@@ -6,10 +6,19 @@ defmodule FluidHabitsWeb.UserRegistrationControllerTest do
   describe "GET /users/register" do
     test "renders registration page", %{conn: conn} do
       conn = get(conn, Routes.user_registration_path(conn, :new))
-      response = html_response(conn, 200)
-      assert response =~ "<h1>Register</h1>"
-      assert response =~ ~r/Log in<\/a>/
-      assert response =~ ~r/Register<\/button>/
+
+      response =
+        html_response(conn, 200)
+        |> Floki.parse_document!()
+
+      assert Floki.find(response, "h2")
+             |> Floki.text() =~ "Register"
+
+      assert Floki.find(response, "a")
+             |> Floki.text() =~ "Log In"
+
+      assert Floki.find(response, "a")
+             |> Floki.text() =~ "Register"
     end
 
     test "redirects if already logged in", %{conn: conn} do
@@ -46,7 +55,11 @@ defmodule FluidHabitsWeb.UserRegistrationControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "<h1>Register</h1>"
+
+      assert Floki.parse_document!(response)
+             |> Floki.find("h2")
+             |> Floki.text() =~ "Register"
+
       assert response =~ "must have the @ sign and no spaces"
       assert response =~ "should be at least 12 character"
     end
