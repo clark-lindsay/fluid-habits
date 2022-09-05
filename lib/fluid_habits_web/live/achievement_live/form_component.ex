@@ -1,6 +1,8 @@
 defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   use FluidHabitsWeb, :live_component
 
+  import FluidHabitsWeb.Components.FormComponents
+
   alias FluidHabits.Achievements
   alias FluidHabits.Achievements.Achievement
 
@@ -54,11 +56,14 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <%= select(f, :achievement_level_id, @achievement_levels) %>
+        <.form_field
+          type="select"
+          form={f}
+          field={:achievement_level_id}
+          options={@achievement_levels}
+        />
 
-        <div>
-          <%= submit("Save", phx_disable_with: "Saving...") %>
-        </div>
+        <.submit_button label="Save" phx_disable_with="Saving..." />
       </.form>
     </div>
     """

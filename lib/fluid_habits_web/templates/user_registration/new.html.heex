@@ -12,23 +12,18 @@
 
     <.form_field form={f} type="password_input" field={:password} required={true} />
 
-    <div>
-      <%= submit("Register",
-        phx_disable_with: "Registering...",
-        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
-      ) %>
-    </div>
+    <.submit_button label="Register" phx_disable_with="Registering..." />
   </.form>
 
-    <.link to={Routes.user_session_path(@conn, :new)}>
-      <div class="flex items-center  text-gray-600 hover:text-secondary-400">
-        <Heroicons.Outline.lock_open class="inline h-4 w-4 mr-1" />Log In
-      </div>
-    </.link>
+  <.link to={Routes.user_session_path(@conn, :new)}>
+    <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+      <Heroicons.Outline.lock_open class="inline h-4 w-4 mr-1" />Log In
+    </div>
+  </.link>
   <% # Why are these links growing to the same size as the container? %>
-    <.link to={Routes.user_reset_password_path(@conn, :new)}>
-      <div class="flex items-center  text-gray-600 hover:text-secondary-400">
-        <Heroicons.Outline.question_mark_circle class="inline h-4 w-4 mr-1" />Forgot your password?
-      </div>
-    </.link>
+  <.link to={Routes.user_reset_password_path(@conn, :new)}>
+    <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+      <Heroicons.Outline.question_mark_circle class="inline h-4 w-4 mr-1" />Forgot your password?
+    </div>
+  </.link>
 </.container>

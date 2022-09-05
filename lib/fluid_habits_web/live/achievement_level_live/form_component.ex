@@ -62,10 +62,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
 
         <.form_field type="select" options={["1": 1, "2": 2, "3": 3]} form={f} field={:value} />
 
-        <%= submit("Save",
-          phx_disable_with: "Saving...",
-          class: "my-2 px-4 py-1 bg-primary-500 text-white rounded-lg"
-        ) %>
+        <.submit_button label="Save" phx_disable_with="Saving..." />
       </.form>
     </div>
     """

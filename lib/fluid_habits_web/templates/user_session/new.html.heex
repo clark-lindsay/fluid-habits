@@ -19,12 +19,10 @@
       field={:remember_me}
     />
 
-    <div>
-      <%= submit("Log in",
-        phx_disable_with: "Logging in...",
-        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
-      ) %>
-    </div>
+
+    <.submit_button label="Log in"
+  phx_disable_with="Logging in..." />
+
   </.form>
 
   <div>

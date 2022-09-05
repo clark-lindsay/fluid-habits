@@ -29,12 +29,8 @@
       id="current_password_for_email"
     />
 
-    <div>
-      <%= submit("Change email",
-        phx_disable_with: "Changing email...",
-        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
-      ) %>
-    </div>
+    <.submit_button label="Change email"
+    phx_disable_with="Changing email..." />
   </.form>
 
   <.h3>Change password</.h3>
@@ -77,11 +73,9 @@
       id="current_password_for_password"
     />
 
-    <div>
-      <%= submit("Change password",
-        phx_disable_with: "Changing password...",
-        class: "my-2 px-4 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg"
-      ) %>
-    </div>
+
+  <.submit_button label="Change password"
+    phx_disable_with="Changing password..." />
+
   </.form>
 </.container>

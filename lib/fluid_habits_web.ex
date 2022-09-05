@@ -102,6 +102,9 @@ defmodule FluidHabitsWeb do
 
       # use all Petal Components
       use PetalComponents
+
+      # import custom FormComponents
+      import FluidHabitsWeb.Components.FormComponents
     end
   end
 

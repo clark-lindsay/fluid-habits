@@ -4,9 +4,7 @@
   <%= label(f, :email) %>
   <%= email_input(f, :email, required: true) %>
 
-  <div>
-    <%= submit("Resend confirmation instructions") %>
-  </div>
+  <.submit_button label="Resend confirmation instructions" phx_disable_with="Sending..." />
 </.form>
 
 <p>
