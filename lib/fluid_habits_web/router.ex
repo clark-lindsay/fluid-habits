@@ -17,6 +17,9 @@ defmodule FluidHabitsWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # if logged in, immediately redirect to a new "/home" page, which renders
+  # a card for each activity and its
+  # current "streak", with the last ~5 (?) achievements 
   scope "/", FluidHabitsWeb do
     pipe_through :browser
 
