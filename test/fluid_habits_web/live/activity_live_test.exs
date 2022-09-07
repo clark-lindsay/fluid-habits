@@ -141,11 +141,11 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
       end
 
-      achievement_plus_date_time_match = ~r/#{achievement_level.name}\s+@\s\d+/
-
       {:ok, show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
 
-      refute html =~ achievement_plus_date_time_match
+      refute Floki.parse_document!(html)
+             |> Floki.find("span")
+             |> Floki.text() =~ achievement_level.name
 
       assert show_live |> element("a", ~r/^\s+Add Achievement\s+$/) |> render_click() =~
                "Add Achievement"
@@ -161,7 +161,10 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
 
       assert html =~ "Achievement created successfully"
-      assert html =~ achievement_plus_date_time_match
+
+      assert Floki.parse_document!(html)
+             |> Floki.find("span")
+             |> Floki.text() =~ achievement_level.name
     end
 
     test "disables the button to add achievements when the activity is ineligible for them", %{
