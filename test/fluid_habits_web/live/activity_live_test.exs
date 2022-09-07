@@ -163,5 +163,22 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       assert html =~ "Achievement created successfully"
       assert html =~ achievement_plus_date_time_match
     end
+
+    test "disables the button to add achievements when the activity is ineligible for them", %{
+      conn: conn,
+      activity: activity
+    } do
+      {:ok, _live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+
+      add_achievement_button =
+        Floki.parse_document!(html)
+        |> Floki.find("a")
+        |> Enum.filter(fn elem ->
+          Regex.match?(~r/^\s*Add\s+Achievement\s*$/, Floki.text(elem))
+        end)
+        |> hd()
+
+      refute Enum.empty?(Floki.attribute(add_achievement_button, "disabled"))
+    end
   end
 end

@@ -39,16 +39,19 @@
 <% end %>
 
 <.h2><%= @activity.name %></.h2>
-<%= unless FluidHabits.Activities.eligible_for_achievements?(@activity) do %>
-  <div>
-    <strong>This activity is not currently eligible for achievements</strong>
-    <p>Please add at least one achievement level each for values 1, 2, and 3.</p>
-  </div>
-<% end %>
 <.container>
   <.p>
     <%= @activity.description %>
   </.p>
+  <%= unless @eligible_for_achievements? do %>
+    <.alert
+      with_icon
+      color="warning"
+      heading="This activity is not currently eligible for achievements"
+    >
+      Please add at least one achievement level each for values 1, 2, and 3.
+    </.alert>
+  <% end %>
 </.container>
 
 <.container>
@@ -67,6 +70,7 @@
   />
 
   <.button
+    disabled={!@eligible_for_achievements?}
     label="Add Achievement"
     link_type="live_patch"
     to={Routes.activity_show_path(@socket, :add_achievement, @activity)}

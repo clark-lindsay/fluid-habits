@@ -13,6 +13,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _, socket) do
     activity = Activities.get_activity!(id)
+    eligible_for_achievements? = Activities.eligible_for_achievements?(activity)
     achievement_levels = Activities.list_achievement_levels(activity)
 
     one_week_ago =
@@ -25,6 +26,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:activity, activity)
+     |> assign(:eligible_for_achievements?, eligible_for_achievements?)
      |> assign(:achievement_levels, achievement_levels)
      |> assign(:recent_achievements, recent_achievements)}
   end

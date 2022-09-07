@@ -52,24 +52,28 @@ defmodule FluidHabits.Achievements do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_achievement(map()) :: {:ok, %Achievement{}} | {:error, atom()}
   def create_achievement(attrs \\ %{}) do
     changeset = Achievement.changeset(%Achievement{}, attrs)
 
-    multi =
-      Multi.new()
-      |> Multi.insert(:achievement_insert, changeset)
-      |> Multi.run(:is_activity_eligible, fn _repo,
-                                             %{achievement_insert: %{activity_id: activity_id}} ->
-        if FluidHabits.Activities.eligible_for_achievements?(%{id: activity_id}) do
-          {:ok, true}
-        else
-          {:error, :ineligible_for_achievements}
-        end
-      end)
+    Multi.new()
+    |> Multi.insert(:achievement_insert, changeset)
+    |> Multi.run(:is_activity_eligible, fn _repo,
+                                           %{achievement_insert: %{activity_id: activity_id}} ->
+      if FluidHabits.Activities.eligible_for_achievements?(%{id: activity_id}) do
+        {:ok, true}
+      else
+        {:error, :ineligible_for_achievements}
+      end
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{achievement_insert: achievement}} ->
+        {:ok, achievement}
 
-    {:ok, %{achievement_insert: achievement}} = Repo.transaction(multi)
-
-    {:ok, achievement}
+      {:error, _failed_operation, {_, reason}, _changes_so_far} ->
+        {:error, reason}
+    end
   end
 
   @doc """
