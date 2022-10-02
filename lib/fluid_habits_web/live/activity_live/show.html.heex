@@ -54,14 +54,15 @@
   <% end %>
 </.container>
 
-<FluidHabitsWeb.Components.ActivityComponents.activity_card
-  activity={@activity}
-  active_streak_start={@active_streak_start}
-  weekly_score={@weekly_score}
-  start_of_week={@start_of_week}
-/>
-
 <.container>
+  <div class="my-4">
+    <FluidHabitsWeb.Components.ActivityComponents.activity_card
+      activity={@activity}
+      active_streak_start={@active_streak_start}
+      weekly_score={@weekly_score}
+      start_of_week={@start_of_week}
+    />
+  </div>
   <.button
     label="Edit"
     link_type="live_patch"
