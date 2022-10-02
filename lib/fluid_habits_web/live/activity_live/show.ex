@@ -1,34 +1,72 @@
 defmodule FluidHabitsWeb.ActivityLive.Show do
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.{Activities}
-
-  @day_in_seconds 60 * 60 * 24
+  alias FluidHabits.{Accounts, Achievements, Activities}
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(_params, %{"user_token" => user_token} = _session, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(FluidHabits.PubSub, "achievement")
+
+      current_user = Accounts.get_user_by_session_token(user_token)
+
+      socket = assign(socket, :current_user, current_user)
+
+      {:ok, socket}
+    else
+      {:ok, socket}
+    end
   end
 
   @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _, socket) do
-    activity = Activities.get_activity!(id)
-    eligible_for_achievements? = Activities.eligible_for_achievements?(activity)
-    achievement_levels = Activities.list_achievement_levels(activity)
-
     one_week_ago =
       NaiveDateTime.utc_now()
-      |> NaiveDateTime.add(-7 * @day_in_seconds, :second)
+      |> Timex.add(Timex.Duration.from_days(-7))
 
-    recent_achievements = Activities.list_achievements_since(activity, one_week_ago)
+    start_of_current_week = NaiveDateTime.utc_now() |> Timex.beginning_of_week(:mon)
 
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:activity, activity)
-     |> assign(:eligible_for_achievements?, eligible_for_achievements?)
-     |> assign(:achievement_levels, achievement_levels)
-     |> assign(:recent_achievements, recent_achievements)}
+    # TODO: optimize DB access
+    # _LOTS_ of non-orthogonal DB calls here
+    with activity <- Activities.get_activity!(id),
+         eligible_for_achievements? <- Activities.eligible_for_achievements?(activity),
+         achievement_levels <- Activities.list_achievement_levels(activity),
+         recent_achievements <- Activities.list_achievements_since(activity, one_week_ago),
+         current_week_achievements <-
+           Activities.list_achievements_since(activity, start_of_current_week),
+         weekly_score <- Achievements.sum_scores(current_week_achievements) do
+      yesterday_origin =
+        NaiveDateTime.utc_now()
+        |> Timex.add(Timex.Duration.from_days(-1))
+        |> Timex.beginning_of_day()
+
+      today_origin =
+        NaiveDateTime.utc_now()
+        |> Timex.beginning_of_day()
+
+      active_streak_start =
+        recent_achievements
+        |> Enum.filter(fn ach ->
+          NaiveDateTime.compare(ach.inserted_at, yesterday_origin) == :gt and
+            NaiveDateTime.compare(ach.inserted_at, today_origin) == :lt
+        end)
+        |> Enum.sort(&(NaiveDateTime.compare(&1.inserted_at, &2.inserted_at) == :gt))
+        |> case do
+          [achievement | _tail] -> achievement.streak_start
+          [] -> NaiveDateTime.utc_now()
+        end
+
+      {:noreply,
+       socket
+       |> assign(:page_title, page_title(socket.assigns.live_action))
+       |> assign(:activity, activity)
+       |> assign(:eligible_for_achievements?, eligible_for_achievements?)
+       |> assign(:achievement_levels, achievement_levels)
+       |> assign(:recent_achievements, recent_achievements)
+       |> assign(:active_streak_start, active_streak_start)
+       |> assign(:start_of_week, start_of_current_week |> NaiveDateTime.to_date())
+       |> assign(:weekly_score, weekly_score)}
+    end
   end
 
   @impl Phoenix.LiveView
@@ -36,6 +74,22 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
     route_to_show = Routes.activity_show_path(socket, :show, socket.assigns.activity)
 
     {:noreply, push_patch(socket, to: route_to_show)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info({:create, %{achievement: %{activity: %{user: user}} = achievement}}, socket) do
+    if user.id == socket.assigns.current_user.id do
+      achievement = FluidHabits.Repo.preload(achievement, :achievement_level)
+
+      socket =
+        assign(socket, :recent_achievements, [
+          achievement | Enum.slice(socket.assigns.recent_achievements, 0..-1)
+        ])
+
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   defp page_title(:show), do: "Show Activity"

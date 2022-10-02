@@ -112,6 +112,17 @@ defmodule FluidHabits.Achievements do
     |> Repo.transaction()
     |> case do
       {:ok, %{achievement_insert: achievement}} ->
+        achievement = Repo.preload(achievement, activity: :user)
+
+        Phoenix.PubSub.broadcast!(
+          FluidHabits.PubSub,
+          "achievement",
+          {:create,
+           %{
+             achievement: achievement
+           }}
+        )
+
         {:ok, achievement}
 
       {:error, _failed_operation, {_, reason}, _changes_so_far} ->
@@ -164,5 +175,33 @@ defmodule FluidHabits.Achievements do
   """
   def change_achievement(%Achievement{} = achievement, attrs \\ %{}) do
     Achievement.changeset(achievement, attrs)
+  end
+
+  @doc """
+  Returns the sum of all `%AchievementLevel{}` `value` properties, using only
+  the maximum value for each day
+
+  The result only makes sense when used with `%Achievement{}`s from a single
+  `%Activity{}`
+
+  ## Examples
+
+      iex> sum_scores([achievement_one, achievement_two])
+      4
+  """
+
+  @spec sum_scores(list(%Achievement{})) :: integer()
+  def sum_scores(achievements) do
+    achievements
+    |> Repo.preload([:achievement_level])
+    |> Enum.group_by(fn %Achievement{inserted_at: inserted_at} ->
+      Timex.day(inserted_at)
+    end)
+    |> Enum.map(fn {_day, daily_achievements} ->
+      Enum.reduce(daily_achievements, 0, fn %Achievement{achievement_level: ach_lvl}, acc ->
+        max(acc, ach_lvl.value)
+      end)
+    end)
+    |> Enum.sum()
   end
 end

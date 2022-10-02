@@ -34,11 +34,13 @@ defmodule FluidHabits.Activities do
   def list_achievements_since(activity = %Activity{}, since, options \\ []) do
     alias FluidHabits.Achievements.{Achievement, AchievementQueries}
 
-    default_options = [limit: 10]
+    default_options = [limit: 10, until: NaiveDateTime.utc_now()]
+
     options = Keyword.merge(default_options, options)
 
     Achievement
     |> AchievementQueries.since(since)
+    |> AchievementQueries.until(options[:until])
     |> AchievementQueries.desc_by(:inserted_at)
     |> AchievementQueries.limit(options[:limit])
     |> AchievementQueries.for_activity(activity)

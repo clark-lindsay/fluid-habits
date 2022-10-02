@@ -10,7 +10,6 @@ defmodule FluidHabits.Achievements.Achievement do
     belongs_to :achievement_level, FluidHabits.AchievementLevels.AchievementLevel
   end
 
-  @doc false
   def changeset(achievement, attrs) do
     achievement
     # allowing `:inserted_at` in the cast to allow for "streak" testing

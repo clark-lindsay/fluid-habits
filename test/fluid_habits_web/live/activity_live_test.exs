@@ -152,19 +152,15 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       assert_patch(show_live, Routes.activity_show_path(conn, :add_achievement, activity))
 
-      {:ok, _live_view, html} =
-        show_live
-        |> form("#achievement-form",
-          achievement: %{achievement_level_id: achievement_level.id}
-        )
-        |> render_submit()
-        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+      show_live
+      |> form("#achievement-form",
+        achievement: %{achievement_level_id: achievement_level.id}
+      )
+      |> render_submit()
 
-      assert html =~ "Achievement created successfully"
+      assert_patch(show_live, Routes.activity_show_path(conn, :show, activity))
 
-      assert Floki.parse_document!(html)
-             |> Floki.find("span")
-             |> Floki.text() =~ achievement_level.name
+      assert render(show_live) =~ "Achievement created successfully"
     end
 
     test "disables the button to add achievements when the activity is ineligible for them", %{
