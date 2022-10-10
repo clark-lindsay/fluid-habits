@@ -59,6 +59,40 @@ defmodule FluidHabits.ActivitiesTest do
       assert activity.name == "some name"
     end
 
+    test "active_streak_start/1 returns nil when there are no achievements _today_" do
+      activity = activity_fixture()
+      two_days_ago = NaiveDateTime.utc_now() |> Timex.add(Timex.Duration.from_days(-2))
+
+      achievement_fixture(activity: activity, inserted_at: two_days_ago)
+
+      assert is_nil(Activities.active_streak_start(activity))
+    end
+
+    test "active_streak_start/1 returns the date of the oldest streak entry when there are _only_ achievements _today_" do
+      activity = activity_fixture()
+
+      achievement = achievement_fixture(activity: activity, inserted_at: NaiveDateTime.utc_now())
+
+      assert Activities.active_streak_start(activity) == achievement.inserted_at
+    end
+
+    test "active_streak_start/1 returns the date of the oldest streak entry when there are gaps" do
+      activity = activity_fixture()
+
+      achievement_insertion_times =
+        for days_ago <- [0, 1, 2, 3, 5] do
+          NaiveDateTime.utc_now()
+          |> Timex.add(Timex.Duration.from_days(-days_ago))
+        end
+
+      [_, _, _, streak_starter, _] =
+        for time <- achievement_insertion_times do
+          achievement_fixture(activity: activity, inserted_at: time)
+        end
+
+      assert Activities.active_streak_start(activity) == streak_starter.inserted_at
+    end
+
     test "create_activity/1 with invalid data returns error changeset", %{valid_user: valid_user} do
       assert {:error, %Ecto.Changeset{}} = Activities.create_activity(valid_user, @invalid_attrs)
     end

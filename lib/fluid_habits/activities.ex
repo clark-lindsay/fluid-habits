@@ -26,8 +26,9 @@ defmodule FluidHabits.Activities do
 
   def list_achievement_levels(%Activity{id: id} = _activity) do
     Repo.all(
-      from ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
+      from(ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
         where: ach_lvl.activity_id == ^id
+      )
     )
   end
 
@@ -140,10 +141,58 @@ defmodule FluidHabits.Activities do
     import Ecto.Query, only: [from: 2]
 
     query =
-      from ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
+      from(ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
         where: ach_lvl.activity_id == ^id
+      )
 
     Repo.aggregate(query, :count) >= @min_ach_levels_for_ach_eligibility
+  end
+
+  @doc """
+  Hits the DB to find the NaiveDateTime representing the _first_ `%Achievement{}` associated
+  to the activity for the active "streak", defined as consecutive achievements (of any `%AchievementLevel{}`)
+  with no more than 1 calendar day between them.
+  """
+  @spec active_streak_start(%Activity{}) :: {%NaiveDateTime{}} | nil
+  def active_streak_start(%Activity{} = activity) do
+    import Ecto.Query, only: [from: 2]
+
+    alias FluidHabits.Achievements.Achievement
+
+    tomorrow = NaiveDateTime.utc_now() |> Timex.add(Timex.Duration.from_days(1))
+
+    streak_start =
+      from(ach in Achievement,
+        where: ach.activity_id == ^activity.id,
+        order_by: [desc: ach.inserted_at],
+        select: ach.inserted_at
+      )
+      |> Repo.all()
+      |> Enum.group_by(&Timex.beginning_of_day/1)
+      |> Enum.map(fn {_key, list} -> hd(list) end)
+      |> Enum.sort(&Timex.after?/2)
+      |> Enum.reduce_while(tomorrow, fn inserted_at, oldest_streak_entry ->
+        previous_day_origin =
+          Timex.beginning_of_day(Timex.add(oldest_streak_entry, Timex.Duration.from_days(-1)))
+
+        previous_day_end = Timex.beginning_of_day(oldest_streak_entry)
+
+        if Timex.between?(inserted_at, previous_day_origin, previous_day_end) do
+          {:cont, inserted_at}
+        else
+          if Timex.equal?(inserted_at, oldest_streak_entry, :day) do
+            {:halt, inserted_at}
+          else
+            {:halt, oldest_streak_entry}
+          end
+        end
+      end)
+
+    if Timex.equal?(streak_start, tomorrow) do
+      nil
+    else
+      streak_start
+    end
   end
 
   def min_ach_levels_for_ach_eligibility(), do: @min_ach_levels_for_ach_eligibility
