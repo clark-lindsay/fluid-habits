@@ -54,49 +54,6 @@ defmodule FluidHabits.Achievements do
   """
   @spec create_achievement(map()) :: {:ok, %Achievement{}} | {:error, atom()}
   def create_achievement(attrs \\ %{}) do
-    # get yesterday at 00:00 and today at 00:00 and search in between
-    yesterday_origin =
-      NaiveDateTime.utc_now()
-      |> NaiveDateTime.add(60 * 60 * 24 * -1)
-      |> NaiveDateTime.to_date()
-      |> NaiveDateTime.new!(~T[00:00:00.000])
-
-    today_origin =
-      NaiveDateTime.utc_now()
-      |> NaiveDateTime.to_date()
-      |> NaiveDateTime.new!(~T[00:00:00.000])
-
-    import Ecto.Query, only: [from: 2]
-
-    activity_id = attrs[:activity_id] || attrs["activity_id"]
-
-    yesterday_achievements =
-      from(a in Achievement,
-        where:
-          a.inserted_at >= ^yesterday_origin and
-            a.inserted_at < ^today_origin and
-            a.activity_id == ^activity_id
-      )
-      |> Repo.all()
-
-    oldest_streak =
-      Enum.reduce(yesterday_achievements, NaiveDateTime.utc_now(), fn achievement, acc ->
-        if NaiveDateTime.compare(acc, achievement.streak_start) == :gt do
-          achievement.streak_start
-        else
-          acc
-        end
-      end)
-
-    attrs =
-      Map.to_list(attrs)
-      |> Enum.map(fn
-        {key, val} when is_binary(key) -> {String.to_atom(key), val}
-        {key, val} when is_atom(key) -> {key, val}
-      end)
-      |> Map.new()
-      |> Map.put_new(:streak_start, oldest_streak)
-
     changeset = Achievement.changeset(%Achievement{}, attrs)
 
     Multi.new()

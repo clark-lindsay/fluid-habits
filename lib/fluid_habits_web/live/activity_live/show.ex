@@ -34,26 +34,12 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
          recent_achievements <- Activities.list_achievements_since(activity, one_week_ago),
          current_week_achievements <-
            Activities.list_achievements_since(activity, start_of_current_week),
+         active_streak_start <- Activities.active_streak_start(activity),
          weekly_score <- Achievements.sum_scores(current_week_achievements) do
-      yesterday_origin =
-        NaiveDateTime.utc_now()
-        |> Timex.add(Timex.Duration.from_days(-1))
-        |> Timex.beginning_of_day()
-
-      today_origin =
-        NaiveDateTime.utc_now()
-        |> Timex.beginning_of_day()
-
       active_streak_start =
-        recent_achievements
-        |> Enum.filter(fn ach ->
-          NaiveDateTime.compare(ach.inserted_at, yesterday_origin) == :gt and
-            NaiveDateTime.compare(ach.inserted_at, today_origin) == :lt
-        end)
-        |> Enum.sort(&(NaiveDateTime.compare(&1.inserted_at, &2.inserted_at) == :gt))
-        |> case do
-          [achievement | _tail] -> achievement.streak_start
-          [] -> NaiveDateTime.utc_now()
+        case active_streak_start do
+          %NaiveDateTime{} = streak_start -> NaiveDateTime.to_date(streak_start)
+          _ -> "No active Streak"
         end
 
       {:noreply,

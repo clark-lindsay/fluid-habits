@@ -3,7 +3,6 @@ defmodule FluidHabits.Achievements.Achievement do
   import Ecto.Changeset
 
   schema "achievements" do
-    field :streak_start, :naive_datetime, autogenerate: {NaiveDateTime, :utc_now, []}
     timestamps()
 
     belongs_to :activity, FluidHabits.Activities.Activity
@@ -13,7 +12,7 @@ defmodule FluidHabits.Achievements.Achievement do
   def changeset(achievement, attrs) do
     achievement
     # allowing `:inserted_at` in the cast to allow for "streak" testing
-    |> cast(attrs, [:achievement_level_id, :activity_id, :streak_start, :inserted_at])
+    |> cast(attrs, [:achievement_level_id, :activity_id, :inserted_at])
     |> validate_required([:activity_id, :achievement_level_id])
     |> assoc_constraint(:activity,
       message: "An achievement must be associated to an existing activity"

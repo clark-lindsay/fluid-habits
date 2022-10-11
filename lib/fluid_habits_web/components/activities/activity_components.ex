@@ -2,16 +2,18 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
   use FluidHabitsWeb, :component
 
   def activity_card(%{activity: _activity} = assigns) do
-    now = NaiveDateTime.utc_now()
-
     running_streak =
-      NaiveDateTime.diff(now, assigns[:active_streak_start] || now)
-      |> Integer.floor_div(60 * 60 * 24)
+      case assigns[:active_streak_start] do
+        %Date{} = streak_start ->
+          Timex.diff(Date.utc_today(), streak_start, :day)
+
+        _ ->
+          "--"
+      end
 
     assigns =
       assigns
       |> assign(:class, assigns[:class] || "")
-      |> assign(:active_streak_start, assigns[:active_streak_start] |> NaiveDateTime.to_date())
       |> assign(:running_streak, running_streak)
 
     ~H"""
