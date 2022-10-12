@@ -177,14 +177,15 @@ defmodule FluidHabits.Activities do
 
         previous_day_end = Timex.beginning_of_day(oldest_streak_entry)
 
-        if Timex.between?(inserted_at, previous_day_origin, previous_day_end) do
-          {:cont, inserted_at}
-        else
-          if Timex.equal?(inserted_at, oldest_streak_entry, :day) do
+        cond do
+          Timex.between?(inserted_at, previous_day_origin, previous_day_end) ->
+            {:cont, inserted_at}
+
+          Timex.equal?(inserted_at, oldest_streak_entry, :day) ->
             {:halt, inserted_at}
-          else
+
+          true ->
             {:halt, oldest_streak_entry}
-          end
         end
       end)
 
