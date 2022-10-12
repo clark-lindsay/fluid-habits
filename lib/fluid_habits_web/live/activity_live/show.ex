@@ -3,6 +3,8 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
   alias FluidHabits.{Accounts, Achievements, Activities}
 
+  @max_recent_achievements 10
+
   @impl Phoenix.LiveView
   def mount(_params, %{"user_token" => user_token} = _session, socket) do
     if connected?(socket) do
@@ -31,7 +33,10 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
     with activity <- Activities.get_activity!(id),
          eligible_for_achievements? <- Activities.eligible_for_achievements?(activity),
          achievement_levels <- Activities.list_achievement_levels(activity),
-         recent_achievements <- Activities.list_achievements_since(activity, one_week_ago),
+         recent_achievements <-
+           Activities.list_achievements_since(activity, one_week_ago,
+             limit: @max_recent_achievements
+           ),
          current_week_achievements <-
            Activities.list_achievements_since(activity, start_of_current_week),
          active_streak_start <- Activities.active_streak_start(activity),
@@ -67,10 +72,14 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
     if user.id == socket.assigns.current_user.id do
       achievement = FluidHabits.Repo.preload(achievement, :achievement_level)
 
-      socket =
-        assign(socket, :recent_achievements, [
-          achievement | Enum.slice(socket.assigns.recent_achievements, 0..-1)
-        ])
+      recent_achievements =
+        socket.assigns.recent_achievements
+        |> Stream.filter(fn %{id: id} ->
+          id != achievement.id
+        end)
+        |> Enum.take(@max_recent_achievements)
+
+      socket = assign(socket, :recent_achievements, [achievement | recent_achievements])
 
       {:noreply, socket}
     else
