@@ -1,8 +1,8 @@
 defmodule FluidHabits.Achievements.Achievement do
-  use Ecto.Schema
+  use TypedEctoSchema
   import Ecto.Changeset
 
-  schema "achievements" do
+  typed_schema "achievements" do
     timestamps()
 
     belongs_to :activity, FluidHabits.Activities.Activity

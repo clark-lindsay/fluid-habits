@@ -52,7 +52,9 @@ defmodule FluidHabits.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:timex, "~> 3.7.9"}
+      {:timex, "~> 3.7.9"},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:typed_ecto_schema, "~> 0.4.1"}
     ]
   end
 

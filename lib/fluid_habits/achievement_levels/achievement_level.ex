@@ -1,8 +1,8 @@
 defmodule FluidHabits.AchievementLevels.AchievementLevel do
-  use Ecto.Schema
+  use TypedEctoSchema
   import Ecto.Changeset
 
-  schema "achievement_levels" do
+  typed_schema "achievement_levels" do
     field(:description, :string)
     field(:name, :string)
     field(:value, :integer)
@@ -24,7 +24,7 @@ defmodule FluidHabits.AchievementLevels.AchievementLevel do
     )
   end
 
-  def to_select_option(achievement_level = %__MODULE__{}) do
+  def to_select_option(%__MODULE__{} = achievement_level) do
     [key: achievement_level.name, value: achievement_level.id]
   end
 end

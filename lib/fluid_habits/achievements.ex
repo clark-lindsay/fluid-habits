@@ -52,7 +52,7 @@ defmodule FluidHabits.Achievements do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec create_achievement(map()) :: {:ok, %Achievement{}} | {:error, atom()}
+  @spec create_achievement(map()) :: {:ok, Achievement.t()} | {:error, atom()}
   def create_achievement(attrs \\ %{}) do
     changeset = Achievement.changeset(%Achievement{}, attrs)
 
@@ -147,7 +147,7 @@ defmodule FluidHabits.Achievements do
       4
   """
 
-  @spec sum_scores(list(%Achievement{})) :: integer()
+  @spec sum_scores(list(Achievement.t())) :: integer()
   def sum_scores(achievements) do
     achievements
     |> Repo.preload([:achievement_level])

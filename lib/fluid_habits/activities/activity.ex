@@ -1,8 +1,9 @@
 defmodule FluidHabits.Activities.Activity do
-  use Ecto.Schema
+  use TypedEctoSchema
+
   import Ecto.Changeset
 
-  schema "activities" do
+  typed_schema "activities" do
     field :description, :string
     field :name, :string
 
