@@ -8,6 +8,8 @@ defmodule FluidHabitsWeb.AchievementComponentsTest do
   alias FluidHabits.AchievementsFixtures
 
   describe "to_list_item/1" do
+    setup context, do: Mox.set_mox_from_context(context)
+
     test "renders the name and inserted_at time for the achievement" do
       achievement =
         AchievementsFixtures.achievement_fixture() |> FluidHabits.Repo.preload(:achievement_level)

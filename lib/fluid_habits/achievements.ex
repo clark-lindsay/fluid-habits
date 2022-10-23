@@ -8,6 +8,7 @@ defmodule FluidHabits.Achievements do
   alias Ecto.Multi
   alias FluidHabits.Repo
   alias FluidHabits.Achievements.Achievement
+  alias FluidHabits.Broadcasters.Broadcaster
 
   @doc """
   Returns the list of achievements.
@@ -71,7 +72,7 @@ defmodule FluidHabits.Achievements do
       {:ok, %{achievement_insert: achievement}} ->
         achievement = Repo.preload(achievement, activity: :user)
 
-        Phoenix.PubSub.broadcast!(
+        Broadcaster.broadcast(
           FluidHabits.PubSub,
           "achievement",
           {:create,

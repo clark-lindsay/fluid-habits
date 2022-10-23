@@ -8,7 +8,8 @@
 import Config
 
 config :fluid_habits,
-  ecto_repos: [FluidHabits.Repo]
+  ecto_repos: [FluidHabits.Repo],
+  broadcaster: FluidHabits.Broadcasters.PhoenixPubSubBroadcaster
 
 # Configures the endpoint
 config :fluid_habits, FluidHabitsWeb.Endpoint,

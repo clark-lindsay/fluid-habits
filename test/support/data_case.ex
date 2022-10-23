@@ -32,6 +32,15 @@ defmodule FluidHabits.DataCase do
     :ok
   end
 
+  setup _ do
+    Mox.stub_with(
+      FluidHabits.Broadcasters.MockBroadcaster,
+      FluidHabits.Broadcasters.StubBroadcaster
+    )
+
+    :ok
+  end
+
   @doc """
   Sets up the sandbox based on the test tags.
   """
