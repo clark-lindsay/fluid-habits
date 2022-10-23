@@ -36,6 +36,15 @@ defmodule FluidHabitsWeb.ConnCase do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
+  setup _ do
+    Mox.stub_with(
+      FluidHabits.Broadcasters.MockBroadcaster,
+      FluidHabits.Broadcasters.StubBroadcaster
+    )
+
+    :ok
+  end
+
   @doc """
   Setup helper that registers and logs in users.
 

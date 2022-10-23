@@ -2,13 +2,15 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.{Accounts, Achievements, Activities}
+  alias Phoenix.PubSub
 
   @max_recent_achievements 10
 
   @impl Phoenix.LiveView
   def mount(_params, %{"user_token" => user_token} = _session, socket) do
     if connected?(socket) do
-      Phoenix.PubSub.subscribe(FluidHabits.PubSub, "achievement")
+      PubSub.subscribe(FluidHabits.PubSub, "achievement")
+      PubSub.subscribe(FluidHabits.PubSub, "achievement_metadata")
 
       current_user = Accounts.get_user_by_session_token(user_token)
 
@@ -85,6 +87,13 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
     else
       {:noreply, socket}
     end
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info({:streak_update, %{active_streak_start: updated_streak_start}}, socket) do
+    socket = assign(socket, active_streak_start: NaiveDateTime.to_date(updated_streak_start))
+
+    {:noreply, socket}
   end
 
   defp page_title(:show), do: "Show Activity"

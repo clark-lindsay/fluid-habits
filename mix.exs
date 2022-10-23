@@ -5,9 +5,9 @@ defmodule FluidHabits.MixProject do
     [
       app: :fluid_habits,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -54,7 +54,8 @@ defmodule FluidHabits.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:timex, "~> 3.7.9"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:typed_ecto_schema, "~> 0.4.1"}
+      {:typed_ecto_schema, "~> 0.4.1"},
+      {:mox, "~> 1.0", only: :test, runtime: false}
     ]
   end
 

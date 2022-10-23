@@ -15,9 +15,10 @@ defmodule FluidHabits.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: FluidHabits.PubSub},
       # Start the Endpoint (http/https)
-      FluidHabitsWeb.Endpoint
+      FluidHabitsWeb.Endpoint,
       # Start a worker by calling: FluidHabits.Worker.start_link(arg)
       # {FluidHabits.Worker, arg}
+      {FluidHabits.AchievementRelay, name: FluidHabits.AchievementRelay}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

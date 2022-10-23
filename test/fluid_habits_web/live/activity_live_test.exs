@@ -1,8 +1,9 @@
 defmodule FluidHabitsWeb.ActivityLiveTest do
-  use FluidHabitsWeb.ConnCase, async: true
+  use FluidHabitsWeb.ConnCase, async: false
 
-  import Phoenix.LiveViewTest
   import FluidHabits.ActivitiesFixtures
+  import Mox
+  import Phoenix.LiveViewTest
 
   @create_attrs %{description: "some description", name: "some name"}
   @update_attrs %{description: "some updated description", name: "some updated name"}
@@ -82,6 +83,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
   describe "Show" do
     setup [:create_activity, :register_and_log_in_user]
+    setup [:set_mox_from_context, :verify_on_exit!]
 
     test "displays activity", %{conn: conn, activity: activity} do
       {:ok, _show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
@@ -133,6 +135,14 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
     test "adds new achievement with modal", %{conn: conn, activity: activity} do
       alias FluidHabits.{Activities, AchievementLevelsFixtures}
+      ref = make_ref()
+      test_pid = self()
+
+      Mox.expect(FluidHabits.Broadcasters.MockBroadcaster, :broadcast, 1, fn _, _, _ ->
+        send(test_pid, {:broadcast, ref})
+
+        :ok
+      end)
 
       achievement_level =
         AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
@@ -161,6 +171,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       assert_patch(show_live, Routes.activity_show_path(conn, :show, activity))
 
       assert render(show_live) =~ "Achievement created successfully"
+      assert_receive({:broadcast, ^ref})
     end
 
     test "disables the button to add achievements when the activity is ineligible for them", %{

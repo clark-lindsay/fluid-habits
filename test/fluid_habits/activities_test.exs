@@ -1,10 +1,9 @@
 defmodule FluidHabits.ActivitiesTest do
-  use FluidHabits.DataCase
-
-  alias FluidHabits.{Activities, AccountsFixtures}
+  use FluidHabits.DataCase, async: true
 
   describe "activities" do
     alias FluidHabits.Activities.Activity
+    alias FluidHabits.{Activities, AccountsFixtures}
 
     import FluidHabits.{ActivitiesFixtures, AchievementsFixtures}
 
@@ -15,6 +14,8 @@ defmodule FluidHabits.ActivitiesTest do
 
       %{valid_user: valid_user}
     end
+
+    setup context, do: Mox.set_mox_from_context(context)
 
     test "list_activities/0 returns all activities" do
       activity = activity_fixture()
