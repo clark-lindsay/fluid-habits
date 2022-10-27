@@ -1,11 +1,11 @@
 defmodule FluidHabits.Achievements.AchievementQueries do
   import Ecto.Query, only: [from: 2]
 
-  def since(queryable, %NaiveDateTime{} = date_time) do
+  def since(queryable, %DateTime{} = date_time) do
     from(ach in queryable, where: ach.inserted_at >= ^date_time)
   end
 
-  def until(queryable, %NaiveDateTime{} = date_time) do
+  def until(queryable, %DateTime{} = date_time) do
     from(ach in queryable, where: ach.inserted_at <= ^date_time)
   end
 

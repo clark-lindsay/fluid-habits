@@ -11,6 +11,10 @@ config :fluid_habits,
   ecto_repos: [FluidHabits.Repo],
   broadcaster: FluidHabits.Broadcasters.PhoenixPubSubBroadcaster
 
+config :fluid_habits,
+       FluidHabits.Repo,
+       migration_timestamps: [type: :utc_datetime_usec]
+
 # Configures the endpoint
 config :fluid_habits, FluidHabitsWeb.Endpoint,
   url: [host: "localhost"],

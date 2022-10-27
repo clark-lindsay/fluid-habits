@@ -35,7 +35,7 @@ defmodule FluidHabits.Activities do
   def list_achievements_since(%Activity{} = activity, since, options \\ []) do
     alias FluidHabits.Achievements.{Achievement, AchievementQueries}
 
-    default_options = [limit: 10, until: NaiveDateTime.utc_now()]
+    default_options = [limit: 10, until: DateTime.utc_now()]
 
     options = Keyword.merge(default_options, options)
 
@@ -149,17 +149,17 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-  Hits the DB to find the NaiveDateTime representing the _first_ `%Achievement{}` associated
+  Hits the DB to find the DateTime representing the _first_ `%Achievement{}` associated
   to the activity for the active "streak", defined as consecutive achievements (of any `%AchievementLevel{}`)
   with no more than 1 calendar day between them.
   """
-  @spec active_streak_start(Activity.t()) :: NaiveDateTime.t() | nil
+  @spec active_streak_start(Activity.t()) :: DateTime.t() | nil
   def active_streak_start(%Activity{} = activity) do
     import Ecto.Query, only: [from: 2]
 
     alias FluidHabits.Achievements.Achievement
 
-    tomorrow = NaiveDateTime.utc_now() |> Timex.add(Timex.Duration.from_days(1))
+    tomorrow = DateTime.utc_now() |> Timex.add(Timex.Duration.from_days(1))
 
     streak_start =
       from(ach in Achievement,

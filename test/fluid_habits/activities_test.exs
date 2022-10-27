@@ -28,7 +28,7 @@ defmodule FluidHabits.ActivitiesTest do
       _unrelated_achievement = achievement_fixture()
 
       assert [%{id: ^associated_achievement_id}] =
-               Activities.list_achievements_since(activity, ~N[2000-01-01 00:00:00])
+               Activities.list_achievements_since(activity, ~U[2000-01-01 00:00:00Z])
     end
 
     test "list_achievements_since/2 returns only `limit` # of achievements" do
@@ -40,7 +40,7 @@ defmodule FluidHabits.ActivitiesTest do
 
       assert Activities.list_achievements_since(
                activity,
-               ~N[2000-01-01 00:00:00],
+               ~U[2000-01-01 00:00:00Z],
                limit: 1
              )
              |> Enum.count() ==
@@ -62,7 +62,7 @@ defmodule FluidHabits.ActivitiesTest do
 
     test "active_streak_start/1 returns nil when there are no achievements _today_" do
       activity = activity_fixture()
-      two_days_ago = NaiveDateTime.utc_now() |> Timex.add(Timex.Duration.from_days(-2))
+      two_days_ago = DateTime.utc_now() |> Timex.add(Timex.Duration.from_days(-2))
 
       achievement_fixture(activity: activity, inserted_at: two_days_ago)
 
@@ -72,7 +72,7 @@ defmodule FluidHabits.ActivitiesTest do
     test "active_streak_start/1 returns the date of the oldest streak entry when there are _only_ achievements _today_" do
       activity = activity_fixture()
 
-      achievement = achievement_fixture(activity: activity, inserted_at: NaiveDateTime.utc_now())
+      achievement = achievement_fixture(activity: activity, inserted_at: DateTime.utc_now())
 
       assert Activities.active_streak_start(activity) == achievement.inserted_at
     end
@@ -82,7 +82,7 @@ defmodule FluidHabits.ActivitiesTest do
 
       achievement_insertion_times =
         for days_ago <- [0, 1, 2, 3, 5] do
-          NaiveDateTime.utc_now()
+          DateTime.utc_now()
           |> Timex.add(Timex.Duration.from_days(-days_ago))
         end
 

@@ -22,7 +22,7 @@ defmodule FluidHabitsWeb.AchievementComponentsTest do
         """)
 
       assert as_string =~ achievement.achievement_level.name
-      assert as_string =~ NaiveDateTime.to_string(achievement.inserted_at)
+      assert as_string =~ DateTime.to_string(achievement.inserted_at)
     end
   end
 end

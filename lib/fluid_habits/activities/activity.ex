@@ -1,5 +1,5 @@
 defmodule FluidHabits.Activities.Activity do
-  use TypedEctoSchema
+  use FluidHabits.Schema
 
   import Ecto.Changeset
 

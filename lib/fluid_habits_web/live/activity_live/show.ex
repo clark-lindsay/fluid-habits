@@ -25,10 +25,10 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _, socket) do
     one_week_ago =
-      NaiveDateTime.utc_now()
+      DateTime.utc_now()
       |> Timex.add(Timex.Duration.from_days(-7))
 
-    start_of_current_week = NaiveDateTime.utc_now() |> Timex.beginning_of_week(:mon)
+    start_of_current_week = DateTime.utc_now() |> Timex.beginning_of_week(:mon)
 
     # TODO: optimize DB access
     # _LOTS_ of non-orthogonal DB calls here
@@ -45,7 +45,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
          weekly_score <- Achievements.sum_scores(current_week_achievements) do
       active_streak_start =
         case active_streak_start do
-          %NaiveDateTime{} = streak_start -> NaiveDateTime.to_date(streak_start)
+          %DateTime{} = streak_start -> DateTime.to_date(streak_start)
           _ -> "No active Streak"
         end
 
@@ -57,7 +57,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
        |> assign(:achievement_levels, achievement_levels)
        |> assign(:recent_achievements, recent_achievements)
        |> assign(:active_streak_start, active_streak_start)
-       |> assign(:start_of_week, start_of_current_week |> NaiveDateTime.to_date())
+       |> assign(:start_of_week, start_of_current_week |> DateTime.to_date())
        |> assign(:weekly_score, weekly_score)}
     end
   end
@@ -91,7 +91,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
   @impl Phoenix.LiveView
   def handle_info({:streak_update, %{active_streak_start: updated_streak_start}}, socket) do
-    socket = assign(socket, active_streak_start: NaiveDateTime.to_date(updated_streak_start))
+    socket = assign(socket, active_streak_start: DateTime.to_date(updated_streak_start))
 
     {:noreply, socket}
   end

@@ -82,7 +82,7 @@ defmodule FluidHabits.AchievementsTest do
 
       [day_one, day_two, day_three] =
         for days_ago <- 1..3 do
-          NaiveDateTime.utc_now()
+          DateTime.utc_now()
           |> Timex.add(Timex.Duration.from_days(-days_ago))
         end
 
