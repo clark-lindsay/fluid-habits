@@ -105,6 +105,40 @@ defmodule FluidHabitsWeb.UserSettingsControllerTest do
     end
   end
 
+  describe "PUT /users/settings (change timezone form)" do
+    test "updates the user timezone", %{conn: conn, user: user} do
+      timezone = Timex.timezones() |> Enum.random()
+
+      conn =
+        put(conn, Routes.user_settings_path(conn, :update), %{
+          "action" => "update_timezone",
+          "user" => %{"timezone" => timezone}
+        })
+
+      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      assert get_flash(conn, :info) =~ "Timezone updated successfully"
+      assert Accounts.get_user!(user.id).timezone == timezone
+    end
+
+    test "does not update for invalid data", %{conn: conn, user: user} do
+      conn =
+        put(conn, Routes.user_settings_path(conn, :update), %{
+          "action" => "update_timezone",
+          "user" => %{"timezone" => "Not/Real"}
+        })
+
+      response = html_response(conn, 200)
+
+      assert response
+             |> Floki.parse_document!()
+             |> Floki.find("h2")
+             |> Floki.text() =~ "Settings"
+
+      assert response =~ "must be included in the official Olson database"
+      assert Accounts.get_user!(user.id).timezone == user.timezone
+    end
+  end
+
   describe "GET /users/settings/confirm_email/:token" do
     setup %{user: user} do
       email = unique_user_email()

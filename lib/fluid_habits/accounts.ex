@@ -215,6 +215,12 @@ defmodule FluidHabits.Accounts do
     end
   end
 
+  def update_user_timezone(user, attrs) do
+    user
+    |> User.timezone_changeset(attrs)
+    |> Repo.update()
+  end
+
   ## Session
 
   @doc """

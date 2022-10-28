@@ -5,6 +5,7 @@ defmodule FluidHabitsWeb.UserSettingsController do
   alias FluidHabitsWeb.UserAuth
 
   plug :assign_email_and_password_changesets
+  plug :assign_timezone_changeset
 
   def edit(conn, _params) do
     render(conn, "edit.html")
@@ -50,6 +51,21 @@ defmodule FluidHabitsWeb.UserSettingsController do
     end
   end
 
+  def update(conn, %{"action" => "update_timezone"} = params) do
+    %{"user" => user_params} = params
+    user = conn.assigns.current_user
+
+    case Accounts.update_user_timezone(user, user_params) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Timezone updated successfully.")
+        |> redirect(to: Routes.user_settings_path(conn, :edit))
+
+      {:error, changeset} ->
+        render(conn, "edit.html", timezone_changeset: changeset)
+    end
+  end
+
   def confirm_email(conn, %{"token" => token}) do
     case Accounts.update_user_email(conn.assigns.current_user, token) do
       :ok ->
@@ -70,5 +86,11 @@ defmodule FluidHabitsWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
+  end
+
+  defp assign_timezone_changeset(conn, _opts) do
+    user = conn.assigns.current_user
+
+    assign(conn, :timezone_changeset, Accounts.User.timezone_changeset(user, %{}))
   end
 end

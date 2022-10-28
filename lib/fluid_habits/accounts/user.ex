@@ -7,6 +7,8 @@ defmodule FluidHabits.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime_usec
+    field :timezone, :string, default: "Etc/UTC"
+
     has_many :activities, FluidHabits.Activities.Activity
 
     timestamps()
@@ -136,5 +138,16 @@ defmodule FluidHabits.Accounts.User do
     else
       add_error(changeset, :current_password, "is not valid")
     end
+  end
+
+  @doc """
+  A user changeset for changing the `timezone`
+  """
+  def timezone_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:timezone])
+    |> validate_inclusion(:timezone, Timex.timezones(),
+      message: "must be included in the official Olson database"
+    )
   end
 end

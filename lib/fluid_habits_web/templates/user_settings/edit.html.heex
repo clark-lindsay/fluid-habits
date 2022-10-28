@@ -74,4 +74,31 @@
 
     <.submit_button label="Change password" phx_disable_with="Changing password..." />
   </.form>
+
+  <.h3>Change timezone</.h3>
+
+  <.form
+    let={f}
+    for={@timezone_changeset}
+    action={Routes.user_settings_path(@conn, :update)}
+    id="update_timezone"
+  >
+    <%= if @timezone_changeset.action do %>
+      <div class="alert alert-danger">
+        <p>Oops, something went wrong! Please check the errors below.</p>
+      </div>
+    <% end %>
+
+    <%= hidden_input(f, :action, name: "action", value: "update_timezone") %>
+
+    <.form_field
+      label="New Timezone"
+      type="select"
+      options={timezone_options()}
+      form={f}
+      field={:timezone}
+    />
+
+    <.submit_button label="Change timezone" phx_disable_with="Changing timezone..." />
+  </.form>
 </.container>
