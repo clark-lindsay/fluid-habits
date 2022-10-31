@@ -1,5 +1,17 @@
 # FluidHabits
 
+A LiveView app for activity tracking with the goal of providing a positive reinforcement for focused, personal investment in a small set of activities.
+
+The general ideas are: 
+
+  - too many activities/ things to track will stretch one's attention and time too thin
+    - having many hobbies or interests is a good thing, but I believe that carefully tracking many hobbies leads to underinvestment in all of them
+  - too many gradations for the value of an engagement with an activity can lead to paralysis in selection, _and_ it makes the scaling less meaningful 
+  - points are fun, so I want the option of gamifying personal investment tracking 
+  - streaks are a good encouragement mechanism, particularly when there is a low effort option to carry a streak and maintain or build momentum
+
+## Default Phoenix readme follows
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
