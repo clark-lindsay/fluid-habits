@@ -11,24 +11,29 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
     if connected?(socket) do
       PubSub.subscribe(FluidHabits.PubSub, "achievement")
       PubSub.subscribe(FluidHabits.PubSub, "achievement_metadata")
-
-      current_user = Accounts.get_user_by_session_token(user_token)
-
-      socket = assign(socket, :current_user, current_user)
-
-      {:ok, socket}
-    else
-      {:ok, socket}
     end
+
+    current_user = Accounts.get_user_by_session_token(user_token)
+
+    socket = assign(socket, :current_user, current_user)
+    {:ok, socket}
   end
 
+  # TODO: investigate: is it a bad pattern to have a "live" `handle_params`
+  # and a separate "dead" handle params? 
+  # if the user can't establish a websocket connection, then I want the forms disabled and I don't
+  # want all of the DB overhead
   @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _, socket) do
-    one_week_ago =
-      DateTime.utc_now()
-      |> Timex.add(Timex.Duration.from_days(-7))
+    now = Timex.now()
 
-    start_of_current_week = DateTime.utc_now() |> Timex.beginning_of_week(:mon)
+    one_week_ago = Timex.shift(now, days: -7)
+
+    start_of_current_week =
+      Timex.beginning_of_week(
+        DateTime.shift_zone!(now, socket.assigns.current_user.timezone),
+        :mon
+      )
 
     # TODO: optimize DB access
     # _LOTS_ of non-orthogonal DB calls here
@@ -40,15 +45,12 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
              limit: @max_recent_achievements
            ),
          current_week_achievements <-
-           Activities.list_achievements_since(activity, start_of_current_week),
+           Activities.list_achievements_since(
+             activity,
+             DateTime.shift_zone!(start_of_current_week, "Etc/UTC")
+           ),
          active_streak_start <- Activities.active_streak_start(activity),
          weekly_score <- Achievements.sum_scores(current_week_achievements) do
-      active_streak_start =
-        case active_streak_start do
-          %DateTime{} = streak_start -> DateTime.to_date(streak_start)
-          _ -> "No active Streak"
-        end
-
       {:noreply,
        socket
        |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -57,7 +59,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
        |> assign(:achievement_levels, achievement_levels)
        |> assign(:recent_achievements, recent_achievements)
        |> assign(:active_streak_start, active_streak_start)
-       |> assign(:start_of_week, start_of_current_week |> DateTime.to_date())
+       |> assign(:start_of_week, start_of_current_week)
        |> assign(:weekly_score, weekly_score)}
     end
   end
