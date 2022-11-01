@@ -58,6 +58,7 @@
   <div class="my-4">
     <FluidHabitsWeb.Components.ActivityComponents.activity_card
       activity={@activity}
+      timezone={@current_user.timezone}
       active_streak_start={@active_streak_start}
       weekly_score={@weekly_score}
       start_of_week={@start_of_week}
@@ -96,7 +97,8 @@
   <.h3>Achievements:</.h3>
   <ul>
     <%= for achievement <- @recent_achievements do %>
-      <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} />
+      <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} timezone={@current_user.timezone} />
+
     <% end %>
   </ul>
 </.container>

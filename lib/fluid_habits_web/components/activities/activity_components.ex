@@ -1,20 +1,24 @@
 defmodule FluidHabitsWeb.Components.ActivityComponents do
   use FluidHabitsWeb, :component
 
-  def activity_card(%{activity: _activity} = assigns) do
-    running_streak =
+  def activity_card(%{activity: _activity, timezone: timezone} = assigns) do
+    {active_streak_start, running_streak} =
       case assigns[:active_streak_start] do
-        %Date{} = streak_start ->
-          Timex.diff(Date.utc_today(), streak_start, :day)
+        %DateTime{} = streak_start ->
+          streak_start = DateTime.shift_zone!(streak_start, timezone)
+
+          {DateTime.to_date(streak_start),
+           1 + Timex.diff(Timex.now(streak_start.time_zone), streak_start, :days)}
 
         _ ->
-          "--"
+          {"No Active Streak", "--"}
       end
 
     assigns =
       assigns
       |> assign(:class, assigns[:class] || "")
       |> assign(:running_streak, running_streak)
+      |> assign(:active_streak_start, active_streak_start)
 
     ~H"""
     <.card class={"w-64 #{@class}"}>
@@ -36,7 +40,7 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
             <div class="text-primary-600">
               Weekly Score:
               <div class="text-xs text-gray-400 pl-2">
-                Since: <%= @start_of_week %>
+                Since: <%= DateTime.to_date(@start_of_week) %>
               </div>
             </div>
           </div>
