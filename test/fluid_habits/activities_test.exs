@@ -60,13 +60,26 @@ defmodule FluidHabits.ActivitiesTest do
       assert activity.name == "some name"
     end
 
-    test "active_streak_start/1 returns nil when there are no achievements _today_" do
+    test "active_streak_start/1 returns nil when there are no achievements _today_ or _yesterday_" do
       activity = activity_fixture()
-      two_days_ago = DateTime.utc_now() |> Timex.add(Timex.Duration.from_days(-2))
+
+      two_days_ago =
+        DateTime.utc_now()
+        |> Timex.shift(days: -2)
+        |> Timex.end_of_day()
 
       achievement_fixture(activity: activity, inserted_at: two_days_ago)
 
       assert is_nil(Activities.active_streak_start(activity))
+
+      yesterday =
+        DateTime.utc_now()
+        |> Timex.shift(days: -1)
+        |> Timex.beginning_of_day()
+
+      achievement_fixture(activity: activity, inserted_at: yesterday)
+
+      refute is_nil(Activities.active_streak_start(activity))
     end
 
     test "active_streak_start/1 returns the date of the oldest streak entry when there are _only_ achievements _today_" do
@@ -75,6 +88,36 @@ defmodule FluidHabits.ActivitiesTest do
       achievement = achievement_fixture(activity: activity, inserted_at: DateTime.utc_now())
 
       assert Activities.active_streak_start(activity) == achievement.inserted_at
+    end
+
+    test "active_streak_start/1 returns the date of the oldest streak entry when the user's timezone causes gaps in UTC" do
+      user = AccountsFixtures.user_fixture(timezone: "US/Eastern")
+
+      activity = activity_fixture(user: user)
+
+      two_days_ago_achievement =
+        achievement_fixture(
+          activity: activity,
+          inserted_at:
+            Timex.now(user.timezone)
+            |> Timex.shift(days: -2)
+            |> Timex.set(hour: 23)
+            |> DateTime.shift_zone!("Etc/UTC")
+        )
+
+      assert Activities.active_streak_start(activity) == nil
+
+      _yesterday_achievement =
+        achievement_fixture(
+          activity: activity,
+          inserted_at:
+            Timex.now(user.timezone)
+            |> Timex.shift(days: -1)
+            |> Timex.set(hour: 23)
+            |> DateTime.shift_zone!("Etc/UTC")
+        )
+
+      assert Activities.active_streak_start(activity) == two_days_ago_achievement.inserted_at
     end
 
     test "active_streak_start/1 returns the date of the oldest streak entry when there are gaps" do

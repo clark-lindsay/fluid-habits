@@ -33,9 +33,10 @@ defmodule FluidHabits.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :timezone])
     |> validate_email()
     |> validate_password(opts)
+    |> validate_timezone()
   end
 
   defp validate_email(changeset) do
@@ -107,6 +108,15 @@ defmodule FluidHabits.Accounts.User do
   end
 
   @doc """
+  A user changeset for changing the `timezone`
+  """
+  def timezone_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:timezone])
+    |> validate_timezone()
+  end
+
+  @doc """
   Confirms the account by setting `confirmed_at`.
   """
   def confirm_changeset(user) do
@@ -140,13 +150,8 @@ defmodule FluidHabits.Accounts.User do
     end
   end
 
-  @doc """
-  A user changeset for changing the `timezone`
-  """
-  def timezone_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:timezone])
-    |> validate_inclusion(:timezone, Timex.timezones(),
+  defp validate_timezone(changeset) do
+    validate_inclusion(changeset, :timezone, Timex.timezones(),
       message: "must be included in the official Olson database"
     )
   end

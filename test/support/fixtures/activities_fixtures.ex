@@ -10,7 +10,7 @@ defmodule FluidHabits.ActivitiesFixtures do
   Generate a activity.
   """
   def activity_fixture(attrs \\ %{}) do
-    user = AccountsFixtures.user_fixture()
+    user = attrs[:user] || AccountsFixtures.user_fixture()
 
     activity_attrs =
       attrs
