@@ -149,51 +149,46 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-  Hits the DB to find the DateTime representing the _first_ `%Achievement{}` associated
-  to the activity for the active "streak", defined as consecutive achievements (of any `%AchievementLevel{}`)
-  with no more than 1 calendar day between them.
+    Hits the DB to find the DateTime representing the _first_ `%Achievement{}` associated
+    to the activity for the active "streak", defined as consecutive achievements (of any `%AchievementLevel{}`)
+    with no more than 1 calendar day between them, starting from yesterday at 00:00 _for the user's timezone_. 
+    This means that if there is no achievement today, a user can still have an active streak as long as they logged an
+    achievement yesterday.
+
+    Returns `nil` if there is not an active streak.
   """
   @spec active_streak_start(Activity.t()) :: DateTime.t() | nil
   def active_streak_start(%Activity{} = activity) do
     import Ecto.Query, only: [from: 2]
 
     alias FluidHabits.Achievements.Achievement
+    alias FluidHabits.Accounts.User
 
-    tomorrow = DateTime.utc_now() |> Timex.add(Timex.Duration.from_days(1))
+    timezone = Repo.one(from(u in User, where: u.id == ^activity.user_id, select: u.timezone))
+    yesterday_origin = Timex.now(timezone) |> Timex.shift(days: -1) |> Timex.beginning_of_day()
 
-    streak_start =
-      from(ach in Achievement,
-        where: ach.activity_id == ^activity.id,
-        order_by: [desc: ach.inserted_at],
-        select: ach.inserted_at
-      )
-      |> Repo.all()
-      |> Enum.group_by(&Timex.beginning_of_day/1)
-      |> Enum.map(fn {_key, list} -> hd(list) end)
-      |> Enum.sort(&Timex.after?/2)
-      |> Enum.reduce_while(tomorrow, fn inserted_at, oldest_streak_entry ->
-        previous_day_origin =
-          Timex.beginning_of_day(Timex.add(oldest_streak_entry, Timex.Duration.from_days(-1)))
-
-        previous_day_end = Timex.beginning_of_day(oldest_streak_entry)
-
-        cond do
-          Timex.between?(inserted_at, previous_day_origin, previous_day_end) ->
-            {:cont, inserted_at}
-
-          Timex.equal?(inserted_at, oldest_streak_entry, :day) ->
-            {:halt, inserted_at}
-
-          true ->
-            {:halt, oldest_streak_entry}
-        end
+    {:ok, streak_start} =
+      Repo.transaction(fn ->
+        from(ach in Achievement,
+          where: ach.activity_id == ^activity.id,
+          order_by: [desc: ach.inserted_at],
+          select: ach.inserted_at
+        )
+        |> Repo.stream()
+        |> Stream.map(&DateTime.shift_zone!(&1, timezone))
+        |> Stream.transform(yesterday_origin, fn inserted_at, day_origin ->
+          if Timex.after?(inserted_at, day_origin) or
+               Timex.equal?(inserted_at, day_origin, :microseconds) do
+            {[inserted_at], Timex.shift(inserted_at, days: -1) |> Timex.beginning_of_day()}
+          else
+            {:halt, day_origin}
+          end
+        end)
+        |> Enum.to_list()
+        |> List.last()
       end)
 
-    if Timex.equal?(streak_start, tomorrow) do
-      nil
-    else
-      streak_start
-    end
+    unless is_nil(streak_start), do: DateTime.shift_zone!(streak_start, "Etc/UTC"), else: nil
   end
 
   def min_ach_levels_for_ach_eligibility(), do: @min_ach_levels_for_ach_eligibility
