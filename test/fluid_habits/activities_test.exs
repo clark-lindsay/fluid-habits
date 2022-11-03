@@ -137,6 +137,55 @@ defmodule FluidHabits.ActivitiesTest do
       assert Activities.active_streak_start(activity) == streak_starter.inserted_at
     end
 
+    test "sum_scores_since/3 returns the sum of all `%AchievementLevel{}` `value`s, taking only the highest value per day" do
+      alias FluidHabits.AchievementLevelsFixtures
+
+      activity = activity_fixture()
+
+      achievement_levels =
+        [level_one, level_two, _level_three] =
+        for value <- 1..3 do
+          AchievementLevelsFixtures.achievement_level_fixture(activity: activity, value: value)
+        end
+
+      [one_day_ago, two_days_ago, three_days_ago] =
+        for days_ago <- 1..3 do
+          Timex.now()
+          |> Timex.shift(days: -days_ago)
+        end
+
+      _today_achievement = achievement_fixture(activity: activity, achievement_level: level_one)
+
+      _one_day_ago_achievements =
+        for ach_lvl <- achievement_levels do
+          achievement_fixture(
+            activity: activity,
+            achievement_level: ach_lvl,
+            inserted_at: one_day_ago
+          )
+        end
+
+      _two_days_ago_achievements =
+        for ach_lvl <- [level_one, level_two, level_two] do
+          achievement_fixture(
+            activity: activity,
+            achievement_level: ach_lvl,
+            inserted_at: two_days_ago
+          )
+        end
+
+      _three_days_ago_achievements =
+        for ach_lvl <- [level_one, level_one] do
+          achievement_fixture(
+            activity: activity,
+            achievement_level: ach_lvl,
+            inserted_at: three_days_ago
+          )
+        end
+
+      assert 7 == Activities.sum_scores_since(activity, Timex.beginning_of_day(three_days_ago))
+    end
+
     test "create_activity/1 with invalid data returns error changeset", %{valid_user: valid_user} do
       assert {:error, %Ecto.Changeset{}} = Activities.create_activity(valid_user, @invalid_attrs)
     end

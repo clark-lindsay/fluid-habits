@@ -1,7 +1,7 @@
 defmodule FluidHabitsWeb.ActivityLive.Show do
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.{Accounts, Achievements, Activities}
+  alias FluidHabits.{Accounts, Activities}
   alias Phoenix.PubSub
 
   @max_recent_achievements 10
@@ -44,13 +44,12 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
            Activities.list_achievements_since(activity, one_week_ago,
              limit: @max_recent_achievements
            ),
-         current_week_achievements <-
-           Activities.list_achievements_since(
+         active_streak_start <- Activities.active_streak_start(activity),
+         weekly_score <-
+           Activities.sum_scores_since(
              activity,
              DateTime.shift_zone!(start_of_current_week, "Etc/UTC")
-           ),
-         active_streak_start <- Activities.active_streak_start(activity),
-         weekly_score <- Achievements.sum_scores(current_week_achievements) do
+           ) do
       {:noreply,
        socket
        |> assign(:page_title, page_title(socket.assigns.live_action))

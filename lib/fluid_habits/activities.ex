@@ -191,5 +191,37 @@ defmodule FluidHabits.Activities do
     unless is_nil(streak_start), do: DateTime.shift_zone!(streak_start, "Etc/UTC"), else: nil
   end
 
+  @doc """
+    Returns the sum of all `%AchievementLevel{}` `value` properties after a
+    datetime, using only the maximum value for each day, localized to the
+    user's timezone.
+
+    Accepts the same options as `list_achievements_since/3`
+
+    ## Examples
+
+        iex> sum_scores_since(activity, datetime) 4
+  """
+
+  @spec sum_scores_since(Activity.t(), DateTime.t(), keyword()) :: integer()
+  def sum_scores_since(activity, since, opts \\ []) do
+    alias FluidHabits.{Accounts.User, Achievements.Achievement}
+
+    timezone = Repo.one(from(u in User, where: u.id == ^activity.user_id, select: u.timezone))
+
+    list_achievements_since(activity, since, opts)
+    |> Enum.map(fn achievement = %Achievement{inserted_at: inserted_at} ->
+      %{achievement | inserted_at: DateTime.shift_zone!(inserted_at, timezone)}
+    end)
+    |> Enum.group_by(
+      fn %Achievement{inserted_at: inserted_at} ->
+        Timex.day(inserted_at)
+      end,
+      fn %Achievement{achievement_level: %{value: value}} -> value end
+    )
+    |> Enum.map(fn {_day, daily_achievement_values} -> Enum.max(daily_achievement_values) end)
+    |> Enum.sum()
+  end
+
   def min_ach_levels_for_ach_eligibility(), do: @min_ach_levels_for_ach_eligibility
 end
