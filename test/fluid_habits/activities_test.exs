@@ -60,7 +60,7 @@ defmodule FluidHabits.ActivitiesTest do
       assert activity.name == "some name"
     end
 
-    test "active_streak_start/1 returns nil when there are no achievements _today_ or _yesterday_" do
+    test "active_streak/1 returns nil when there are no achievements _today_ or _yesterday_" do
       activity = activity_fixture()
 
       two_days_ago =
@@ -70,7 +70,7 @@ defmodule FluidHabits.ActivitiesTest do
 
       achievement_fixture(activity: activity, inserted_at: two_days_ago)
 
-      assert is_nil(Activities.active_streak_start(activity))
+      assert is_nil(Activities.active_streak(activity))
 
       yesterday =
         DateTime.utc_now()
@@ -79,18 +79,19 @@ defmodule FluidHabits.ActivitiesTest do
 
       achievement_fixture(activity: activity, inserted_at: yesterday)
 
-      refute is_nil(Activities.active_streak_start(activity))
+      refute is_nil(Activities.active_streak(activity))
     end
 
-    test "active_streak_start/1 returns the date of the oldest streak entry when there are _only_ achievements _today_" do
+    test "active_streak/1 returns the date of the streak start with no end when there are _only_ achievements _today_" do
       activity = activity_fixture()
 
       achievement = achievement_fixture(activity: activity, inserted_at: DateTime.utc_now())
 
-      assert Activities.active_streak_start(activity) == achievement.inserted_at
+      {:single, start_date} = Activities.active_streak(activity)
+      assert start_date == achievement.inserted_at
     end
 
-    test "active_streak_start/1 returns the date of the oldest streak entry when the user's timezone causes gaps in UTC" do
+    test "active_streak/1 returns the date of the oldest streak entry when the user's timezone causes gaps in UTC" do
       user = AccountsFixtures.user_fixture(timezone: "US/Eastern")
 
       activity = activity_fixture(user: user)
@@ -105,9 +106,9 @@ defmodule FluidHabits.ActivitiesTest do
             |> DateTime.shift_zone!("Etc/UTC")
         )
 
-      assert Activities.active_streak_start(activity) == nil
+      assert Activities.active_streak(activity) == nil
 
-      _yesterday_achievement =
+      yesterday_achievement =
         achievement_fixture(
           activity: activity,
           inserted_at:
@@ -117,24 +118,28 @@ defmodule FluidHabits.ActivitiesTest do
             |> DateTime.shift_zone!("Etc/UTC")
         )
 
-      assert Activities.active_streak_start(activity) == two_days_ago_achievement.inserted_at
+      {:range, %{start: start_date, end: end_date}} = Activities.active_streak(activity)
+      assert start_date == two_days_ago_achievement.inserted_at
+      assert end_date == yesterday_achievement.inserted_at
     end
 
-    test "active_streak_start/1 returns the date of the oldest streak entry when there are gaps" do
+    test "active_streak/1 returns the date of the oldest streak entry when there are gaps" do
       activity = activity_fixture()
 
       achievement_insertion_times =
         for days_ago <- [0, 1, 2, 3, 5] do
-          DateTime.utc_now()
-          |> Timex.add(Timex.Duration.from_days(-days_ago))
+          Timex.now()
+          |> Timex.shift(days: -days_ago)
         end
 
-      [_, _, _, streak_starter, _] =
+      [most_recent, _, _, streak_starter, _] =
         for time <- achievement_insertion_times do
           achievement_fixture(activity: activity, inserted_at: time)
         end
 
-      assert Activities.active_streak_start(activity) == streak_starter.inserted_at
+      {:range, %{start: start_date, end: end_date}} = Activities.active_streak(activity)
+      assert start_date  == streak_starter.inserted_at
+      assert end_date  == most_recent.inserted_at
     end
 
     test "sum_scores_since/3 returns the sum of all `%AchievementLevel{}` `value`s, taking only the highest value per day" do

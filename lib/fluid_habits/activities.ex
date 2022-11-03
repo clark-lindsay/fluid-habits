@@ -149,16 +149,23 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-    Hits the DB to find the DateTime representing the _first_ `%Achievement{}` associated
-    to the activity for the active "streak", defined as consecutive achievements (of any `%AchievementLevel{}`)
-    with no more than 1 calendar day between them, starting from yesterday at 00:00 _for the user's timezone_. 
-    This means that if there is no achievement today, a user can still have an active streak as long as they logged an
-    achievement yesterday.
+    Hits the DB to find the DateTimes representing the _first_
+    `%Achievement{}` associated to the activity for the active "streak" and the
+    most recent achievement in that streak. 
+
+    A "streak" is defined as consecutive achievements (of any
+    `%AchievementLevel{}`) with no more than 1 calendar day between them,
+    starting from yesterday at 00:00 _for the user's timezone_. This means that
+    if there is no achievement today, a user can still have an active streak as
+    long as they logged an achievement yesterday.
 
     Returns `nil` if there is not an active streak.
   """
-  @spec active_streak_start(Activity.t()) :: DateTime.t() | nil
-  def active_streak_start(%Activity{} = activity) do
+  @spec active_streak(Activity.t()) ::
+          {:single, DateTime.t()}
+          | {:range, %{required(:start) => DateTime.t(), required(:end) => DateTime.t()}}
+          | nil
+  def active_streak(%Activity{} = activity) do
     import Ecto.Query, only: [from: 2]
 
     alias FluidHabits.Achievements.Achievement
@@ -167,7 +174,7 @@ defmodule FluidHabits.Activities do
     timezone = Repo.one(from(u in User, where: u.id == ^activity.user_id, select: u.timezone))
     yesterday_origin = Timex.now(timezone) |> Timex.shift(days: -1) |> Timex.beginning_of_day()
 
-    {:ok, streak_start} =
+    {:ok, streak} =
       Repo.transaction(fn ->
         from(ach in Achievement,
           where: ach.activity_id == ^activity.id,
@@ -185,10 +192,22 @@ defmodule FluidHabits.Activities do
           end
         end)
         |> Enum.to_list()
-        |> List.last()
+        |> then(fn datetimes ->
+          shift_zone = fn
+            nil -> nil
+            datetime -> DateTime.shift_zone!(datetime, "Etc/UTC")
+          end
+
+          {most_recent, tail} = List.pop_at(datetimes, 0)
+
+          case tail do
+            [] -> if is_nil(most_recent), do: nil, else: {:single, shift_zone.(most_recent)}
+            _ -> {:range, %{start: shift_zone.(List.last(tail)), end: shift_zone.(most_recent)}}
+          end
+        end)
       end)
 
-    unless is_nil(streak_start), do: DateTime.shift_zone!(streak_start, "Etc/UTC"), else: nil
+    streak
   end
 
   @doc """

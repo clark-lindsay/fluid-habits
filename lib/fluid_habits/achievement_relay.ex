@@ -18,12 +18,12 @@ defmodule FluidHabits.AchievementRelay do
 
   @impl GenServer
   def handle_info({:create, %{achievement: %{activity: activity}}}, state) do
-    active_streak_start = Activities.active_streak_start(activity)
+    active_streak = Activities.active_streak(activity)
 
     Broadcaster.broadcast(
       PubSub,
       "achievement_metadata",
-      {:streak_update, %{active_streak_start: active_streak_start}}
+      {:streak_update, %{active_streak: active_streak}}
     )
 
     {:noreply, state}

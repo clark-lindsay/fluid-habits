@@ -44,7 +44,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
            Activities.list_achievements_since(activity, one_week_ago,
              limit: @max_recent_achievements
            ),
-         active_streak_start <- Activities.active_streak_start(activity),
+         active_streak <- Activities.active_streak(activity),
          weekly_score <-
            Activities.sum_scores_since(
              activity,
@@ -57,7 +57,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
        |> assign(:eligible_for_achievements?, eligible_for_achievements?)
        |> assign(:achievement_levels, achievement_levels)
        |> assign(:recent_achievements, recent_achievements)
-       |> assign(:active_streak_start, active_streak_start)
+       |> assign(:active_streak, active_streak)
        |> assign(:start_of_week, start_of_current_week)
        |> assign(:weekly_score, weekly_score)}
     end
@@ -91,8 +91,8 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   end
 
   @impl Phoenix.LiveView
-  def handle_info({:streak_update, %{active_streak_start: updated_streak_start}}, socket) do
-    socket = assign(socket, active_streak_start: DateTime.to_date(updated_streak_start))
+  def handle_info({:streak_update, %{active_streak: updated_streak}}, socket) do
+    socket = assign(socket, active_streak: updated_streak)
 
     {:noreply, socket}
   end
