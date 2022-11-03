@@ -21,7 +21,7 @@ defmodule FluidHabits.AchievementRelay do
     active_streak = Activities.active_streak(activity)
 
     Broadcaster.broadcast(
-      PubSub,
+      FluidHabits.PubSub,
       "achievement_metadata",
       {:streak_update, %{active_streak: active_streak}}
     )
