@@ -55,7 +55,8 @@ defmodule FluidHabits.MixProject do
       {:timex, "~> 3.7.9"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:typed_ecto_schema, "~> 0.4.1"},
-      {:mox, "~> 1.0", only: :test, runtime: false}
+      {:mox, "~> 1.0", only: :test, runtime: false},
+      {:stream_data, "~> 0.5.0", only: :test, runtime: false}
     ]
   end
 

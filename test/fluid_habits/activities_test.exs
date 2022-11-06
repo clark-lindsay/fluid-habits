@@ -138,8 +138,8 @@ defmodule FluidHabits.ActivitiesTest do
         end
 
       {:range, %{start: start_date, end: end_date}} = Activities.active_streak(activity)
-      assert start_date  == streak_starter.inserted_at
-      assert end_date  == most_recent.inserted_at
+      assert start_date == streak_starter.inserted_at
+      assert end_date == most_recent.inserted_at
     end
 
     test "sum_scores_since/3 returns the sum of all `%AchievementLevel{}` `value`s, taking only the highest value per day" do

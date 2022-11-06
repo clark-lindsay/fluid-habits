@@ -97,8 +97,10 @@
   <.h3>Achievements:</.h3>
   <ul>
     <%= for achievement <- @recent_achievements do %>
-      <FluidHabitsWeb.Components.AchievementComponents.to_list_item achievement={achievement} timezone={@current_user.timezone} />
-
+      <FluidHabitsWeb.Components.AchievementComponents.to_list_item
+        achievement={achievement}
+        timezone={@current_user.timezone}
+      />
     <% end %>
   </ul>
 </.container>

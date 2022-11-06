@@ -39,6 +39,12 @@ defmodule FluidHabitsWeb.Router do
     live "/:id/show/add-achievement", ActivityLive.Show, :add_achievement
   end
 
+  scope "/stats", FluidHabitsWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/", StatsLive.Stats
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", FluidHabitsWeb do
   #   pipe_through :api
