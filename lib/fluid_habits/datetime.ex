@@ -13,7 +13,6 @@ defmodule FluidHabits.DateTime do
         right_open: false,
         step: [days: 1]
       )
-      |> Enum.to_list()
       |> Enum.group_by(&Timex.end_of_week(&1, :mon))
       |> Enum.sort(fn {end_of_week_a, _date_a}, {end_of_week_b, _date_b} ->
         Timex.before?(end_of_week_a, end_of_week_b)
