@@ -4,6 +4,14 @@ defmodule FluidHabits.DateTime do
         %DateTime{time_zone: time_zone} = period_end,
         granularity \\ :weeks
       ) do
+    end_of_interval =
+      case granularity do
+        :days -> &Timex.end_of_day/1
+        :months -> &Timex.end_of_month/1
+        :years -> &Timex.end_of_year/1
+        _ -> &Timex.end_of_week(&1, :mon)
+      end
+
     if Timex.after?(period_start, period_end) do
       []
     else
@@ -11,25 +19,29 @@ defmodule FluidHabits.DateTime do
         from: DateTime.to_naive(period_start),
         until: DateTime.to_naive(period_end),
         right_open: false,
-        step: [days: 1]
+        step: [hours: 12]
       )
-      |> Enum.group_by(&Timex.end_of_week(&1, :mon))
-      |> Enum.sort(fn {end_of_week_a, _date_a}, {end_of_week_b, _date_b} ->
-        Timex.before?(end_of_week_a, end_of_week_b)
+      |> Enum.group_by(end_of_interval)
+      |> Enum.sort(fn {end_of_interval_a, _date_a}, {end_of_interval_b, _date_b} ->
+        Timex.before?(end_of_interval_a, end_of_interval_b)
       end)
-      |> Enum.map(fn {_end_of_week, date_times} ->
+      |> Enum.map(fn {_, date_times} ->
         from =
           hd(date_times)
           |> Timex.to_datetime(period_start.time_zone)
           |> Timex.beginning_of_day()
 
-        end_of_week = Timex.end_of_week(from, :mon)
+        until = end_of_interval.(from)
+
+        if !Timex.is_valid?(hd(date_times)) do
+          raise "Invalid datetime of #{inspect(hd(date_times))} for timezone #{time_zone}"
+        end
 
         until =
-          if Timex.before?(period_end, end_of_week) do
+          if Timex.before?(period_end, until) do
             period_end
           else
-            end_of_week
+            until
           end
 
         %{
