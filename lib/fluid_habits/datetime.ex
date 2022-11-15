@@ -1,4 +1,37 @@
 defmodule FluidHabits.DateTime do
+  @moduledoc """
+  Transformations and conversions for the basic `DateTime.t()` type that are
+  unique requirements of this application.
+
+  It is preferred to never `alias` this application, as it causes collision
+  with the basic `DateTime` module
+  """
+
+  @doc """
+  Return a chronologically ascending (newest first) list of maps,
+  using UTC DateTimes to represent intervals whose size is _at most_ the
+  maximum length of the given granularity, accounting for fluctuations in
+  local time such as "Daylight Saving Time".
+
+  _Excluding_ fluctuations, this results in maximum intervals as follows:
+    - `:days`   -> 24 hours
+    - `:weeks`  -> 7 days
+    - `:months` -> 31 days
+    - `:years`  -> 365 days
+
+  The resulting intervals will each have a `:from` key representing the start
+  of the day in local time with microsecond precision, and an `:until` key
+  representing the end of the interval in local time, running up to the last
+  microsecond of the relevant date.
+
+  Requires that the `period_start` and `period_end` arguments have the same
+  `time_zone`
+
+  Raises an exception in the event that a datetime is generated that _does not
+  exist_ in the local timezone of the input arguments.
+  """
+  @spec split_into_intervals(DateTime.t(), DateTime.t(), :days | :weeks | :months | :years) ::
+          [%{from: DateTime.t(), until: DateTime.t()}]
   def split_into_intervals(
         %DateTime{time_zone: time_zone} = period_start,
         %DateTime{time_zone: time_zone} = period_end,
