@@ -66,10 +66,6 @@ defmodule FluidHabits.DateTime do
 
         until = end_of_interval.(from)
 
-        if !Timex.is_valid?(hd(date_times)) do
-          raise "Invalid datetime of #{inspect(hd(date_times))} for timezone #{time_zone}"
-        end
-
         until =
           if Timex.before?(period_end, until) do
             period_end
