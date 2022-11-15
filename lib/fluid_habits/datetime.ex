@@ -52,7 +52,7 @@ defmodule FluidHabits.DateTime do
         from: DateTime.to_naive(period_start),
         until: DateTime.to_naive(period_end),
         right_open: false,
-        step: [hours: 12]
+        step: [days: 1]
       )
       |> Enum.group_by(end_of_interval)
       |> Enum.sort(fn {end_of_interval_a, _date_a}, {end_of_interval_b, _date_b} ->
