@@ -42,7 +42,7 @@ defmodule FluidHabitsWeb.Router do
   scope "/stats", FluidHabitsWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live "/", StatsLive.Stats
+    live "/", StatsLive.Index, :index
   end
 
   # Other scopes may use custom stacks.

@@ -142,7 +142,7 @@ defmodule FluidHabits.ActivitiesTest do
       assert end_date == most_recent.inserted_at
     end
 
-    test "sum_scores_since/3 returns the sum of all `%AchievementLevel{}` `value`s, taking only the highest value per day" do
+    test "scores_since/3 returns all `%AchievementLevel{}` `value`s grouped by their date, taking only the highest value per day" do
       alias FluidHabits.AchievementLevelsFixtures
 
       activity = activity_fixture()
@@ -188,7 +188,9 @@ defmodule FluidHabits.ActivitiesTest do
           )
         end
 
-      assert 7 == Activities.sum_scores_since(activity, Timex.beginning_of_day(three_days_ago))
+      scores_since = Activities.scores_since(activity, Timex.beginning_of_day(three_days_ago))
+      assert 4 == length(scores_since)
+      assert 7 == Enum.reduce(scores_since, 0, fn {_date, score}, acc -> acc + score end)
     end
 
     test "create_activity/1 with invalid data returns error changeset", %{valid_user: valid_user} do

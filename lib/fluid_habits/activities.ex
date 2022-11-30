@@ -24,6 +24,26 @@ defmodule FluidHabits.Activities do
     Repo.all(Activity)
   end
 
+  @doc """
+  Returns all activities identified by the given list of IDs.
+
+  Raises if _all_ IDs are not found.
+  """
+  @spec list_activities_with_ids!(list(integer())) :: list(Activity.t())
+  def list_activities_with_ids!(ids) do
+    activities =
+      from(act in Activity,
+        where: act.id in ^ids
+      )
+      |> Repo.all()
+
+    if length(ids) != length(activities) do
+      raise("All IDs must be found in the database")
+    else
+      activities
+    end
+  end
+
   def list_achievement_levels(%Activity{id: id} = _activity) do
     Repo.all(
       from(ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
@@ -211,19 +231,19 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-    Returns the sum of all `%AchievementLevel{}` `value` properties after a
-    datetime, using only the maximum value for each day, localized to the
-    user's timezone.
+    Returns the maximum `%AchievementLevel{}` `value` per day, grouped by date
+    of entry, since a given datetime, localized to the user's timezone.
 
     Accepts the same options as `list_achievements_since/3`
 
     ## Examples
 
-        iex> sum_scores_since(activity, datetime) 4
+        iex> sum_scores_since(activity, datetime)
+        [{~D(...), 2}, {~D(...), 1}]
   """
 
-  @spec sum_scores_since(Activity.t(), DateTime.t(), keyword()) :: integer()
-  def sum_scores_since(activity, since, opts \\ []) do
+  @spec scores_since(Activity.t(), DateTime.t(), keyword()) :: keyword()
+  def scores_since(activity, since, opts \\ []) do
     alias FluidHabits.{Accounts.User, Achievements.Achievement}
 
     timezone = Repo.one(from(u in User, where: u.id == ^activity.user_id, select: u.timezone))
@@ -233,13 +253,12 @@ defmodule FluidHabits.Activities do
       %{achievement | inserted_at: DateTime.shift_zone!(inserted_at, timezone)}
     end)
     |> Enum.group_by(
-      fn %Achievement{inserted_at: inserted_at} ->
-        Timex.day(inserted_at)
-      end,
+      fn %Achievement{inserted_at: inserted_at} -> DateTime.to_date(inserted_at) end,
       fn %Achievement{achievement_level: %{value: value}} -> value end
     )
-    |> Enum.map(fn {_day, daily_achievement_values} -> Enum.max(daily_achievement_values) end)
-    |> Enum.sum()
+    |> Enum.map(fn {datetime, daily_achievement_values} ->
+      {datetime, Enum.max(daily_achievement_values)}
+    end)
   end
 
   def min_ach_levels_for_ach_eligibility(), do: @min_ach_levels_for_ach_eligibility

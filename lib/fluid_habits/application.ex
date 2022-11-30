@@ -18,7 +18,8 @@ defmodule FluidHabits.Application do
       FluidHabitsWeb.Endpoint,
       # Start a worker by calling: FluidHabits.Worker.start_link(arg)
       # {FluidHabits.Worker, arg}
-      {FluidHabits.AchievementRelay, name: FluidHabits.AchievementRelay}
+      {FluidHabits.AchievementRelay, name: FluidHabits.AchievementRelay},
+      {Task.Supervisor, name: FluidHabits.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -1,56 +1,317 @@
-defmodule FluidHabitsWeb.StatsLive.Stats do
+defmodule FluidHabitsWeb.StatsLive.Index do
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.Accounts
 
   @impl Phoenix.LiveView
-  def mount(_params, %{"user_token" => user_token} = _session, socket) do
+  def mount(params, %{"user_token" => user_token} = _session, socket) do
     current_user = Accounts.get_user_by_session_token(user_token)
+
+    if(connected?(socket)) do
+      Phoenix.PubSub.subscribe(FluidHabits.PubSub, "achievement")
+    end
 
     socket =
       socket
       |> assign(:current_user, current_user)
-      |> assign(
-        :period_start,
-        Timex.now(current_user.timezone) |> Timex.shift(months: -1) |> Timex.beginning_of_month()
+
+    import Ecto.Query, only: [from: 2]
+
+    activities =
+      from(act in FluidHabits.Activities.Activity,
+        where: act.user_id == ^socket.assigns.current_user.id
       )
-      |> assign(:period_end, Timex.now(current_user.timezone) |> Timex.end_of_month())
+      |> FluidHabits.Repo.all()
+
+    default_from =
+      Timex.now(current_user.timezone)
+      |> Timex.shift(months: -1)
+      |> Timex.beginning_of_month()
+      |> Timex.to_date()
+      |> Date.to_iso8601()
+
+    default_until =
+      Timex.now(current_user.timezone)
+      |> Timex.end_of_month()
+      |> Timex.to_date()
+      |> Date.to_iso8601()
+
+    changeset =
+      change_stats_params(%{}, %{
+        from: params["from"] || default_from,
+        until: params["until"] || default_until,
+        granularity: params["granularity"] || "Weeks",
+        activities: params["activities"]
+      })
 
     socket =
-      assign(
-        socket,
-        :intervals,
-        FluidHabits.DateTime.split_into_intervals(
-          socket.assigns.period_start,
-          socket.assigns.period_end
-        )
+      assign(socket,
+        changeset: changeset,
+        activities: activities,
+        scored_intervals: []
       )
 
     {:ok, socket}
   end
 
   @impl Phoenix.LiveView
+  def handle_params(
+        %{
+          "granularity" => granularity,
+          "activities" => activity_ids,
+          "from" => from,
+          "until" => until
+        },
+        _uri,
+        socket
+      ) do
+    from =
+      Timex.parse!(
+        from,
+        "{YYYY}-{0M}-{D}"
+      )
+      |> Timex.to_datetime(socket.assigns.current_user.timezone)
+
+    until =
+      Timex.parse!(
+        until,
+        "{YYYY}-{0M}-{D}"
+      )
+      |> Timex.to_datetime(socket.assigns.current_user.timezone)
+
+    activity_ids = if(is_list(activity_ids), do: activity_ids, else: [])
+
+    scored_intervals = score_selected_activities(granularity, activity_ids, from, until)
+
+    {:noreply, assign(socket, scored_intervals: scored_intervals)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_params(%{}, _, socket), do: {:noreply, socket}
+
+  @impl Phoenix.LiveView
+  def handle_params(_, _, socket) do
+    socket = Phoenix.LiveView.push_patch(socket, to: Routes.stats_index_path(socket, :index))
+
+    {:noreply, socket}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event(
+        "period_parameters_change",
+        %{
+          "stats_params" =>
+            params = %{
+              "granularity" => granularity,
+              "activities" => activity_ids,
+              "from" => from,
+              "until" => until
+            }
+        },
+        socket
+      ) do
+    changeset =
+      socket.assigns.changeset
+      |> change_stats_params(params)
+
+    socket = assign(socket, changeset: changeset)
+
+    if changeset.valid? do
+      socket =
+        Phoenix.LiveView.push_patch(socket,
+          to:
+            Routes.stats_index_path(socket, :index,
+              granularity: granularity,
+              activities: activity_ids,
+              from: from,
+              until: until
+            )
+        )
+
+      {:noreply, socket}
+    else
+      {:error, changeset_with_action} =
+        Ecto.Changeset.apply_action(socket.assigns.changeset, :insert)
+
+      socket = assign(socket, changeset: changeset_with_action)
+
+      {:noreply, socket}
+    end
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info({:create, %{achievement: %{activity: %{user: user}}}}, socket) do
+    if user.id == socket.assigns.current_user.id do
+      # could find the correct interval, if it exists in the current set, and update the score
+      # just going to take it easy for now and re-calculate all scores
+
+      %{granularity: granularity, activities: activity_ids, from: from, until: until} =
+        socket.assigns.changeset.changes
+
+      scored_intervals = score_selected_activities(granularity, activity_ids, from, until)
+
+      {:noreply, assign(socket, scored_intervals: scored_intervals)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <.h2>Stats!</.h2>
+    <div class="flex flex-col gap-2">
+      <.h2>Stats!</.h2>
 
-    <.card class="p-2">
-      <.h3>Form</.h3>
-      <div class="w-full py-2 flex flex-direction-row justify-between">
-        <div>Start: <%= DateTime.to_date(@period_start) %></div>
-        <div>End: <%= DateTime.to_date(@period_end) %></div>
-      </div>
-      <div class="w-full py-2 flex flex-direction-row justify-between">
-        <div>Granularity: Weeks</div>
-        <div>Activities: [...]</div>
-      </div>
-    </.card>
+      <.card class="p-2 w-1/2">
+        <.card_content heading="Form">
+          <.form
+            let={f}
+            as={:stats_params}
+            for={@changeset}
+            id="stats-form"
+            phx-change="period_parameters_change"
+          >
+            <div class="w-full py-2 flex flex-row justify-between">
+              <div class="flex flex-col justify-between">
+                <.form_field type="date_input" form={f} field={:from} label="From" />
+                <.form_field type="date_input" form={f} field={:until} label="Until" />
 
-    <ul>
-      <%= for interval <- @intervals do %>
-        <li><%= interval.from %> -> <%= interval.until %></li>
-      <% end %>
-    </ul>
+                <.form_field
+                  type="select"
+                  options={
+                    [
+                      "Days",
+                      "Weeks",
+                      "Months",
+                      "Years"
+                    ]
+                  }
+                  form={f}
+                  field={:granularity}
+                  label="Granularity"
+                />
+              </div>
+              <.form_field
+                type="checkbox_group"
+                options={Enum.map(@activities, &{&1.name, &1.id})}
+                form={f}
+                field={:activities}
+                label="Activities"
+              />
+            </div>
+          </.form>
+        </.card_content>
+      </.card>
+
+      <ul>
+        <%= for {interval, score} <- @scored_intervals do %>
+          <li>
+            <%= DateTime.shift_zone!(interval.from, @current_user.timezone) |> DateTime.to_date() %> -> <%= DateTime.shift_zone!(
+              interval.until,
+              @current_user.timezone
+            )
+            |> DateTime.to_date() %> : <%= score %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
     """
+  end
+
+  defp score_selected_activities(granularity, activity_ids, from, until) do
+    granularity =
+      case String.downcase(granularity) do
+        "days" -> :days
+        "weeks" -> :weeks
+        "months" -> :months
+        "years" -> :years
+        val when is_atom(val) -> val
+      end
+
+    activities = FluidHabits.Activities.list_activities_with_ids!(activity_ids)
+
+    Task.Supervisor.async_stream(FluidHabits.TaskSupervisor, activities, fn activity ->
+      intervals =
+        FluidHabits.DateTime.split_into_intervals(
+          from,
+          until,
+          granularity
+        )
+
+      scores_per_day =
+        FluidHabits.Activities.scores_since(
+          activity,
+          from,
+          until: until
+        )
+
+      # use the listed scores per day and the intervals to match each interval with a
+      # summed score, and zip/ pair those together for presentation
+      Enum.map(intervals, fn interval = %{from: from, until: until} ->
+        scores_within_interval =
+          Enum.filter(scores_per_day, fn {date, _score} ->
+            date =
+              Timex.to_datetime(date)
+              |> Timex.set(hour: 12)
+
+            Timex.before?(from, date) and Timex.after?(until, date)
+          end)
+
+        total_score_for_interval =
+          Enum.reduce(scores_within_interval, 0, fn {_date, score}, acc -> acc + score end)
+
+        {interval, total_score_for_interval}
+      end)
+    end)
+    |> Stream.filter(fn task_result ->
+      case task_result do
+        {:ok, _result} ->
+          true
+
+        {_error, reason} ->
+          IO.warn("Failed to score an activity with reason: #{inspect(reason)}")
+          false
+      end
+    end)
+    |> Stream.flat_map(fn {_tag, result} -> result end)
+    |> Enum.group_by(fn {%{from: from}, _score} -> from end)
+    |> Enum.map(fn {_from, scored_intervals} ->
+      Enum.reduce(scored_intervals, fn {_interval, score}, {interval, acc_score} ->
+        {interval, score + acc_score}
+      end)
+    end)
+    |> Enum.sort(fn {%{from: from_a}, _}, {%{from: from_b}, _} ->
+      Timex.before?(from_a, from_b)
+    end)
+  end
+
+  defp change_stats_params(data, params) do
+    # using `:naive_datetime` because we will assume that a user will use the inputs
+    # to select datetimes local to their timezone, and there is no datetime with a 
+    # non-UTC timezone
+    types = %{
+      from: :string,
+      until: :string,
+      granularity: :string,
+      activities: {:array, :id}
+    }
+
+    {data, types}
+    |> Ecto.Changeset.cast(params, Map.keys(types))
+    |> Ecto.Changeset.validate_required([:granularity, :from, :until])
+    |> Ecto.Changeset.validate_change(:from, fn :from, from ->
+      if Timex.validate_format(from) do
+        []
+      else
+        [from: "must be a valid date format"]
+      end
+    end)
+    |> Ecto.Changeset.validate_change(:until, fn :until, until ->
+      if Timex.validate_format(until) do
+        []
+      else
+        [until: "must be a valid date format"]
+      end
+    end)
   end
 end

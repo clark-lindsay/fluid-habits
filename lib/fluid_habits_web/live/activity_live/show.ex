@@ -46,10 +46,11 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
            ),
          active_streak <- Activities.active_streak(activity),
          weekly_score <-
-           Activities.sum_scores_since(
+           Activities.scores_since(
              activity,
              DateTime.shift_zone!(start_of_current_week, "Etc/UTC")
-           ) do
+           )
+           |> Enum.reduce(0, fn {_date, score}, acc -> acc + score end) do
       {:noreply,
        socket
        |> assign(:page_title, page_title(socket.assigns.live_action))
