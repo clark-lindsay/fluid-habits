@@ -81,7 +81,14 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
     activity_ids = if(is_list(activity_ids), do: activity_ids, else: [])
 
-    scored_intervals = score_selected_activities(granularity, activity_ids, from, until)
+    intervals =
+      FluidHabits.DateTime.split_into_intervals(
+        from,
+        until,
+        to_granularity_atom(granularity)
+      )
+
+    scored_intervals = interval_scores(activity_ids, intervals)
 
     {:noreply, assign(socket, scored_intervals: scored_intervals)}
   end
@@ -148,7 +155,14 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       %{granularity: granularity, activities: activity_ids, from: from, until: until} =
         socket.assigns.changeset.changes
 
-      scored_intervals = score_selected_activities(granularity, activity_ids, from, until)
+      intervals =
+        FluidHabits.DateTime.split_into_intervals(
+          from,
+          until,
+          to_granularity_atom(granularity)
+        )
+
+      scored_intervals = interval_scores(activity_ids, intervals)
 
       {:noreply, assign(socket, scored_intervals: scored_intervals)}
     else
@@ -162,7 +176,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     <div class="flex flex-col gap-2">
       <.h2>Stats!</.h2>
 
-      <.card class="p-2 w-1/2">
+      <.card class="p-2 w-full">
         <.card_content heading="Form">
           <.form
             let={f}
@@ -171,7 +185,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
             id="stats-form"
             phx-change="period_parameters_change"
           >
-            <div class="w-full py-2 flex flex-row justify-between">
+            <div class="w-full py-2 flex flex-row gap-4 justify-between">
               <div class="flex flex-col justify-between">
                 <.form_field type="date_input" form={f} field={:from} label="From" />
                 <.form_field type="date_input" form={f} field={:until} label="Until" />
@@ -218,35 +232,21 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     """
   end
 
-  defp score_selected_activities(granularity, activity_ids, from, until) do
-    granularity =
-      case String.downcase(granularity) do
-        "days" -> :days
-        "weeks" -> :weeks
-        "months" -> :months
-        "years" -> :years
-        val when is_atom(val) -> val
-      end
-
+  @spec interval_scores(list(integer()), %{from: DateTime.t(), until: DateTime.t()}) ::
+          {%{from: DateTime.t(), until: DateTime.t()}, integer()}
+  defp interval_scores(activity_ids, intervals) do
     activities = FluidHabits.Activities.list_activities_with_ids!(activity_ids)
 
     Task.Supervisor.async_stream(FluidHabits.TaskSupervisor, activities, fn activity ->
-      intervals =
-        FluidHabits.DateTime.split_into_intervals(
-          from,
-          until,
-          granularity
-        )
-
       scores_per_day =
         FluidHabits.Activities.scores_since(
           activity,
-          from,
-          until: until
+          hd(intervals)[:from],
+          until: List.last(intervals)[:until]
         )
 
-      # use the listed scores per day and the intervals to match each interval with a
-      # summed score, and zip/ pair those together for presentation
+      # match each `interval` against `scores_per_day` to reduce the scores to
+      # one total score per interval
       Enum.map(intervals, fn interval = %{from: from, until: until} ->
         scores_within_interval =
           Enum.filter(scores_per_day, fn {date, _score} ->
@@ -286,9 +286,9 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   end
 
   defp change_stats_params(data, params) do
-    # using `:naive_datetime` because we will assume that a user will use the inputs
-    # to select datetimes local to their timezone, and there is no datetime with a 
-    # non-UTC timezone
+    # using `:naive_datetime` because we will assume that a user will use the
+    # inputs to select datetimes local to their timezone, and there is no `Ecto`
+    # datetime type with a non-UTC timezone
     types = %{
       from: :string,
       until: :string,
@@ -313,5 +313,29 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         [until: "must be a valid date format"]
       end
     end)
+  end
+
+  @doc """
+  Convert the granularity options presented in the HTML as strings into atoms
+  to conform the value for the options of date-time manipulation functions
+
+  Passes atoms through unchanged.
+
+    ## Examples
+
+    iex > to_granularity_atom("Days")
+    # => :days
+    iex > to_granularity_atom(:weeks)
+    # => :weeks
+  """
+  @spec to_granularity_atom(String.t() | atom()) :: atom()
+  defp to_granularity_atom(granularity) do
+    case String.downcase(granularity) do
+      "days" -> :days
+      "weeks" -> :weeks
+      "months" -> :months
+      "years" -> :years
+      val when is_atom(val) -> val
+    end
   end
 end
