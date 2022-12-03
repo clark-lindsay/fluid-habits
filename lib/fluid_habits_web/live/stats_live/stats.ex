@@ -233,7 +233,9 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   end
 
   @spec interval_scores(list(integer()), %{from: DateTime.t(), until: DateTime.t()}) ::
-          {%{from: DateTime.t(), until: DateTime.t()}, integer()}
+          list({%{from: DateTime.t(), until: DateTime.t()}, integer()})
+  defp interval_scores(_, []), do: []
+
   defp interval_scores(activity_ids, intervals) do
     activities = FluidHabits.Activities.list_activities_with_ids!(activity_ids)
 
@@ -296,23 +298,19 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       activities: {:array, :id}
     }
 
+    is_valid_iso_date? = fn field, date_str ->
+      if Timex.validate_format(date_str) do
+        []
+      else
+        [{field, "must be a valid date format"}]
+      end
+    end
+
     {data, types}
     |> Ecto.Changeset.cast(params, Map.keys(types))
     |> Ecto.Changeset.validate_required([:granularity, :from, :until])
-    |> Ecto.Changeset.validate_change(:from, fn :from, from ->
-      if Timex.validate_format(from) do
-        []
-      else
-        [from: "must be a valid date format"]
-      end
-    end)
-    |> Ecto.Changeset.validate_change(:until, fn :until, until ->
-      if Timex.validate_format(until) do
-        []
-      else
-        [until: "must be a valid date format"]
-      end
-    end)
+    |> Ecto.Changeset.validate_change(:from, is_valid_iso_date?)
+    |> Ecto.Changeset.validate_change(:until, is_valid_iso_date?)
   end
 
   @doc """
