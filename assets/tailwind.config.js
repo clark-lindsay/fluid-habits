@@ -15,7 +15,10 @@ module.exports = {
     extend: {
       colors: {
         primary: colors.purple,
-        secondary: colors.yellow
+        secondary: colors.yellow,
+        achievementLevelLow: colors.green,
+        achievementLevelMedium: colors.blue,
+        achievementLevelHigh: colors.purple,
       }
     },
   },
