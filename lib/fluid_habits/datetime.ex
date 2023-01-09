@@ -3,7 +3,7 @@ defmodule FluidHabits.DateTime do
   Transformations and conversions for the basic `DateTime.t()` type that are
   unique requirements of this application.
 
-  It is preferred to never `alias` this application, as it causes collision
+  It is preferred to never `alias` this module, as it causes a name collision
   with the basic `DateTime` module
   """
 
