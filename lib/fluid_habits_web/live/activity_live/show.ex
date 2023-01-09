@@ -48,7 +48,8 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
          weekly_score <-
            Activities.scores_since(
              activity,
-             DateTime.shift_zone!(start_of_current_week, "Etc/UTC")
+             DateTime.shift_zone!(start_of_current_week, "Etc/UTC"),
+             limit: :infinity
            )
            |> Enum.reduce(0, fn {_date, score}, acc -> acc + score end) do
       {:noreply,

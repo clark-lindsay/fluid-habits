@@ -17,5 +17,6 @@ defmodule FluidHabits.Achievements.AchievementQueries do
     from(ach in queryable, where: ach.activity_id == ^activity_id)
   end
 
+  def limit(queryable, :infinity), do: queryable
   def limit(queryable, max), do: from(queryable, limit: ^max)
 end

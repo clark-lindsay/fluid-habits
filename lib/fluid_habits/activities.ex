@@ -52,10 +52,20 @@ defmodule FluidHabits.Activities do
     )
   end
 
+  @doc """
+  List all `Achievements` starting from the given `since` datetime, which should
+  be supplied in the "Etc/UTC" timezone.
+
+  Default options:
+    - `limit`: 50
+      - limit in place to prevent needlessly large DB calls
+      - can use `:infinity` to query the entire DB
+    - `until`: `DateTime.utc_now()`
+  """
   def list_achievements_since(%Activity{} = activity, since, options \\ []) do
     alias FluidHabits.Achievements.{Achievement, AchievementQueries}
 
-    default_options = [limit: 10, until: DateTime.utc_now()]
+    default_options = [limit: 50, until: DateTime.utc_now()]
 
     options = Keyword.merge(default_options, options)
 
@@ -234,14 +244,13 @@ defmodule FluidHabits.Activities do
     Returns the maximum `%AchievementLevel{}` `value` per day, grouped by date
     of entry, since a given datetime, localized to the user's timezone.
 
-    Accepts the same options as `list_achievements_since/3`
+    Accepts the same options and uses the same defaults as `list_achievements_since/3`
 
     ## Examples
 
         iex> sum_scores_since(activity, datetime)
         [{~D(...), 2}, {~D(...), 1}]
   """
-
   @spec scores_since(Activity.t(), DateTime.t(), keyword()) :: keyword()
   def scores_since(activity, since, opts \\ []) do
     alias FluidHabits.{Accounts.User, Achievements.Achievement}
