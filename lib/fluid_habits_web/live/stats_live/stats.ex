@@ -251,7 +251,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
       # match each `interval` against `scores_per_day` to reduce the scores to
       # one total score per interval
-      Enum.map(intervals, fn interval = %{from: from, until: until} ->
+      Stream.map(intervals, fn interval = %{from: from, until: until} ->
         scores_within_interval =
           Enum.filter(scores_per_day, fn {date, _score} ->
             date =
