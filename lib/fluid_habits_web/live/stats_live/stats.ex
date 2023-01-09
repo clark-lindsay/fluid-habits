@@ -71,6 +71,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         "{YYYY}-{0M}-{D}"
       )
       |> Timex.to_datetime(socket.assigns.current_user.timezone)
+      |> Timex.beginning_of_day()
 
     until =
       Timex.parse!(
@@ -78,6 +79,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         "{YYYY}-{0M}-{D}"
       )
       |> Timex.to_datetime(socket.assigns.current_user.timezone)
+      |> Timex.end_of_day()
 
     activity_ids = if(is_list(activity_ids), do: activity_ids, else: [])
 
