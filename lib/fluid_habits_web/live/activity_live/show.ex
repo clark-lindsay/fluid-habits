@@ -1,7 +1,8 @@
 defmodule FluidHabitsWeb.ActivityLive.Show do
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.{Accounts, Activities}
+  alias FluidHabits.{Accounts, Activities, Repo}
+  alias FluidHabits.Activities.Activity
   alias Phoenix.PubSub
 
   @max_recent_achievements 10
@@ -37,7 +38,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
     # TODO: optimize DB access
     # _LOTS_ of non-orthogonal DB calls here
-    with activity <- Activities.get_activity!(id),
+    with activity <- Repo.get!(Activity, id),
          eligible_for_achievements? <- Activities.eligible_for_achievements?(activity),
          achievement_levels <- Activities.list_achievement_levels(activity),
          recent_achievements <-

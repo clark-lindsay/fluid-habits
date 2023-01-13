@@ -2,10 +2,11 @@ defmodule FluidHabitsWeb.ActivityLive.FormComponent do
   use FluidHabitsWeb, :live_component
 
   alias FluidHabits.Activities
+  alias FluidHabits.Activities.Activity
 
   @impl true
   def update(%{activity: activity} = assigns, socket) do
-    changeset = Activities.change_activity(activity)
+    changeset = Activity.changeset(activity, %{})
 
     {:ok,
      socket
@@ -17,7 +18,7 @@ defmodule FluidHabitsWeb.ActivityLive.FormComponent do
   def handle_event("validate", %{"activity" => activity_params}, socket) do
     changeset =
       socket.assigns.activity
-      |> Activities.change_activity(activity_params)
+      |> Activity.changeset(activity_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :changeset, changeset)}

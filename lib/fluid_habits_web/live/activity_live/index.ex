@@ -1,8 +1,8 @@
 defmodule FluidHabitsWeb.ActivityLive.Index do
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.Activities
   alias FluidHabits.Activities.Activity
+  alias FluidHabits.Repo
 
   @impl true
   def mount(_params, session, socket) do
@@ -12,7 +12,7 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
 
     {:ok,
      assign(socket,
-       activities: list_activities(),
+       activities: Repo.all(Activity),
        current_user: user
      )}
   end
@@ -25,7 +25,7 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Activity")
-    |> assign(:activity, Activities.get_activity!(id))
+    |> assign(:activity, Repo.get!(Activity, id))
   end
 
   defp apply_action(socket, :new, _params) do
@@ -42,10 +42,10 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    activity = Activities.get_activity!(id)
-    {:ok, _} = Activities.delete_activity(activity)
+    activity = Repo.get!(Activity, id)
+    {:ok, _} = Repo.delete(activity)
 
-    {:noreply, assign(socket, :activities, list_activities())}
+    {:noreply, assign(socket, :activities, Repo.all(Activity))}
   end
 
   @impl Phoenix.LiveView
@@ -53,9 +53,5 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
     route_to_show = Routes.activity_index_path(socket, :index)
 
     {:noreply, push_patch(socket, to: route_to_show)}
-  end
-
-  defp list_activities do
-    Activities.list_activities()
   end
 end
