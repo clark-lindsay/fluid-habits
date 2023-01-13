@@ -9,35 +9,6 @@ defmodule FluidHabits.AchievementLevels do
   alias FluidHabits.AchievementLevels.AchievementLevel
 
   @doc """
-  Returns the list of achievement_levels.
-
-  ## Examples
-
-      iex> list_achievement_levels()
-      [%AchievementLevel{}, ...]
-
-  """
-  def list_achievement_levels do
-    Repo.all(AchievementLevel)
-  end
-
-  @doc """
-  Gets a single achievement_level.
-
-  Raises `Ecto.NoResultsError` if the Achievement level does not exist.
-
-  ## Examples
-
-      iex> get_achievement_level!(123)
-      %AchievementLevel{}
-
-      iex> get_achievement_level!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_achievement_level!(id), do: Repo.get!(AchievementLevel, id)
-
-  @doc """
   Creates an achievement_level.
 
   Requires a valid Activity, that the AchievementLevel will belong to.
@@ -73,34 +44,5 @@ defmodule FluidHabits.AchievementLevels do
     achievement_level
     |> AchievementLevel.changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a achievement_level.
-
-  ## Examples
-
-      iex> delete_achievement_level(achievement_level)
-      {:ok, %AchievementLevel{}}
-
-      iex> delete_achievement_level(achievement_level)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_achievement_level(%AchievementLevel{} = achievement_level) do
-    Repo.delete(achievement_level)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking achievement_level changes.
-
-  ## Examples
-
-      iex> change_achievement_level(achievement_level)
-      %Ecto.Changeset{data: %AchievementLevel{}}
-
-  """
-  def change_achievement_level(%AchievementLevel{} = achievement_level, attrs \\ %{}) do
-    AchievementLevel.changeset(achievement_level, attrs)
   end
 end

@@ -8,8 +8,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
   def update(%{activity: activity} = assigns, socket) do
     achievement_level = %AchievementLevel{}
 
-    changeset =
-      AchievementLevels.change_achievement_level(%AchievementLevel{activity_id: activity.id})
+    changeset = AchievementLevel.changeset(%AchievementLevel{activity_id: activity.id}, %{})
 
     {:ok,
      socket
@@ -22,7 +21,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
   def handle_event("validate", %{"achievement_level" => achivement_level_params}, socket) do
     changeset =
       socket.assigns.achievement_level
-      |> AchievementLevels.change_achievement_level(achivement_level_params)
+      |> AchievementLevel.changeset(achivement_level_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :changeset, changeset)}
