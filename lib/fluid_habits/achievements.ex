@@ -11,38 +11,10 @@ defmodule FluidHabits.Achievements do
   alias FluidHabits.Broadcasters.Broadcaster
 
   @doc """
-  Returns the list of achievements.
-
-  ## Examples
-
-      iex> list_achievements()
-      [%Achievement{}, ...]
-
-  """
-  def list_achievements() do
-    Repo.all(Achievement)
-  end
-
-  @doc """
-  Gets a single achievement.
-
-  Raises `Ecto.NoResultsError` if the Achievement does not exist.
-
-  ## Examples
-
-      iex> get_achievement!(123)
-      %Achievement{}
-
-      iex> get_achievement!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_achievement!(id), do: Repo.get!(Achievement, id)
-
-  @doc """
   Creates an achievement.
 
-  Requires a valid Activity and a valid AchievementLevel that the achievement will relate to.
+  Requires a valid `Activity` and a valid `AchievementLevel` that the 
+  achievement will be associated to.
 
   ## Examples
 
@@ -83,55 +55,8 @@ defmodule FluidHabits.Achievements do
 
         {:ok, achievement}
 
-      {:error, _failed_operation, {_, reason}, _changes_so_far} ->
+      {:error, _failed_operation, reason, _changes_so_far} ->
         {:error, reason}
     end
-  end
-
-  @doc """
-  Updates a achievement.
-
-  ## Examples
-
-      iex> update_achievement(achievement, %{field: new_value})
-      {:ok, %Achievement{}}
-
-      iex> update_achievement(achievement, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_achievement(%Achievement{} = achievement, attrs) do
-    achievement
-    |> Achievement.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a achievement.
-
-  ## Examples
-
-      iex> delete_achievement(achievement)
-      {:ok, %Achievement{}}
-
-      iex> delete_achievement(achievement)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_achievement(%Achievement{} = achievement) do
-    Repo.delete(achievement)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking achievement changes.
-
-  ## Examples
-
-      iex> change_achievement(achievement)
-      %Ecto.Changeset{data: %Achievement{}}
-
-  """
-  def change_achievement(%Achievement{} = achievement, attrs \\ %{}) do
-    Achievement.changeset(achievement, attrs)
   end
 end

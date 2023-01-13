@@ -3,13 +3,10 @@ defmodule FluidHabits.AchievementsTest do
 
   alias FluidHabits.Achievements
   alias FluidHabits.Achievements.Achievement
+  alias FluidHabits.{ActivitiesFixtures, Activities, AchievementLevelsFixtures}
 
   describe "achievements" do
-    import FluidHabits.AchievementsFixtures
-
     setup do
-      alias FluidHabits.{ActivitiesFixtures, Activities, AchievementLevelsFixtures}
-
       activity = ActivitiesFixtures.activity_fixture()
 
       achievement_level =
@@ -24,22 +21,6 @@ defmodule FluidHabits.AchievementsTest do
       %{activity: activity, achievement_level: achievement_level}
     end
 
-    test "list_achievements/0 returns all achievements",
-         %{activity: _, achievement_level: _} = context do
-      achievement = achievement_fixture(context) |> Map.delete(:activity)
-
-      assert Achievements.list_achievements() |> Enum.map(&Map.delete(&1, :activity)) == [
-               achievement
-             ]
-    end
-
-    test "get_achievement!/1 returns the achievement with given id",
-         %{achievement_level: _, activity: _} = context do
-      achievement = achievement_fixture(context) |> Map.delete(:activity)
-
-      assert Achievements.get_achievement!(achievement.id) |> Map.delete(:activity) == achievement
-    end
-
     test "create_achievement/1 with valid data creates a achievement",
          %{achievement_level: achievement_level, activity: activity} do
       valid_attrs = %{achievement_level_id: achievement_level.id, activity_id: activity.id}
@@ -47,27 +28,17 @@ defmodule FluidHabits.AchievementsTest do
       assert {:ok, %Achievement{}} = Achievements.create_achievement(valid_attrs)
     end
 
-    test "update_achievement/2 with valid data updates the achievement",
-         %{achievement_level: _, activity: _} = context do
-      achievement = achievement_fixture(context)
-      update_attrs = %{}
+    test "create_achievement/1 errors when the associated activity is not eligible for achievements" do
+      activity = ActivitiesFixtures.activity_fixture()
 
-      assert {:ok, %Achievement{}} = Achievements.update_achievement(achievement, update_attrs)
-    end
+      achievement_level =
+        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
 
-    test "delete_achievement/1 deletes the achievement",
-         %{achievement_level: _, activity: _} = context do
-      achievement = achievement_fixture(context)
-
-      assert {:ok, %Achievement{}} = Achievements.delete_achievement(achievement)
-      assert_raise Ecto.NoResultsError, fn -> Achievements.get_achievement!(achievement.id) end
-    end
-
-    test "change_achievement/1 returns a achievement changeset",
-         %{achievement_level: _, activity: _} = context do
-      achievement = achievement_fixture(context)
-
-      assert %Ecto.Changeset{} = Achievements.change_achievement(achievement)
+      assert {:error, _} =
+               Achievements.create_achievement(%{
+                 achievement_level_id: achievement_level.id,
+                 activity_id: activity.id
+               })
     end
   end
 end

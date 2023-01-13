@@ -9,7 +9,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   @impl Phoenix.LiveComponent
   def update(%{activity: activity} = assigns, socket) do
     achievement = %Achievement{}
-    changeset = Achievements.change_achievement(achievement, %{activity_id: activity.id})
+    changeset = Achievement.changeset(achievement, %{activity_id: activity.id})
 
     {:ok,
      socket
@@ -22,7 +22,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   def handle_event("validate", %{"achievement" => achievement_params}, socket) do
     changeset =
       socket.assigns.achievement
-      |> Achievements.change_achievement(achievement_params)
+      |> Achievement.changeset(achievement_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :changeset, changeset)}
