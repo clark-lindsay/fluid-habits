@@ -15,13 +15,14 @@ defmodule FluidHabits.AchievementLevelsTest do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
 
       assert {:ok, %AchievementLevel{} = achievement_level} =
-               AchievementLevels.create_achievement_level(
-                 Map.put(@valid_attrs, :activity_id, activity.id)
-               )
+               @valid_attrs
+               |> Map.put(:activity_id, activity.id)
+               |> AchievementLevels.create_achievement_level()
 
       assert achievement_level.description == "some description"
       assert achievement_level.name == "some name"
       assert achievement_level.value == 2
+      assert is_nil(achievement_level.group_id)
     end
 
     test "create_achievement_level/1 with invalid data returns error changeset" do

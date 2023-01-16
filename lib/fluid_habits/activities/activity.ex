@@ -10,6 +10,7 @@ defmodule FluidHabits.Activities.Activity do
     belongs_to :user, FluidHabits.Accounts.User
     has_many :achievement_levels, FluidHabits.AchievementLevels.AchievementLevel
     has_many :achievements, FluidHabits.Achievements.Achievement
+    has_many :achievement_groups, FluidHabits.Achievements.Group
 
     timestamps()
   end
