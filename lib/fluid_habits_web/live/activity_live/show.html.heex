@@ -37,6 +37,17 @@
     />
   </.modal>
 <% end %>
+<%= if @live_action in [:add_ach_group] do %>
+  <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
+    <.live_component
+      module={FluidHabitsWeb.AchievementGroupLive.FormComponent}
+      id={@activity.id}
+      action={@live_action}
+      activity={@activity}
+      return_to={Routes.activity_show_path(@socket, :show, @activity)}
+    />
+  </.modal>
+<% end %>
 
 <.h2><%= @activity.name %></.h2>
 <.container>

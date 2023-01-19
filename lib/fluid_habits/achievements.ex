@@ -7,7 +7,8 @@ defmodule FluidHabits.Achievements do
 
   alias Ecto.Multi
   alias FluidHabits.Repo
-  alias FluidHabits.Achievements.Achievement
+  alias FluidHabits.Achievements.{Achievement, Group}
+  alias FluidHabits.AchievementLevels.AchievementLevel
   alias FluidHabits.Broadcasters.Broadcaster
 
   @doc """
@@ -58,5 +59,22 @@ defmodule FluidHabits.Achievements do
       {:error, _failed_operation, reason, _changes_so_far} ->
         {:error, reason}
     end
+  end
+
+  @doc """
+    Write a new Achievement `Group` to the database and associate any `AchievementLevel`s
+    identified in the "achievement_level_ids" param to the new group, replacing whatever foreign
+    key they might currently have.
+  """
+  @spec create_group(map()) :: {:ok, Group.t()} | {:error, Ecto.Changeset.t()}
+  def create_group(attrs \\ %{}) do
+    achievement_level_ids = attrs["achievement_level_ids"] || []
+
+    achievement_levels =
+      Repo.all(from ach_lvl in AchievementLevel, where: ach_lvl.id in ^achievement_level_ids)
+
+    FluidHabits.Achievements.Group.changeset(%FluidHabits.Achievements.Group{}, attrs)
+    |> Ecto.Changeset.put_assoc(:achievement_levels, achievement_levels)
+    |> Repo.insert()
   end
 end

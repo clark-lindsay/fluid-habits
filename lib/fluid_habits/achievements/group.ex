@@ -10,11 +10,11 @@ defmodule FluidHabits.Achievements.Group do
   import Ecto.Changeset
 
   typed_schema "achievement_groups" do
-    field :description, :string
-    field :name, :string, null: false
+    field(:description, :string)
+    field(:name, :string, null: false)
 
-    belongs_to :activity, FluidHabits.Activities.Activity
-    has_many :achievement_levels, FluidHabits.AchievementLevels.AchievementLevel
+    belongs_to(:activity, FluidHabits.Activities.Activity)
+    has_many(:achievement_levels, FluidHabits.AchievementLevels.AchievementLevel)
 
     timestamps()
   end
@@ -22,7 +22,7 @@ defmodule FluidHabits.Achievements.Group do
   @doc false
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:name, :description])
-    |> validate_required([:name, :description])
+    |> cast(attrs, [:name, :description, :activity_id])
+    |> validate_required([:name, :description, :activity_id])
   end
 end

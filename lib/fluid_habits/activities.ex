@@ -7,6 +7,7 @@ defmodule FluidHabits.Activities do
   alias FluidHabits.Repo
 
   alias FluidHabits.Activities.Activity
+  alias FluidHabits.AchievementLevels.AchievementLevel
   alias FluidHabits.Accounts.User
 
   @min_ach_levels_for_ach_eligibility 3
@@ -31,9 +32,10 @@ defmodule FluidHabits.Activities do
     end
   end
 
+  @spec list_achievement_levels(Activity.t(id: integer())) :: list(AchievementLevel.t())
   def list_achievement_levels(%Activity{id: id} = _activity) do
     Repo.all(
-      from(ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
+      from(ach_lvl in AchievementLevel,
         where: ach_lvl.activity_id == ^id
       )
     )

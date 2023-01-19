@@ -6,21 +6,18 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
 
   @impl Phoenix.LiveComponent
   def update(%{activity: activity} = assigns, socket) do
-    achievement_level = %AchievementLevel{}
-
-    changeset = AchievementLevel.changeset(%AchievementLevel{activity_id: activity.id}, %{})
+    changeset = AchievementLevel.changeset(%AchievementLevel{}, %{activity_id: activity.id})
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:achievement_level, achievement_level)
      |> assign(:changeset, changeset)}
   end
 
   @impl Phoenix.LiveComponent
   def handle_event("validate", %{"achievement_level" => achivement_level_params}, socket) do
     changeset =
-      socket.assigns.achievement_level
+      %AchievementLevel{}
       |> AchievementLevel.changeset(achivement_level_params)
       |> Map.put(:action, :validate)
 

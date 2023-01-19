@@ -104,4 +104,5 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   defp page_title(:edit), do: "Edit Activity"
   defp page_title(:add_ach_lvl), do: "Add Achievement Level"
   defp page_title(:add_achievement), do: "Add Achievement"
+  defp page_title(:add_ach_group), do: "Add Achievement Group"
 end
