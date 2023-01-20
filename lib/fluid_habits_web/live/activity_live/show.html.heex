@@ -90,6 +90,13 @@
   />
 
   <.button
+    label="Add Achievement Group"
+    link_type="live_patch"
+    to={Routes.activity_show_path(@socket, :add_ach_group, @activity)}
+    color="primary"
+  />
+
+  <.button
     disabled={!@eligible_for_achievements?}
     label="Add Achievement"
     link_type="live_patch"
