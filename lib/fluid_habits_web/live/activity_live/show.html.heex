@@ -1,4 +1,4 @@
-<%= if @live_action in [:edit] do %>
+<%= if @live_action == :edit do %>
   <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.ActivityLive.FormComponent}
@@ -9,7 +9,7 @@
     />
   </.modal>
 <% end %>
-<%= if @live_action in [:add_ach_lvl] do %>
+<%= if @live_action == :add_ach_lvl do %>
   <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.AchievementLevelLive.FormComponent}
@@ -20,7 +20,7 @@
     />
   </.modal>
 <% end %>
-<%= if @live_action in [:add_achievement] do %>
+<%= if @live_action == :add_achievement do %>
   <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.AchievementLive.FormComponent}
@@ -37,7 +37,7 @@
     />
   </.modal>
 <% end %>
-<%= if @live_action in [:add_ach_group] do %>
+<%= if @live_action == :add_ach_group do %>
   <.modal return_to={Routes.activity_show_path(@socket, :show, @activity)} title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.AchievementGroupLive.FormComponent}
