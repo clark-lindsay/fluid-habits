@@ -2,6 +2,8 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
   use FluidHabitsWeb, :component
 
   def activity_card(%{activity: _activity, timezone: timezone} = assigns) do
+    assigns = assign(assigns, :show_name, assigns[:show_name] || false)
+
     shift = fn datetime ->
       DateTime.shift_zone!(datetime, timezone) |> DateTime.to_date()
     end
@@ -37,8 +39,8 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
       |> assign(:active_streak_start, active_streak_start)
 
     ~H"""
-    <.card class={"w-64 #{@class}"}>
-      <.card_content heading={@activity.name}>
+    <.card class={"min-w-64 #{@class}"}>
+      <.card_content heading={if @show_name, do: @activity.name, else: nil}>
         <div class="flex justify-between">
           <div class="text-primary-600">
             Streak:

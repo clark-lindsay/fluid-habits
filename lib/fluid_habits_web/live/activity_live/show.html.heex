@@ -51,7 +51,7 @@
 
 <div class="flex flex-col justify-start">
   <div class="flex flex-row gap-2">
-    <.h2><%= @activity.name %></.h2>
+    <.h2 class="!m-0"><%= @activity.name %></.h2>
     <.link to={Routes.activity_show_path(@socket, :edit, @activity)} link_type="live_patch">
       <div class="flex items-center  text-gray-600 hover:text-secondary-400">
         <Heroicons.Outline.pencil class="inline h-4 w-4 mr-1" />
@@ -59,9 +59,6 @@
     </.link>
   </div>
   <.container>
-    <.p>
-      <%= @activity.description %>
-    </.p>
     <%= unless @eligible_for_achievements? do %>
       <.alert
         with_icon
@@ -74,7 +71,7 @@
   </.container>
 
   <div class="max-w-md">
-    <div class="my-4">
+    <div class="mb-4">
       <FluidHabitsWeb.Components.ActivityComponents.activity_card
         activity={@activity}
         timezone={@current_user.timezone}
@@ -114,7 +111,7 @@
   </div>
 
   <.container class="my-2">
-    <.h3>Achievements:</.h3>
+    <.h3 class="!m-0">Achievements:</.h3>
     <ul>
       <%= for achievement <- @recent_achievements do %>
         <FluidHabitsWeb.Components.AchievementComponents.to_list_item
