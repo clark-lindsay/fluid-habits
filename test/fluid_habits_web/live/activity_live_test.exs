@@ -93,7 +93,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     end
 
     test "updates activity within modal", %{conn: conn, activity: activity} do
-      {:ok, show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
 
       assert show_live
              |> element("[href=\"/activities/#{activity.id}/show/edit\"]")
