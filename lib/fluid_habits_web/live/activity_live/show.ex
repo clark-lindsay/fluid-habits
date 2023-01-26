@@ -45,6 +45,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
            Activities.list_achievements_since(activity, one_week_ago,
              limit: @max_recent_achievements
            ),
+         achievement_groups <- Repo.preload(activity, :achievement_groups).achievement_groups,
          active_streak <- Activities.active_streak(activity),
          weekly_score <-
            Activities.scores_since(
@@ -59,6 +60,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
        |> assign(:activity, activity)
        |> assign(:eligible_for_achievements?, eligible_for_achievements?)
        |> assign(:achievement_levels, achievement_levels)
+       |> assign(:achievement_groups, achievement_groups)
        |> assign(:recent_achievements, recent_achievements)
        |> assign(:active_streak, active_streak)
        |> assign(:start_of_week, start_of_current_week)

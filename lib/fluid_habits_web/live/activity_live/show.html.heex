@@ -27,12 +27,7 @@
       id={@activity.id}
       action={@live_action}
       activity={@activity}
-      achievement_levels={
-        Enum.map(
-          @achievement_levels,
-          &FluidHabits.AchievementLevels.AchievementLevel.to_select_option/1
-        )
-      }
+      achievement_levels={@achievement_levels}
       return_to={Routes.activity_show_path(@socket, :show, @activity)}
     />
   </.modal>

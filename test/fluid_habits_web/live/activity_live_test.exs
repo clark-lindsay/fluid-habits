@@ -89,13 +89,15 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       {:ok, _show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
 
       assert html =~ "Show Activity"
-      assert html =~ activity.description
+      assert html =~ activity.name
     end
 
     test "updates activity within modal", %{conn: conn, activity: activity} do
-      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
 
-      assert show_live |> element("a", ~r/^\s+Edit\s+$/) |> render_click() =~
+      assert show_live
+             |> element("[href=\"/activities/#{activity.id}/show/edit\"]")
+             |> render_click() =~
                "Edit Activity"
 
       assert_patch(show_live, Routes.activity_show_path(conn, :edit, activity))
@@ -111,7 +113,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
 
       assert html =~ "Activity updated successfully"
-      assert html =~ "some updated description"
+      assert html =~ @update_attrs.name
     end
 
     test "adds new achievement level with modal", %{conn: conn, activity: activity} do
