@@ -31,3 +31,6 @@ config :logger, level: :warn
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# use the MockBroadcaster instead of `Phoenix.PubSub`
+config :fluid_habits, :broadcaster, FluidHabits.Broadcasters.MockBroadcaster

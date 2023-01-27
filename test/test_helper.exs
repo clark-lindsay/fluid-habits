@@ -6,6 +6,4 @@ Mox.defmock(FluidHabits.Broadcasters.MockBroadcaster,
   for: FluidHabits.Broadcasters.Broadcaster
 )
 
-Application.put_env(:fluid_habits, :broadcaster, FluidHabits.Broadcasters.MockBroadcaster)
-
 ExUnit.start()

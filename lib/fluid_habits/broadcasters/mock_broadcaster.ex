@@ -5,5 +5,7 @@ defmodule FluidHabits.Broadcasters.MockBroadcaster do
   def broadcast(_module, topic, message) do
     # credo:disable-for-next-line
     IO.inspect(message, label: 'Broadcast for topic `#{topic}`')
+
+    :ok
   end
 end
