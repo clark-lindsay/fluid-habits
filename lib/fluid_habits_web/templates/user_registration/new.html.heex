@@ -1,7 +1,7 @@
 <.container>
   <.h2>Register</.h2>
 
-  <.form let={f} for={@changeset} action={Routes.user_registration_path(@conn, :create)}>
+  <.form :let={f} for={@changeset} action={Routes.user_registration_path(@conn, :create)}>
     <%= if @changeset.action do %>
       <div class="alert alert-danger">
         <p>Oops, something went wrong! Please check the errors below.</p>
@@ -15,15 +15,15 @@
     <.submit_button label="Register" phx_disable_with="Registering..." />
   </.form>
 
-  <.link to={Routes.user_session_path(@conn, :new)}>
+  <.link href={Routes.user_session_path(@conn, :new)}>
     <div class="flex items-center  text-gray-600 hover:text-secondary-400">
-      <Heroicons.Outline.lock_open class="inline h-4 w-4 mr-1" />Log In
+      <.icon name={:lock_open} class="inline h-4 w-4 mr-1" />Log In
     </div>
   </.link>
   <% # Why are these links growing to the same size as the container? %>
-  <.link to={Routes.user_reset_password_path(@conn, :new)}>
+  <.link href={Routes.user_reset_password_path(@conn, :new)}>
     <div class="flex items-center  text-gray-600 hover:text-secondary-400">
-      <Heroicons.Outline.question_mark_circle class="inline h-4 w-4 mr-1" />Forgot your password?
+      <.icon name={:question_mark_circle} class="inline h-4 w-4 mr-1" />Forgot your password?
     </div>
   </.link>
 </.container>

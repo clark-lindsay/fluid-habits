@@ -1,7 +1,7 @@
 defmodule FluidHabitsWeb.AchievementComponentsTest do
   use FluidHabitsWeb.ConnCase, async: true
 
-  import Phoenix.LiveView.Helpers
+  import Phoenix.Component
   import Phoenix.LiveViewTest
 
   alias FluidHabitsWeb.Components.AchievementComponents
@@ -15,11 +15,11 @@ defmodule FluidHabitsWeb.AchievementComponentsTest do
         achievement =
         AchievementsFixtures.achievement_fixture() |> FluidHabits.Repo.preload(:achievement_level)
 
-      assigns = []
+      assigns = %{achievement: achievement}
 
       html =
         rendered_to_string(~H"""
-        <AchievementComponents.to_list_item achievement={achievement} timezone="Etc/UTC" />
+        <AchievementComponents.to_list_item achievement={@achievement} timezone="Etc/UTC" />
         """)
 
       assert html =~ achievement_level.name

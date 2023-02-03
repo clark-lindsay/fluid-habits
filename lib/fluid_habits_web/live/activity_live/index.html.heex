@@ -1,7 +1,7 @@
 <.h2>Activities</.h2>
 
 <%= if @live_action in [:new, :edit] do %>
-  <.modal return_to={Routes.activity_index_path(@socket, :index)} title={@page_title}>
+  <.modal title={@page_title}>
     <.live_component
       module={FluidHabitsWeb.ActivityLive.FormComponent}
       current_user={@current_user}
@@ -28,11 +28,11 @@
         <.tr id={"activity-#{activity.id}"}>
           <.td>
             <.link
-              to={Routes.activity_show_path(@socket, :show, activity)}
-              label={activity.name}
-              link_type="live_redirect"
+              navigate={Routes.activity_show_path(@socket, :show, activity)}
               class="text-primary-400 hover:text-primary-600"
-            />
+            >
+              <%= activity.name %>
+            </.link>
           </.td>
           <.td><%= activity.description %></.td>
 

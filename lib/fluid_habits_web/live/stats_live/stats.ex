@@ -181,7 +181,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       <.card class="p-2 w-full">
         <.card_content heading="Form">
           <.form
-            let={f}
+            :let={f}
             as={:stats_params}
             for={@changeset}
             id="stats-form"
@@ -194,14 +194,12 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
                 <.form_field
                   type="select"
-                  options={
-                    [
-                      "Days",
-                      "Weeks",
-                      "Months",
-                      "Years"
-                    ]
-                  }
+                  options={[
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                  ]}
                   form={f}
                   field={:granularity}
                   label="Granularity"

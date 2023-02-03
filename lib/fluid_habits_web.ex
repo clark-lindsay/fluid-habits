@@ -45,7 +45,7 @@ defmodule FluidHabitsWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {FluidHabitsWeb.LayoutView, "live.html"}
+        layout: {FluidHabitsWeb.LayoutView, :live}
 
       unquote(view_helpers())
     end
@@ -89,12 +89,11 @@ defmodule FluidHabitsWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
-      import Phoenix.LiveView.Helpers
-      import FluidHabitsWeb.LiveHelpers
-
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
+
+      # Import helpers and foundational building blocks for components
+      import Phoenix.Component
 
       import FluidHabitsWeb.ErrorHelpers
       import FluidHabitsWeb.Gettext
