@@ -17,14 +17,20 @@ defmodule FluidHabitsWeb.Components.AchievementComponents do
         _ -> "text-black"
       end
 
+    assigns =
+      assign(assigns,
+        display_datetime: display_datetime,
+        achievement_level_classname: achievement_level_classname
+      )
+
     ~H"""
     <li>
       <div>
-        <span class={achievement_level_classname}>
+        <span class={@achievement_level_classname}>
           <%= "(#{@achievement.achievement_level.value})" %>
         </span>
         <span><%= "#{@achievement.achievement_level.name}" %></span>
-        <span><%= "@ #{display_datetime}" %></span>
+        <span><%= "@ #{@display_datetime}" %></span>
       </div>
     </li>
     """

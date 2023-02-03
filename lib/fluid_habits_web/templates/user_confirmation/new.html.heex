@@ -1,11 +1,11 @@
 <h1>Resend confirmation instructions</h1>
 
-<.form let={f} for={:user} action={Routes.user_confirmation_path(@conn, :create)}>
+<%= form_for @conn, Routes.user_confirmation_path(@conn, :create), [as: :user], fn f -> %>
   <%= label(f, :email) %>
   <%= email_input(f, :email, required: true) %>
 
   <.submit_button label="Resend confirmation instructions" phx_disable_with="Sending..." />
-</.form>
+<% end %>
 
 <p>
   <%= link("Register", to: Routes.user_registration_path(@conn, :new)) %> | <%= link("Log in",

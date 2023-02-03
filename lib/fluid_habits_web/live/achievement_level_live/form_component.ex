@@ -45,7 +45,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="achievement-level-form"
         phx-target={@myself}

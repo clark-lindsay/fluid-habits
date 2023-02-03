@@ -184,7 +184,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       add_achievement_button =
         Floki.parse_document!(html)
-        |> Floki.find("a")
+        |> Floki.find("button")
         |> Enum.filter(fn elem ->
           Regex.match?(~r/^\s*Add\s+Achievement\s*$/, Floki.text(elem))
         end)

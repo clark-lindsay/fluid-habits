@@ -56,7 +56,7 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="achievement-group-form"
         phx-target={@myself}

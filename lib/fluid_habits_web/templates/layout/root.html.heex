@@ -5,7 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content={csrf_token_value()} />
-    <%= live_title_tag(assigns[:page_title] || "FluidHabits", suffix: " · Phoenix Framework") %>
+    <.live_title suffix="- Fluid Habits">
+      <%= assigns[:page_title] || "Welcome" %>
+    </.live_title>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
     <script
       defer
@@ -22,30 +24,23 @@
           <ul>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
               <li>
-                <.link
-                  to={Routes.live_dashboard_path(@conn, :home)}
-                  link_type="live_patch"
-                  label="LiveDashboard"
-                  class="text-purple-500"
-                />
+                <.link navigate={Routes.live_dashboard_path(@conn, :home)} class="text-purple-500">
+                  LiveDashboard
+                </.link>
               </li>
             <% end %>
             <%= if @current_user do %>
               <li>
-                <.link to="/" link_type="live_redirect" class="grow-0">
+                <.link navigate="/" class="grow-0">
                   <div class="flex items-center  text-gray-600 hover:text-primary-400">
-                    <Heroicons.Outline.home class="inline h-4 w-4 mr-1" />Home
+                    <.icon name={:home} class="inline h-4 w-4 mr-1" />Home
                   </div>
                 </.link>
               </li>
               <li>
-                <.link
-                  to={Routes.activity_index_path(@conn, :index)}
-                  link_type="live_redirect"
-                  class="grow-0"
-                >
+                <.link navigate={Routes.activity_index_path(@conn, :index)} class="grow-0">
                   <div class="flex items-center  text-gray-600 hover:text-secondary-400">
-                    <Heroicons.Outline.lightning_bolt class="inline h-4 w-4 mr-1" />Activities
+                    <.icon name={:bolt} class="inline h-4 w-4 mr-1" />Activities
                   </div>
                 </.link>
               </li>

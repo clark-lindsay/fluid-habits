@@ -60,6 +60,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
       %Achievement{}
       |> Achievement.changeset(achievement_params)
       |> Map.put(:action, :insert)
+      |> dbg()
 
     {:noreply, assign(socket, :changeset, changeset)}
   end
@@ -75,8 +76,13 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
          |> put_flash(:info, "Achievement created successfully")
          |> push_patch(to: socket.assigns.return_to)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+      {:error, reason} ->
+        IO.inspect(reason)
+
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to create achievement with error: #{inspect(reason)}")
+         |> push_patch(to: socket.assigns.return_to)}
     end
   end
 
@@ -85,29 +91,19 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="achievement-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
       >
-        <.form_label form={f} field={:group} />
-
-        <div class="flex flex-row gap-3 mb-2">
-          <label class="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-gray-200">
-            <.radio form={f} field={:group} value="all" checked />
-            <div><%= "All" %></div>
-          </label>
-          <%= for group <- @achievement_groups do %>
-            <label class="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-gray-200">
-              <.radio form={f} field={:group} value={group.id} />
-              <div><%= group.name %></div>
-            </label>
-          <% end %>
-        </div>
-
-        <.form_field_error form={f} field={:group} class="mt-1" />
+        <.form_field
+          type="select"
+          form={f}
+          field={:group}
+          options={[{"All", "all"} | Enum.map(@achievement_groups, &{&1.name, &1.id})]}
+        />
 
         <.form_field
           type="select"
