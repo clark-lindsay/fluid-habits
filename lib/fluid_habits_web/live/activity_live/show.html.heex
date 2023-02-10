@@ -77,7 +77,7 @@
     </div>
 
     <div class="flex flex-col gap-2">
-<% # have to render two buttons because `petal_components` does not respect `disabled` for link-buttons %>
+      <% # have to render two buttons because `petal_components` does not respect `disabled` for link-buttons %>
       <%= if @eligible_for_achievements? do %>
         <.button
           label="Add Achievement"

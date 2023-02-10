@@ -135,6 +135,41 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       assert html =~ "Achievement Level created successfully"
     end
 
+    test "adds new achievement group with modal", %{conn: conn, activity: activity} do
+      min_ach_levels_for_ach_eligibility =
+        FluidHabits.Activities.min_ach_levels_for_ach_eligibility()
+
+      for iteration <- Range.new(1, min_ach_levels_for_ach_eligibility) do
+        FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{
+          activity: activity,
+          value: Integer.mod(iteration, min_ach_levels_for_ach_eligibility + 1)
+        })
+      end
+
+      activity = FluidHabits.Repo.preload(activity, :achievement_levels)
+
+      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+
+      assert show_live |> element("a", "Add Achievement Group") |> render_click() =~
+               "Add Achievement Group"
+
+      assert_patch(show_live, Routes.activity_show_path(conn, :add_ach_group, activity))
+
+      {:ok, _live_view, html} =
+        show_live
+        |> form("#achievement-group-form",
+          group: %{
+            description: "some description",
+            name: "some name",
+            achievement_level_ids: Enum.map(activity.achievement_levels, & &1.id)
+          }
+        )
+        |> render_submit()
+        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+
+      assert html =~ "Achievement Group created successfully"
+    end
+
     test "adds new achievement with modal", %{conn: conn, activity: activity} do
       alias FluidHabits.{Activities, AchievementLevelsFixtures}
       ref = make_ref()

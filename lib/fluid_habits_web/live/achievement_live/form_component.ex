@@ -47,20 +47,32 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
           )
       end
 
+    options = Enum.map(socket.assigns.achievement_level_options, & &1.id)
+
     achievement_params =
       achievement_params
       |> Map.put("activity_id", socket.assigns.activity.id)
-      |> Map.update("achievement_level_id", nil, fn id ->
-        if String.to_integer(id) in Enum.map(socket.assigns.achievement_level_options, & &1.id),
-          do: id,
-          else: nil
+      |> Map.update("achievement_level_id", nil, fn
+        "" ->
+          nil
+
+        id when is_binary(id) ->
+          case options do
+            [] ->
+              nil
+
+            list ->
+              if String.to_integer(id) in list, do: id, else: hd(list)
+          end
+
+        _ ->
+          nil
       end)
 
     changeset =
       %Achievement{}
       |> Achievement.changeset(achievement_params)
       |> Map.put(:action, :insert)
-      |> dbg()
 
     {:noreply, assign(socket, :changeset, changeset)}
   end
@@ -109,7 +121,9 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
           type="select"
           form={f}
           field={:achievement_level_id}
-          options={Enum.map(@achievement_level_options, &AchievementLevel.to_select_option/1)}
+          options={[
+            {"None", nil} | Enum.map(@achievement_level_options, &AchievementLevel.to_select_option/1)
+          ]}
         />
 
         <.submit_button label="Save" phx_disable_with="Saving..." />

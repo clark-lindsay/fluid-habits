@@ -21,8 +21,12 @@ defmodule FluidHabits.Achievements.Group do
 
   @doc false
   def changeset(group, attrs) do
+    ach_lvls = attrs["achievement_levels"] || attrs[:achievement_levels] || []
+
     group
     |> cast(attrs, [:name, :description, :activity_id])
+    |> put_assoc(:achievement_levels, ach_lvls)
     |> validate_required([:name, :description, :activity_id])
+    |> validate_length(:achievement_levels, min: 1)
   end
 end
