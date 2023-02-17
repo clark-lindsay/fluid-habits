@@ -221,5 +221,43 @@ defmodule FluidHabits.ActivitiesTest do
 
       refute Activities.eligible_for_achievements?(activity)
     end
+
+    test "has_logged_achievement_today?/1 returns true when there is an achievement today, in the right timezone, and false when there are none",
+         %{valid_user: valid_user} do
+      activity = activity_fixture(%{user: valid_user})
+
+      for days_ago <- 1..3 do
+        insertion_time =
+          valid_user.timezone
+          |> Timex.now()
+          |> Timex.shift(days: days_ago * -1)
+
+        achievement_fixture(%{activity: activity, inserted_at: insertion_time})
+      end
+
+      refute Activities.has_logged_achievement_today?(activity)
+
+      achievement_fixture(%{activity: activity})
+
+      assert Activities.has_logged_achievement_today?(activity)
+    end
+
+    test "has_logged_achievement_today?/1 returns false when there is an achievement with the same date, in a different timezone" do
+      utc_user = AccountsFixtures.user_fixture(timezone: "Etc/UTC")
+      activity = activity_fixture(%{user: utc_user})
+
+      # Tokyo is UTC + 9_hours
+      # 04:00 in Tokyo would have the same Date as today for the user,
+      # before conversion to UTC
+      four_am_tokyo =
+        Timex.now()
+        |> DateTime.shift_zone!("Japan")
+        |> Timex.beginning_of_day()
+        |> Timex.shift(hours: 4)
+
+      achievement_fixture(%{activity: activity, inserted_at: four_am_tokyo})
+
+      refute Activities.has_logged_achievement_today?(activity)
+    end
   end
 end

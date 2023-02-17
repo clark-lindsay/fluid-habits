@@ -8,6 +8,7 @@ defmodule FluidHabits.Activities do
 
   alias FluidHabits.Activities.Activity
   alias FluidHabits.AchievementLevels.AchievementLevel
+  alias FluidHabits.Accounts
   alias FluidHabits.Accounts.User
 
   @min_ach_levels_for_ach_eligibility 3
@@ -120,6 +121,30 @@ defmodule FluidHabits.Activities do
       )
 
     Repo.aggregate(query, :count) >= @min_ach_levels_for_ach_eligibility
+  end
+
+  @doc """
+  Whether or not an achievement has been recorded for whatever "today" is 
+  **in the user's timezone**
+  """
+    @spec  has_logged_achievement_today?(Activity.t()) :: boolean()
+  def has_logged_achievement_today?(activity = %Activity{}) do
+    user_timezone = Accounts.get_user!(activity.user_id).timezone
+
+    start_of_day =
+      user_timezone
+      |> Timex.now()
+      |> Timex.beginning_of_day()
+      |> DateTime.shift_zone!("Etc/UTC")
+
+    end_of_day =
+      user_timezone
+      |> Timex.now()
+      |> Timex.end_of_day()
+      |> DateTime.shift_zone!("Etc/UTC")
+
+    list_achievements_since(activity, start_of_day, until: end_of_day, limit: 1)
+    |> Enum.count() >= 1
   end
 
   @doc """
