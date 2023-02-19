@@ -4,7 +4,7 @@ defmodule FluidHabits.AchievementLevelsTest do
   alias FluidHabits.{AchievementLevels, Repo}
 
   describe "achievement_levels" do
-    alias FluidHabits.AchievementLevels.AchievementLevel
+    alias FluidHabits.Achievements.AchievementLevel
 
     import FluidHabits.AchievementLevelsFixtures
 

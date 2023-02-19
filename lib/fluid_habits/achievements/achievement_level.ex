@@ -1,4 +1,4 @@
-defmodule FluidHabits.AchievementLevels.AchievementLevel do
+defmodule FluidHabits.Achievements.AchievementLevel do
   use FluidHabits.Schema
   import Ecto.Changeset
 

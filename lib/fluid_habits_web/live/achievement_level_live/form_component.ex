@@ -2,7 +2,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
   use FluidHabitsWeb, :live_component
 
   alias FluidHabits.AchievementLevels
-  alias FluidHabits.AchievementLevels.AchievementLevel
+  alias FluidHabits.Achievements.AchievementLevel
 
   @impl Phoenix.LiveComponent
   def update(%{activity: activity} = assigns, socket) do

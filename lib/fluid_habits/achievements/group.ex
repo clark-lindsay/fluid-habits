@@ -14,7 +14,7 @@ defmodule FluidHabits.Achievements.Group do
     field(:name, :string, null: false)
 
     belongs_to(:activity, FluidHabits.Activities.Activity)
-    has_many(:achievement_levels, FluidHabits.AchievementLevels.AchievementLevel)
+    has_many(:achievement_levels, FluidHabits.Achievements.AchievementLevel)
 
     timestamps()
   end

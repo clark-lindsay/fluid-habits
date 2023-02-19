@@ -4,7 +4,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   import FluidHabitsWeb.Components.FormComponents
 
   alias FluidHabits.Achievements
-  alias FluidHabits.AchievementLevels.AchievementLevel
+  alias FluidHabits.Achievements.AchievementLevel
   alias FluidHabits.Achievements.Achievement
 
   @impl Phoenix.LiveComponent

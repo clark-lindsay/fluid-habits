@@ -7,7 +7,7 @@ defmodule FluidHabits.Activities do
   alias FluidHabits.Repo
 
   alias FluidHabits.Activities.Activity
-  alias FluidHabits.AchievementLevels.AchievementLevel
+  alias FluidHabits.Achievements.AchievementLevel
   alias FluidHabits.Accounts
   alias FluidHabits.Accounts.User
 
@@ -109,14 +109,14 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-  Checks that there are 3 or more `%FluidHabits.AchievementLevels.AchievementLevel{}`-s
+  Checks that there are 3 or more `%FluidHabits.Achievements.AchievementLevel{}`-s
   associated with the given activity
   """
   def eligible_for_achievements?(%{id: id}) do
     import Ecto.Query, only: [from: 2]
 
     query =
-      from(ach_lvl in FluidHabits.AchievementLevels.AchievementLevel,
+      from(ach_lvl in FluidHabits.Achievements.AchievementLevel,
         where: ach_lvl.activity_id == ^id
       )
 
@@ -127,7 +127,7 @@ defmodule FluidHabits.Activities do
   Whether or not an achievement has been recorded for whatever "today" is 
   **in the user's timezone**
   """
-    @spec  has_logged_achievement_today?(Activity.t()) :: boolean()
+  @spec has_logged_achievement_today?(Activity.t()) :: boolean()
   def has_logged_achievement_today?(activity = %Activity{}) do
     user_timezone = Accounts.get_user!(activity.user_id).timezone
 

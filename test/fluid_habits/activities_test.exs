@@ -249,13 +249,13 @@ defmodule FluidHabits.ActivitiesTest do
       # Tokyo is UTC + 9_hours
       # 04:00 in Tokyo would have the same Date as today for the user,
       # before conversion to UTC
-      four_am_tokyo =
-        Timex.now()
-        |> DateTime.shift_zone!("Japan")
-        |> Timex.beginning_of_day()
-        |> Timex.shift(hours: 4)
+      four_am_today_in_tokyo =
+        Timex.now(utc_user.timezone)
+        |> Timex.to_date()
+        |> DateTime.new!(~T[04:00:00.000], "Japan")
 
-      achievement_fixture(%{activity: activity, inserted_at: four_am_tokyo})
+      achievement_fixture(%{activity: activity, inserted_at: four_am_today_in_tokyo})
+      |> FluidHabits.Repo.preload(:achievement_level)
 
       refute Activities.has_logged_achievement_today?(activity)
     end
