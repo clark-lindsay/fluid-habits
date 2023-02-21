@@ -4,7 +4,7 @@ defmodule FluidHabits.AchievementLevelsTest do
   alias FluidHabits.{AchievementLevels, Repo}
 
   describe "achievement_levels" do
-    alias FluidHabits.Achievements.AchievementLevel
+    alias FluidHabits.Achievements.Level
 
     import FluidHabits.AchievementLevelsFixtures
 
@@ -14,7 +14,7 @@ defmodule FluidHabits.AchievementLevelsTest do
     test "create_achievement_level/1 with valid data creates a achievement_level" do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
 
-      assert {:ok, %AchievementLevel{} = achievement_level} =
+      assert {:ok, %Level{} = achievement_level} =
                @valid_attrs
                |> Map.put(:activity_id, activity.id)
                |> AchievementLevels.create_achievement_level()
@@ -62,7 +62,7 @@ defmodule FluidHabits.AchievementLevelsTest do
         value: 3
       }
 
-      assert {:ok, %AchievementLevel{} = achievement_level} =
+      assert {:ok, %Level{} = achievement_level} =
                AchievementLevels.update_achievement_level(achievement_level, update_attrs)
 
       assert achievement_level.description == "some updated description"
@@ -76,7 +76,7 @@ defmodule FluidHabits.AchievementLevelsTest do
       assert {:error, %Ecto.Changeset{}} =
                AchievementLevels.update_achievement_level(achievement_level, @invalid_attrs)
 
-      assert achievement_level == Repo.get!(AchievementLevel, achievement_level.id)
+      assert achievement_level == Repo.get!(Level, achievement_level.id)
     end
   end
 end

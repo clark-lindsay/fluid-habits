@@ -8,7 +8,7 @@ defmodule FluidHabits.Activities.Activity do
     field :name, :string
 
     belongs_to :user, FluidHabits.Accounts.User
-    has_many :achievement_levels, FluidHabits.Achievements.AchievementLevel
+    has_many :achievement_levels, FluidHabits.Achievements.Level
     has_many :achievements, FluidHabits.Achievements.Achievement
     has_many :achievement_groups, FluidHabits.Achievements.Group
 

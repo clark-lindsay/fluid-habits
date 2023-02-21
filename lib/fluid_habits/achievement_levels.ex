@@ -1,30 +1,30 @@
 defmodule FluidHabits.AchievementLevels do
   @moduledoc """
-  The AchievementLevels context.
+  The `Achievements.Level`s context.
   """
 
   import Ecto.Query, warn: false
   alias FluidHabits.Repo
 
-  alias FluidHabits.Achievements.AchievementLevel
+  alias FluidHabits.Achievements.Level
 
   @doc """
-  Creates an achievement_level.
+  Creates an `Achievements.Level`
 
-  Requires a valid Activity, that the AchievementLevel will belong to.
+  Requires a valid Activity, that the Level will belong to.
 
   ## Examples
 
       iex> create_achievement_level(%{field: value, activity_id: activity.id})
-      {:ok, %AchievementLevel{}}
+      {:ok, %Achievements.Level{}}
 
       iex> create_achievement_level(%{field: bad_value, activity_id: activity.id})
       {:error, %Ecto.Changeset{}}
 
   """
   def create_achievement_level(attrs \\ %{}) do
-    %AchievementLevel{}
-    |> AchievementLevel.changeset(attrs)
+    %Level{}
+    |> Level.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -34,15 +34,15 @@ defmodule FluidHabits.AchievementLevels do
   ## Examples
 
       iex> update_achievement_level(achievement_level, %{field: new_value})
-      {:ok, %AchievementLevel{}}
+      {:ok, %Level{}}
 
       iex> update_achievement_level(achievement_level, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_achievement_level(%AchievementLevel{} = achievement_level, attrs) do
+  def update_achievement_level(%Level{} = achievement_level, attrs) do
     achievement_level
-    |> AchievementLevel.changeset(attrs)
+    |> Level.changeset(attrs)
     |> Repo.update()
   end
 end

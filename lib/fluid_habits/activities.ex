@@ -7,7 +7,7 @@ defmodule FluidHabits.Activities do
   alias FluidHabits.Repo
 
   alias FluidHabits.Activities.Activity
-  alias FluidHabits.Achievements.AchievementLevel
+  alias FluidHabits.Achievements.Level
   alias FluidHabits.Accounts
   alias FluidHabits.Accounts.User
 
@@ -33,10 +33,10 @@ defmodule FluidHabits.Activities do
     end
   end
 
-  @spec list_achievement_levels(Activity.t(id: integer())) :: list(AchievementLevel.t())
+  @spec list_achievement_levels(Activity.t(id: integer())) :: list(Level.t())
   def list_achievement_levels(%Activity{id: id} = _activity) do
     Repo.all(
-      from(ach_lvl in AchievementLevel,
+      from(ach_lvl in Level,
         where: ach_lvl.activity_id == ^id
       )
     )
@@ -109,14 +109,14 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-  Checks that there are 3 or more `%FluidHabits.Achievements.AchievementLevel{}`-s
+  Checks that there are 3 or more `%FluidHabits.Achievements.Achievements.Level{}`-s
   associated with the given activity
   """
   def eligible_for_achievements?(%{id: id}) do
     import Ecto.Query, only: [from: 2]
 
     query =
-      from(ach_lvl in FluidHabits.Achievements.AchievementLevel,
+      from(ach_lvl in FluidHabits.Achievements.Level,
         where: ach_lvl.activity_id == ^id
       )
 
@@ -153,7 +153,7 @@ defmodule FluidHabits.Activities do
     most recent achievement in that streak. 
 
     A "streak" is defined as consecutive achievements (of any
-    `%AchievementLevel{}`) with no more than 1 calendar day between them,
+    `%Achievements.Level{}`) with no more than 1 calendar day between them,
     starting from yesterday at 00:00 _for the user's timezone_. This means that
     if there is no achievement today, a user can still have an active streak as
     long as they logged an achievement yesterday.
@@ -210,7 +210,7 @@ defmodule FluidHabits.Activities do
   end
 
   @doc """
-    Returns the maximum `%AchievementLevel{}` `value` per day, grouped by date
+    Returns the maximum `%Achievements.Level{}` `value` per day, grouped by date
     of entry, since a given datetime, localized to the user's timezone.
 
     Accepts the same options and uses the same defaults as `list_achievements_since/3`

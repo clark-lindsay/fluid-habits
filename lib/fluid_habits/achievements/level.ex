@@ -1,4 +1,4 @@
-defmodule FluidHabits.Achievements.AchievementLevel do
+defmodule FluidHabits.Achievements.Level do
   use FluidHabits.Schema
   import Ecto.Changeset
 
@@ -9,7 +9,7 @@ defmodule FluidHabits.Achievements.AchievementLevel do
 
     belongs_to :activity, FluidHabits.Activities.Activity
     belongs_to :group, FluidHabits.Achievements.Group
-    has_many :achievements, FluidHabits.Achievements.Achievement
+    has_many :achievements, FluidHabits.Achievements.Achievement, foreign_key: :achievement_level_id
 
     timestamps()
   end

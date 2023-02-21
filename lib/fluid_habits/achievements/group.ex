@@ -1,6 +1,6 @@
 defmodule FluidHabits.Achievements.Group do
   @moduledoc """
-      Organizational category for `AchievementLevel`s
+      Organizational category for `Achievements.Level`s
 
       e.g. If you have an `Activity` of "Fitness", you could have a `Group` for
       cardiovascular training and a `Group` for resistance training.
@@ -14,7 +14,7 @@ defmodule FluidHabits.Achievements.Group do
     field(:name, :string, null: false)
 
     belongs_to(:activity, FluidHabits.Activities.Activity)
-    has_many(:achievement_levels, FluidHabits.Achievements.AchievementLevel)
+    has_many(:achievement_levels, FluidHabits.Achievements.Level)
 
     timestamps()
   end

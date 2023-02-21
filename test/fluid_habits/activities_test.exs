@@ -136,7 +136,7 @@ defmodule FluidHabits.ActivitiesTest do
       assert end_date == most_recent.inserted_at
     end
 
-    test "scores_since/3 returns all `%AchievementLevel{}` `value`s grouped by their date, taking only the highest value per day" do
+    test "scores_since/3 returns all `%Achievements.Level{}` `value`s grouped by their date, taking only the highest value per day" do
       alias FluidHabits.AchievementLevelsFixtures
 
       activity = activity_fixture()
@@ -255,7 +255,6 @@ defmodule FluidHabits.ActivitiesTest do
         |> DateTime.new!(~T[04:00:00.000], "Japan")
 
       achievement_fixture(%{activity: activity, inserted_at: four_am_today_in_tokyo})
-      |> FluidHabits.Repo.preload(:achievement_level)
 
       refute Activities.has_logged_achievement_today?(activity)
     end

@@ -6,7 +6,7 @@ defmodule FluidHabits.Achievements.Achievement do
     timestamps()
 
     belongs_to :activity, FluidHabits.Activities.Activity
-    belongs_to :achievement_level, FluidHabits.Achievements.AchievementLevel
+    belongs_to :achievement_level, FluidHabits.Achievements.Level
   end
 
   def changeset(achievement, attrs) do

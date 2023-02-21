@@ -13,7 +13,7 @@ defmodule FluidHabits.Achievements do
   @doc """
   Creates an achievement.
 
-  Requires a valid `Activity` and a valid `AchievementLevel` that the 
+  Requires a valid `Activity` and a valid `Achievements.Level` that the 
   achievement will be associated to.
 
   ## Examples
@@ -61,7 +61,7 @@ defmodule FluidHabits.Achievements do
   end
 
   @doc """
-    Write a new Achievement `Group` to the database and associate any `AchievementLevel`s
+    Write a new `Achievements.Group` to the database and associate any `Achievements.Level`s
     identified in the `"achievement_level"` param to the new group, replacing whatever associated
     group they might currently have.
   """

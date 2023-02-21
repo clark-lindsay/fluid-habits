@@ -127,7 +127,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       {:ok, _live_view, html} =
         show_live
         |> form("#achievement-level-form",
-          achievement_level: %{description: "some description", name: "some name", value: 1}
+          level: %{description: "some description", name: "some name", value: 1}
         )
         |> render_submit()
         |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))

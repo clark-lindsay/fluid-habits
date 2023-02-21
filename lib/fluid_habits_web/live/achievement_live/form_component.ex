@@ -4,8 +4,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   import FluidHabitsWeb.Components.FormComponents
 
   alias FluidHabits.Achievements
-  alias FluidHabits.Achievements.AchievementLevel
-  alias FluidHabits.Achievements.Achievement
+  alias FluidHabits.Achievements.{Achievement, Level}
 
   @impl Phoenix.LiveComponent
   def update(%{activity: activity} = assigns, socket) do
@@ -122,7 +121,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
           form={f}
           field={:achievement_level_id}
           options={[
-            {"None", nil} | Enum.map(@achievement_level_options, &AchievementLevel.to_select_option/1)
+            {"None", nil} | Enum.map(@achievement_level_options, &Level.to_select_option/1)
           ]}
         />
 
