@@ -128,7 +128,7 @@ defmodule FluidHabits.Activities do
   **in the user's timezone**
   """
   @spec has_logged_achievement_today?(Activity.t()) :: boolean()
-  def has_logged_achievement_today?(activity = %Activity{}) do
+  def has_logged_achievement_today?(%Activity{} = activity) do
     user_timezone = Accounts.get_user!(activity.user_id).timezone
 
     start_of_day =

@@ -88,7 +88,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
          |> push_patch(to: socket.assigns.return_to)}
 
       {:error, reason} ->
-        IO.inspect(reason)
+        IO.warn(inspect(reason))
 
         {:noreply,
          socket
