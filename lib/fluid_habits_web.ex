@@ -102,8 +102,8 @@ defmodule FluidHabitsWeb do
       # use all Petal Components
       use PetalComponents
 
-      # import custom FormComponents
-      import FluidHabitsWeb.Components.FormComponents
+      # alias all components to reduce namespace clutter
+      alias FluidHabitsWeb.Components
     end
   end
 

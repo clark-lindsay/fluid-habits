@@ -15,7 +15,9 @@
   <%= password_input(f, :password_confirmation, required: true) %>
   <%= error_tag(f, :password_confirmation) %>
 
-  <.submit_button label="Reset password" phx_disable_with="Resetting..." />
+  <Components.Buttons.button type="submit" phx_disable_with="Resetting...">
+    Reset password
+  </Components.Buttons.button>
 </.form>
 
 <p>

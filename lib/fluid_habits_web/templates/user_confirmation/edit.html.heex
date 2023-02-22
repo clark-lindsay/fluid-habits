@@ -1,7 +1,9 @@
 <h1>Confirm account</h1>
 
 <.form :let={_f} for={:user} action={Routes.user_confirmation_path(@conn, :update, @token)}>
-  <.submit_button label="Confirm my account" phx_disable_with="Confirming..." />
+  <Components.Buttons.button type="submit" phx_disable_with="Confirming...">
+    Confirm my account
+  </Components.Buttons.button>
 </.form>
 
 <p>

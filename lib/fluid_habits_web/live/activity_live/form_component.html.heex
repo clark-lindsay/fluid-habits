@@ -11,6 +11,8 @@
 
     <.form_field type="text_input" form={f} field={:description} />
 
-    <.submit_button label="Save" phx_disable_with="Saving..." />
+    <Components.Buttons.button type="submit" phx_disable_with="Saving...">
+      Save
+    </Components.Buttons.button>
   </.form>
 </div>

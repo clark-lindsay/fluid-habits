@@ -29,7 +29,9 @@
       id="current_password_for_email"
     />
 
-    <.submit_button label="Change email" phx_disable_with="Changing email..." />
+    <Components.Buttons.button type="submit" phx_disable_with="Changing email...">
+      Change email
+    </Components.Buttons.button>
   </.form>
 
   <.h3>Change password</.h3>
@@ -72,7 +74,9 @@
       id="current_password_for_password"
     />
 
-    <.submit_button label="Change password" phx_disable_with="Changing password..." />
+    <Components.Buttons.button type="submit" phx_disable_with="Changing password...">
+      Change password
+    </Components.Buttons.button>
   </.form>
 
   <.h3>Change timezone</.h3>
@@ -99,6 +103,8 @@
       field={:timezone}
     />
 
-    <.submit_button label="Change timezone" phx_disable_with="Changing timezone..." />
+    <Components.Buttons.button type="submit" phx_disable_with="Changing timezone...">
+      Change timezone
+    </Components.Buttons.button>
   </.form>
 </.container>

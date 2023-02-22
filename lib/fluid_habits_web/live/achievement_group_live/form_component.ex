@@ -115,7 +115,9 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
         <.form_field_error form={f} field={:achievement_levels} class="mt-1" />
 
         <%= if (@has_confirmed_group_membership_changes) do %>
-          <.submit_button label="Save" phx_disable_with="Saving..." />
+          <Components.Buttons.button type="submit" phx_disable_with="Saving...">
+            Save
+          </Components.Buttons.button>
         <% else %>
           <.h3>Group Membership Changes</.h3>
           <%= for ach_lvl <- @achievement_levels, !is_nil(ach_lvl.group), ach_lvl.id in Enum.map(@changeset.changes.achievement_levels, & &1.data.id) do %>

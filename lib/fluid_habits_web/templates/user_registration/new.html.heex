@@ -12,7 +12,9 @@
 
     <.form_field form={f} type="password_input" field={:password} required={true} />
 
-    <.submit_button label="Register" phx_disable_with="Registering..." />
+    <Components.Buttons.button type="submit" phx_disable_with="Registering...">
+      Register
+    </Components.Buttons.button>
   </.form>
 
   <.link href={Routes.user_session_path(@conn, :new)}>

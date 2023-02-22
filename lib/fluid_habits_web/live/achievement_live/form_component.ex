@@ -1,8 +1,6 @@
 defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   use FluidHabitsWeb, :live_component
 
-  import FluidHabitsWeb.Components.FormComponents
-
   alias FluidHabits.Achievements
   alias FluidHabits.Achievements.{Achievement, Level}
 
@@ -78,22 +76,31 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
 
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"achievement" => achievement_params}, socket) do
-    case Achievements.create_achievement(
-           Map.put(achievement_params, "activity_id", socket.assigns.activity.id)
-         ) do
-      {:ok, _achievement_} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Achievement created successfully")
-         |> push_patch(to: socket.assigns.return_to)}
+    params = Map.put(achievement_params, "activity_id", socket.assigns.activity.id)
 
-      {:error, reason} ->
-        IO.warn(inspect(reason))
+    changeset =
+      %Achievement{}
+      |> Achievement.changeset(params)
+      |> Map.put(:action, :insert)
 
-        {:noreply,
-         socket
-         |> put_flash(:error, "Failed to create achievement with error: #{inspect(reason)}")
-         |> push_patch(to: socket.assigns.return_to)}
+    if(changeset.valid?) do
+      case Achievements.create_achievement(params) do
+        {:ok, _achievement_} ->
+          {:noreply,
+           socket
+           |> put_flash(:info, "Achievement created successfully")
+           |> push_patch(to: socket.assigns.return_to)}
+
+        {:error, reason} ->
+          IO.warn(inspect(reason))
+
+          {:noreply,
+           socket
+           |> put_flash(:error, "Failed to create achievement with error: #{inspect(reason)}")
+           |> push_patch(to: socket.assigns.return_to)}
+      end
+    else
+      {:noreply, assign(socket, changeset: changeset)}
     end
   end
 
@@ -125,7 +132,9 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
           ]}
         />
 
-        <.submit_button label="Save" phx_disable_with="Saving..." />
+        <Components.Buttons.button type="submit" phx_disable_with="Saving...">
+          Save
+        </Components.Buttons.button>
       </.form>
     </div>
     """
