@@ -11,7 +11,7 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
     import Ecto.Query, only: [from: 2]
 
     achievement_levels =
-      FluidHabits.Activities.list_achievement_levels(activity)
+      (assigns.achievement_levels || FluidHabits.Activities.list_achievement_levels(activity))
       |> FluidHabits.Repo.preload(group: from(g in Group, select: %{name: g.name}))
 
     {:ok,
