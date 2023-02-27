@@ -24,7 +24,7 @@ defmodule FluidHabitsWeb.ConnCase do
       import Phoenix.ConnTest
       import FluidHabitsWeb.ConnCase
 
-      alias FluidHabitsWeb.Router.Helpers, as: Routes
+      use FluidHabitsWeb, :verified_routes
 
       # The default endpoint for testing
       @endpoint FluidHabitsWeb.Endpoint

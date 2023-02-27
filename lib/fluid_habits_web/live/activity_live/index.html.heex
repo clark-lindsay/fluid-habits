@@ -8,7 +8,7 @@
       id={@activity.id || :new}
       action={@live_action}
       activity={@activity}
-      return_to={Routes.activity_index_path(@socket, :index)}
+      return_to={~p"/activities"}
     />
   </.modal>
 <% end %>
@@ -28,7 +28,7 @@
         <.tr id={"activity-#{activity.id}"}>
           <.td>
             <.link
-              navigate={Routes.activity_show_path(@socket, :show, activity)}
+              navigate={~p"/activities/#{activity.id}"}
               class="text-primary-400 hover:text-primary-600"
             >
               <%= activity.name %>
@@ -40,7 +40,7 @@
             <.button
               label="Edit"
               link_type="live_patch"
-              to={Routes.activity_index_path(@socket, :edit, activity)}
+              to={~p"/activities/#{activity.id}/edit"}
               color="primary"
               class="m-1"
             />
@@ -59,10 +59,5 @@
     </div>
   </.table>
 
-  <.button
-    label="New Activity"
-    link_type="live_patch"
-    to={Routes.activity_index_path(@socket, :new)}
-    color="primary"
-  />
+  <.button label="New Activity" link_type="live_patch" to={~p"/activities/new"} color="primary" />
 </.container>

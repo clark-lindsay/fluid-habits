@@ -72,7 +72,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
   @impl Phoenix.LiveView
   def handle_event("close_modal", _, socket) do
-    route_to_show = Routes.activity_show_path(socket, :show, socket.assigns.activity)
+    route_to_show = ~p"/activities/#{socket.assigns.activity.id}"
 
     {:noreply, push_patch(socket, to: route_to_show)}
   end

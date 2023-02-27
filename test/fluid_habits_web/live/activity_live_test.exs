@@ -18,19 +18,19 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     setup [:create_activity, :register_and_log_in_user]
 
     test "lists all activities", %{conn: conn, activity: activity} do
-      {:ok, _index_live, html} = live(conn, Routes.activity_index_path(conn, :index))
+      {:ok, _index_live, html} = live(conn, ~p"/activities")
 
       assert html =~ "Listing Activities"
       assert html =~ activity.description
     end
 
     test "saves new activity", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.activity_index_path(conn, :index))
+      {:ok, index_live, _html} = live(conn, ~p"/activities")
 
       assert index_live |> element("a", "New Activity") |> render_click() =~
                "New Activity"
 
-      assert_patch(index_live, Routes.activity_index_path(conn, :new))
+      assert_patch(index_live, ~p"/activities/new")
 
       assert index_live
              |> form("#activity-form", activity: @invalid_attrs)
@@ -40,21 +40,21 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         index_live
         |> form("#activity-form", activity: @create_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_index_path(conn, :index))
+        |> follow_redirect(conn, ~p"/activities")
 
       assert html =~ "Activity created successfully"
       assert html =~ "some description"
     end
 
     test "updates activity in listing", %{conn: conn, activity: activity} do
-      {:ok, index_live, _html} = live(conn, Routes.activity_index_path(conn, :index))
+      {:ok, index_live, _html} = live(conn, ~p"/activities")
 
       assert index_live
              |> element("#activity-#{activity.id} a", ~r/^\s+Edit\s+$/)
              |> render_click() =~
                "Edit Activity"
 
-      assert_patch(index_live, Routes.activity_index_path(conn, :edit, activity))
+      assert_patch(index_live, ~p"/activities/#{activity.id}/edit")
 
       assert index_live
              |> form("#activity-form", activity: @invalid_attrs)
@@ -64,14 +64,14 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         index_live
         |> form("#activity-form", activity: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_index_path(conn, :index))
+        |> follow_redirect(conn, ~p"/activities")
 
       assert html =~ "Activity updated successfully"
       assert html =~ "some updated description"
     end
 
     test "deletes activity in listing", %{conn: conn, activity: activity} do
-      {:ok, index_live, _html} = live(conn, Routes.activity_index_path(conn, :index))
+      {:ok, index_live, _html} = live(conn, ~p"/activities")
 
       assert index_live
              |> element("#activity-#{activity.id} button", ~r/^\s+Delete\s+$/)
@@ -86,21 +86,21 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     setup [:set_mox_from_context, :verify_on_exit!]
 
     test "displays activity", %{conn: conn, activity: activity} do
-      {:ok, _show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, _show_live, html} = live(conn, ~p"/activities/#{activity.id}")
 
       assert html =~ "Show Activity"
       assert html =~ activity.name
     end
 
     test "updates activity within modal", %{conn: conn, activity: activity} do
-      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, show_live, _html} = live(conn, ~p"/activities/#{activity.id}")
 
       assert show_live
              |> element("[href=\"/activities/#{activity.id}/show/edit\"]")
              |> render_click() =~
                "Edit Activity"
 
-      assert_patch(show_live, Routes.activity_show_path(conn, :edit, activity))
+      assert_patch(show_live, ~p"/activities/#{activity.id}/show/edit")
 
       assert show_live
              |> form("#activity-form", activity: @invalid_attrs)
@@ -110,19 +110,19 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         show_live
         |> form("#activity-form", activity: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+        |> follow_redirect(conn, ~p"/activities/#{activity.id}")
 
       assert html =~ "Activity updated successfully"
       assert html =~ @update_attrs.name
     end
 
     test "adds new achievement level with modal", %{conn: conn, activity: activity} do
-      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, show_live, _html} = live(conn, ~p"/activities/#{activity.id}")
 
       assert show_live |> element("a", "Add Achievement Level") |> render_click() =~
                "Add Achievement Level"
 
-      assert_patch(show_live, Routes.activity_show_path(conn, :add_ach_lvl, activity))
+      assert_patch(show_live, ~p"/activities/#{activity.id}/show/add-ach-lvl")
 
       {:ok, _live_view, html} =
         show_live
@@ -130,7 +130,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
           level: %{description: "some description", name: "some name", value: 1}
         )
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+        |> follow_redirect(conn, ~p"/activities/#{activity.id}")
 
       assert html =~ "Achievement Level created successfully"
     end
@@ -148,12 +148,12 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       activity = FluidHabits.Repo.preload(activity, :achievement_levels)
 
-      {:ok, show_live, _html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, show_live, _html} = live(conn, ~p"/activities/#{activity.id}")
 
       assert show_live |> element("a", "Add Achievement Group") |> render_click() =~
                "Add Achievement Group"
 
-      assert_patch(show_live, Routes.activity_show_path(conn, :add_ach_group, activity))
+      assert_patch(show_live, ~p"/activities/#{activity.id}/show/add-ach-group")
 
       {:ok, _live_view, html} =
         show_live
@@ -165,7 +165,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
           }
         )
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_show_path(conn, :show, activity))
+        |> follow_redirect(conn, ~p"/activities/#{activity.id}")
 
       assert html =~ "Achievement Group created successfully"
     end
@@ -188,7 +188,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
       end
 
-      {:ok, show_live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, show_live, html} = live(conn, ~p"/activities/#{activity.id}")
 
       refute Floki.parse_document!(html)
              |> Floki.find("span")
@@ -197,7 +197,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       assert show_live |> element("a", ~r/^\s+Add Achievement\s+$/) |> render_click() =~
                "Add Achievement"
 
-      assert_patch(show_live, Routes.activity_show_path(conn, :add_achievement, activity))
+      assert_patch(show_live, ~p"/activities/#{activity.id}/show/add-achievement")
 
       show_live
       |> form("#achievement-form",
@@ -205,7 +205,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       )
       |> render_submit()
 
-      assert_patch(show_live, Routes.activity_show_path(conn, :show, activity))
+      assert_patch(show_live, ~p"/activities/#{activity.id}")
 
       assert render(show_live) =~ "Achievement created successfully"
       assert_receive({:broadcast, ^ref})
@@ -215,7 +215,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       conn: conn,
       activity: activity
     } do
-      {:ok, _live, html} = live(conn, Routes.activity_show_path(conn, :show, activity))
+      {:ok, _live, html} = live(conn, ~p"/activities/#{activity.id}")
 
       add_achievement_button =
         Floki.parse_document!(html)

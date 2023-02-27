@@ -3,7 +3,8 @@ defmodule FluidHabitsWeb.UserAuth do
   import Phoenix.Controller
 
   alias FluidHabits.Accounts
-  alias FluidHabitsWeb.Router.Helpers, as: Routes
+
+  use FluidHabitsWeb, :verified_routes
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -134,7 +135,7 @@ defmodule FluidHabitsWeb.UserAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: Routes.user_session_path(conn, :new))
+      |> redirect(to: ~p"/users/log_in")
       |> halt()
     end
   end

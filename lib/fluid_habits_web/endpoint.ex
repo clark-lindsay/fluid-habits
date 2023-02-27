@@ -7,7 +7,8 @@ defmodule FluidHabitsWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_fluid_habits_key",
-    signing_salt: "kQv2shCw"
+    signing_salt: "kQv2shCw",
+    same_site: "Lax"
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
@@ -20,7 +21,7 @@ defmodule FluidHabitsWeb.Endpoint do
     at: "/",
     from: :fluid_habits,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt)
+    only: FluidHabitsWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

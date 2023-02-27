@@ -1,3 +1,3 @@
 defmodule FluidHabitsWeb.UserSessionView do
-  use FluidHabitsWeb, :view
+  use FluidHabitsWeb, :html
 end

@@ -1,3 +1,3 @@
 defmodule FluidHabitsWeb.UserRegistrationView do
-  use FluidHabitsWeb, :view
+  use FluidHabitsWeb, :html
 end

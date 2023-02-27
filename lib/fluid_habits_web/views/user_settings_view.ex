@@ -1,5 +1,5 @@
 defmodule FluidHabitsWeb.UserSettingsView do
-  use FluidHabitsWeb, :view
+  use FluidHabitsWeb, :html
 
   defp timezone_options() do
     Timex.timezones()

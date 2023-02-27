@@ -1,17 +1,19 @@
 <%= if @live_action in ~w(edit add_achievement add_ach_lvl add_ach_group)a do %>
   <.modal title={@page_title}>
     <.live_component
-      module={case @live_action do
-         :edit -> FluidHabitsWeb.ActivityLive.FormComponent
-         :add_achievement -> FluidHabitsWeb.AchievementLive.FormComponent
-         :add_ach_lvl -> FluidHabitsWeb.AchievementLevelLive.FormComponent
-         :add_ach_group -> FluidHabitsWeb.AchievementGroupLive.FormComponent
-      end}
+      module={
+        case @live_action do
+          :edit -> FluidHabitsWeb.ActivityLive.FormComponent
+          :add_achievement -> FluidHabitsWeb.AchievementLive.FormComponent
+          :add_ach_lvl -> FluidHabitsWeb.AchievementLevelLive.FormComponent
+          :add_ach_group -> FluidHabitsWeb.AchievementGroupLive.FormComponent
+        end
+      }
       id={@activity.id}
       action={@live_action}
       activity={@activity}
       achievement_levels={@achievement_levels}
-      return_to={Routes.activity_show_path(@socket, :show, @activity)}
+      return_to={~p"/activities/#{@activity.id}"}
     />
   </.modal>
 <% end %>
@@ -19,7 +21,7 @@
 <div class="flex flex-col justify-start">
   <div class="flex flex-row gap-2">
     <.h2 class="!m-0"><%= @activity.name %></.h2>
-    <.link patch={Routes.activity_show_path(@socket, :edit, @activity)}>
+    <.link patch={~p"/activities/#{@activity.id}/show/edit"}>
       <div class="flex items-center  text-gray-600 hover:text-secondary-400">
         <.icon name={:pencil} class="inline h-4 w-4 mr-1" />
       </div>
@@ -55,7 +57,7 @@
         <.button
           label="Add Achievement"
           link_type="live_patch"
-          to={Routes.activity_show_path(@socket, :add_achievement, @activity)}
+          to={~p"/activities/#{@activity.id}/show/add-achievement"}
           color="primary"
         />
       <% else %>
@@ -66,7 +68,7 @@
         <.button
           label="Add Achievement Level"
           link_type="live_patch"
-          to={Routes.activity_show_path(@socket, :add_ach_lvl, @activity)}
+          to={~p"/activities/#{@activity.id}/show/add-ach-lvl"}
           color="primary"
           class="grow"
         />
@@ -74,7 +76,7 @@
         <.button
           label="Add Achievement Group"
           link_type="live_patch"
-          to={Routes.activity_show_path(@socket, :add_ach_group, @activity)}
+          to={~p"/activities/#{@activity.id}/show/add-ach-group"}
           color="primary"
           class="grow"
         />

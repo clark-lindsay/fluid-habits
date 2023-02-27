@@ -1,7 +1,7 @@
 <.container class="my-4">
   <.h2>Log in</.h2>
 
-  <.form :let={f} for={@conn} action={Routes.user_session_path(@conn, :create)} as={:user}>
+  <.form :let={f} for={@conn} action={~p"/users/log_in"} as={:user}>
     <%= if @error_message do %>
       <div class="alert alert-danger">
         <p><%= @error_message %></p>
@@ -25,12 +25,12 @@
   </.form>
 
   <div>
-    <.link href={Routes.user_registration_path(@conn, :new)}>
+    <.link href={~p"/users/register"}>
       <div class="flex items-center  text-gray-600 hover:text-secondary-400">
         <.icon name={:user} class="inline h-4 w-4 mr-1" />Register
       </div>
     </.link>
-    <.link href={Routes.user_reset_password_path(@conn, :new)}>
+    <.link href={~p"/users/reset_password"}>
       <div class="flex items-center  text-gray-600 hover:text-secondary-400">
         <.icon name={:question_mark_circle} class="inline h-4 w-4 mr-1" />Forgot your password?
       </div>

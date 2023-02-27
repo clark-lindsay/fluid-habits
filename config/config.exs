@@ -18,7 +18,10 @@ config :fluid_habits,
 # Configures the endpoint
 config :fluid_habits, FluidHabitsWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: FluidHabitsWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [
+    formats: [html: FluidHabitsWeb.ErrorHTML, json: FluidHabitsWeb.ErrorJSON],
+    layout: false
+  ],
   pubsub_server: FluidHabits.PubSub,
   live_view: [signing_salt: "cfIvt8RW"]
 

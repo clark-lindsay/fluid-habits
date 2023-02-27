@@ -50,7 +50,7 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
 
   @impl Phoenix.LiveView
   def handle_event("close_modal", _, socket) do
-    route_to_show = Routes.activity_index_path(socket, :index)
+    route_to_show = ~p"/activities"
 
     {:noreply, push_patch(socket, to: route_to_show)}
   end

@@ -11,9 +11,11 @@ defmodule FluidHabitsWeb.UserResetPasswordController do
 
   def create(conn, %{"user" => %{"email" => email}}) do
     if user = Accounts.get_user_by_email(email) do
+      user_token = get_session(conn, :user_token)
+
       Accounts.deliver_user_reset_password_instructions(
         user,
-        &Routes.user_reset_password_url(conn, :edit, &1)
+        fn _ -> url(~p"/users/reset_password/#{user_token}") end
       )
     end
 
@@ -36,7 +38,7 @@ defmodule FluidHabitsWeb.UserResetPasswordController do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Password reset successfully.")
-        |> redirect(to: Routes.user_session_path(conn, :new))
+        |> redirect(to: ~p"/users/log_in")
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)

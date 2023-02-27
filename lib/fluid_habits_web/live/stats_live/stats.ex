@@ -100,7 +100,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
   @impl Phoenix.LiveView
   def handle_params(_, _, socket) do
-    socket = Phoenix.LiveView.push_patch(socket, to: Routes.stats_index_path(socket, :index))
+    socket = Phoenix.LiveView.push_patch(socket, to: ~p"/stats")
 
     {:noreply, socket}
   end
@@ -126,15 +126,16 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     socket = assign(socket, changeset: changeset)
 
     if changeset.valid? do
+      query_params = %{
+        granularity: granularity,
+        activities: activity_ids,
+        from: from,
+        until: until
+      }
+
       socket =
         Phoenix.LiveView.push_patch(socket,
-          to:
-            Routes.stats_index_path(socket, :index,
-              granularity: granularity,
-              activities: activity_ids,
-              from: from,
-              until: until
-            )
+          to: ~p"/stats?#{query_params}"
         )
 
       {:noreply, socket}

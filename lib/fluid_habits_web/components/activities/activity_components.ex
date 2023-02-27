@@ -1,5 +1,5 @@
 defmodule FluidHabitsWeb.Components.ActivityComponents do
-  use FluidHabitsWeb, :component
+  use FluidHabitsWeb, :html
 
   def activity_card(
         %{activity: _activity, streak_includes_today?: streak_includes_today?, timezone: timezone} =

@@ -1,12 +1,12 @@
 defmodule FluidHabitsWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
-  as controllers, views, channels and so on.
+  as controllers, components, channels and so on.
 
   This can be used in your application as:
 
       use FluidHabitsWeb, :controller
-      use FluidHabitsWeb, :view
+      use FluidHabitsWeb, :html
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -17,58 +17,11 @@ defmodule FluidHabitsWeb do
   and import those modules here.
   """
 
-  def controller do
-    quote do
-      use Phoenix.Controller, namespace: FluidHabitsWeb
-
-      import Plug.Conn
-      import FluidHabitsWeb.Gettext
-      alias FluidHabitsWeb.Router.Helpers, as: Routes
-    end
-  end
-
-  def view do
-    quote do
-      use Phoenix.View,
-        root: "lib/fluid_habits_web/templates",
-        namespace: FluidHabitsWeb
-
-      # Import convenience functions from controllers
-      import Phoenix.Controller,
-        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
-
-      # Include shared imports and aliases for views
-      unquote(view_helpers())
-    end
-  end
-
-  def live_view do
-    quote do
-      use Phoenix.LiveView,
-        layout: {FluidHabitsWeb.LayoutView, :live}
-
-      unquote(view_helpers())
-    end
-  end
-
-  def live_component do
-    quote do
-      use Phoenix.LiveComponent
-
-      unquote(view_helpers())
-    end
-  end
-
-  def component do
-    quote do
-      use Phoenix.Component
-
-      unquote(view_helpers())
-    end
-  end
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def router do
     quote do
+      # TODO: , helpers: false
       use Phoenix.Router
 
       import Plug.Conn
@@ -80,30 +33,84 @@ defmodule FluidHabitsWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import FluidHabitsWeb.Gettext
     end
   end
 
-  defp view_helpers do
+  def controller do
+    quote do
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: FluidHabitsWeb.Layouts]
+
+      import Plug.Conn
+      import FluidHabitsWeb.Gettext
+      # TODO: delete this line
+      alias FluidHabitsWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
+    end
+  end
+
+  def live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {FluidHabitsWeb.Layouts, :app}
+
+      unquote(html_helpers())
+    end
+  end
+
+  def live_component do
+    quote do
+      use Phoenix.LiveComponent
+
+      unquote(html_helpers())
+    end
+  end
+
+  def html do
+    quote do
+      use Phoenix.Component
+
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      # Include general helpers for rendering HTML
+      unquote(html_helpers())
+    end
+  end
+
+  defp html_helpers do
     quote do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
-
-      # Import helpers and foundational building blocks for components
-      import Phoenix.Component
-
-      import FluidHabitsWeb.ErrorHelpers
+      # Core UI components and translation
+      import FluidHabitsWeb.CoreComponents
       import FluidHabitsWeb.Gettext
-      alias FluidHabitsWeb.Router.Helpers, as: Routes
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+
+      # Route generation with the `~p` sigil
+      unquote(verified_routes())
 
       # use all Petal Components
       use PetalComponents
+      # alias FluidHabitsWeb.PC
 
       # alias all components to reduce namespace clutter
       alias FluidHabitsWeb.Components
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: FluidHabitsWeb.Endpoint,
+        router: FluidHabitsWeb.Router,
+        statics: FluidHabitsWeb.static_paths()
     end
   end
 

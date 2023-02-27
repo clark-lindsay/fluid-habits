@@ -14,13 +14,14 @@ defmodule FluidHabitsWeb.UserSettingsController do
   def update(conn, %{"action" => "update_email"} = params) do
     %{"current_password" => password, "user" => user_params} = params
     user = conn.assigns.current_user
+    user_token = get_session(conn, :user_token)
 
     case Accounts.apply_user_email(user, password, user_params) do
       {:ok, applied_user} ->
         Accounts.deliver_update_email_instructions(
           applied_user,
           user.email,
-          &Routes.user_settings_url(conn, :confirm_email, &1)
+          fn _ -> url(~p"/users/settings/confirm_email/#{user_token}") end
         )
 
         conn
@@ -28,7 +29,7 @@ defmodule FluidHabitsWeb.UserSettingsController do
           :info,
           "A link to confirm your email change has been sent to the new address."
         )
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
 
       {:error, changeset} ->
         render(conn, "edit.html", email_changeset: changeset)
@@ -43,7 +44,7 @@ defmodule FluidHabitsWeb.UserSettingsController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Password updated successfully.")
-        |> put_session(:user_return_to, Routes.user_settings_path(conn, :edit))
+        |> put_session(:user_return_to, ~p"/users/settings")
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
@@ -59,7 +60,7 @@ defmodule FluidHabitsWeb.UserSettingsController do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Timezone updated successfully.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
 
       {:error, changeset} ->
         render(conn, "edit.html", timezone_changeset: changeset)
@@ -71,12 +72,12 @@ defmodule FluidHabitsWeb.UserSettingsController do
       :ok ->
         conn
         |> put_flash(:info, "Email changed successfully.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
 
       :error ->
         conn
         |> put_flash(:error, "Email change link is invalid or it has expired.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
     end
   end
 
