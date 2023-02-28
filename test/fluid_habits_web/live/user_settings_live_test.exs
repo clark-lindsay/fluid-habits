@@ -158,6 +158,44 @@ defmodule FluidHabitsWeb.UserSettingsLiveTest do
     end
   end
 
+  describe "change timezone form" do
+    setup %{conn: conn} do
+      user = user_fixture()
+
+      %{conn: log_in_user(conn, user)}
+    end
+
+    test "updates the user timezone", %{conn: conn} do
+      timezone = Timex.timezones() |> Enum.random()
+
+      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+
+      form =
+        form(lv, "#timezone_form", %{
+          "timezone" => timezone
+        })
+
+      result = render_submit(form)
+
+      assert result =~ "Timezone updated successfully."
+    end
+
+    test "renders errors with invalid data (phx-change)", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+
+      result =
+        lv
+        |> element("#timezone_form")
+        |> render_change(%{
+          "action" => "validate_timezone",
+          "timezone" => "invalid/not_real"
+        })
+
+      assert result =~ "Change Timezone"
+      assert result =~ ~r/must be included.*Olson database/
+    end
+  end
+
   describe "confirm email" do
     setup %{conn: conn} do
       user = user_fixture()

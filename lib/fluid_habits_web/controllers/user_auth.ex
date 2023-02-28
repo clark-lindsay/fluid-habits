@@ -109,7 +109,7 @@ defmodule FluidHabitsWeb.UserAuth do
     end
   end
 
-@doc"""
+  @doc """
   Handles mounting and authenticating the current_user in LiveViews.
 
   ## `on_mount` arguments

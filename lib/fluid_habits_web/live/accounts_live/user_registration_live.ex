@@ -3,6 +3,7 @@ defmodule FluidHabitsWeb.UserRegistrationLive do
 
   alias FluidHabits.Accounts
   alias FluidHabits.Accounts.User
+  alias FluidHabitsWeb.Components.Forms.Inputs
 
   def render(assigns) do
     ~H"""
@@ -12,7 +13,7 @@ defmodule FluidHabitsWeb.UserRegistrationLive do
         <:subtitle>
           Already registered?
           <.link navigate={~p"/users/log_in"} class="font-semibold text-brand hover:underline">
-            Sign in
+            Log in
           </.link>
           to your account now.
         </:subtitle>
@@ -33,6 +34,13 @@ defmodule FluidHabitsWeb.UserRegistrationLive do
 
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
+        <.input
+          field={@form[:timezone]}
+          type="select"
+          label="Timezone"
+          options={Inputs.timezone_options()}
+          required
+        />
 
         <:actions>
           <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
@@ -72,6 +80,7 @@ defmodule FluidHabitsWeb.UserRegistrationLive do
 
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset = Accounts.change_user_registration(%User{}, user_params)
+
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
 

@@ -171,7 +171,11 @@ defmodule FluidHabits.Accounts do
     {encoded_token, user_token} = UserToken.build_email_token(user, "change:#{current_email}")
 
     Repo.insert!(user_token)
-    UserNotifier.deliver_user_update_email_instructions(user, update_email_url_fun.(encoded_token))
+
+    UserNotifier.deliver_user_update_email_instructions(
+      user,
+      update_email_url_fun.(encoded_token)
+    )
   end
 
   @doc """

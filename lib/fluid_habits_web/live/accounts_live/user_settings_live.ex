@@ -2,6 +2,7 @@ defmodule FluidHabitsWeb.UserSettingsLive do
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.Accounts
+  alias FluidHabitsWeb.Components.Forms.Inputs
 
   def render(assigns) do
     ~H"""
@@ -59,6 +60,32 @@ defmodule FluidHabitsWeb.UserSettingsLive do
         <.button phx-disable-with="Changing...">Change Password</.button>
       </:actions>
     </.simple_form>
+
+    <.header>Change Timezone</.header>
+
+    <.simple_form
+      for={@timezone_form}
+      id="timezone_form"
+      phx-change="validate_timezone"
+      phx-submit="update_timezone"
+    >
+      <.input
+        field={@timezone_form[:timezone]}
+        name="timezone"
+        type="select"
+        label="Timezone"
+        id="timezone_input"
+        options={Inputs.timezone_options()}
+        value={@current_user.timezone}
+        required
+      />
+
+      <:actions>
+        <Components.Buttons.button type="submit" phx_disable_with="Changing timezone...">
+          Change timezone
+        </Components.Buttons.button>
+      </:actions>
+    </.simple_form>
     """
   end
 
@@ -79,6 +106,7 @@ defmodule FluidHabitsWeb.UserSettingsLive do
     user = socket.assigns.current_user
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
+    timezone_changeset = Accounts.User.timezone_changeset(user, %{})
 
     socket =
       socket
@@ -87,6 +115,7 @@ defmodule FluidHabitsWeb.UserSettingsLive do
       |> assign(:current_email, user.email)
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
+      |> assign(:timezone_form, to_form(timezone_changeset))
       |> assign(:trigger_submit, false)
 
     {:ok, socket}
@@ -151,6 +180,31 @@ defmodule FluidHabitsWeb.UserSettingsLive do
 
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
+    end
+  end
+
+  def handle_event("validate_timezone", params, socket) do
+    timezone_form =
+      socket.assigns.current_user
+      |> Accounts.User.timezone_changeset(params)
+      |> Map.put(:action, :validate)
+      |> to_form()
+
+    {:noreply, assign(socket, timezone_form: timezone_form)}
+  end
+
+  def handle_event("update_timezone", params, socket) do
+    user = socket.assigns.current_user
+
+    case Accounts.update_user_timezone(user, params) do
+      {:ok, user} ->
+        {:noreply,
+         socket
+         |> assign(:current_user, user)
+         |> put_flash(:info, "Timezone updated successfully.")}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, :timezone_form, to_form(Map.put(changeset, :action, :insert)))}
     end
   end
 end

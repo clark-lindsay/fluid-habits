@@ -40,6 +40,36 @@
               </li>
             <% end %>
           </ul>
+          <div class="flex flex-col justify-end">
+            <%= if @current_user do %>
+              <div class="text-gray-700"><%= @current_user.email %></div>
+              <div class="flex justify-end">
+                <.link href={~p"/users/settings"} class="grow-0">
+                  <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                    <.icon name={:cog} class="inline h-4 w-4 mr-1" />Settings
+                  </div>
+                </.link>
+              </div>
+              <div class="flex justify-end">
+                <.link href={~p"/users/log_out"} method="delete">
+                  <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                    <.icon name={:arrow_left_on_rectangle} class="inline h-4 w-4 mr-1" />Log out
+                  </div>
+                </.link>
+              </div>
+            <% else %>
+              <.link href={~p"/users/register"}>
+                <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                  <.icon name={:user} class="inline h-4 w-4 mr-1" />Register
+                </div>
+              </.link>
+              <.link href={~p"/users/log_in"}>
+                <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                  <.icon name={:lock_open} class="inline h-4 w-4 mr-1" />Log In
+                </div>
+              </.link>
+            <% end %>
+          </div>
         </nav>
       </.container>
     </header>
