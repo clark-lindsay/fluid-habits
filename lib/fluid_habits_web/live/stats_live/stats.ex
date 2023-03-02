@@ -8,7 +8,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     current_user = Accounts.get_user_by_session_token(user_token)
 
     if(connected?(socket)) do
-      Phoenix.PubSub.subscribe(FluidHabits.PubSub, "achievement")
+      Phoenix.PubSub.subscribe(FluidHabits.PubSub, "user:#{current_user.id}")
     end
 
     socket =
@@ -150,7 +150,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   end
 
   @impl Phoenix.LiveView
-  def handle_info({:create, %{achievement: %{activity: %{user: user}}}}, socket) do
+  def handle_info({:create_achievement, %{achievement: %{activity: %{user: user}}}}, socket) do
     if user.id == socket.assigns.current_user.id do
       # could find the correct interval, if it exists in the current set, and update the score
       # just going to take it easy for now and re-calculate all scores
@@ -158,10 +158,13 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       %{granularity: granularity, activities: activity_ids, from: from, until: until} =
         socket.assigns.changeset.changes
 
+      {:ok, from_date} = Date.from_iso8601(from)
+      {:ok, until_date} = Date.from_iso8601(until)
+
       intervals =
         FluidHabits.DateTime.split_into_intervals(
-          from,
-          until,
+          Timex.to_datetime(from_date, user.timezone),
+          Timex.to_datetime(until_date, user.timezone),
           to_granularity_atom(granularity)
         )
 
@@ -300,10 +303,10 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     }
 
     is_valid_iso_date? = fn field, date_str ->
-      if Timex.validate_format(date_str) do
+      with {:ok, _date} <- Date.from_iso8601(date_str) do
         []
       else
-        [{field, "must be a valid date format"}]
+        _ -> [{field, "must be a valid date format"}]
       end
     end
 

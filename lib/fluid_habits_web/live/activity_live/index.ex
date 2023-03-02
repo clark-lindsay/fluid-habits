@@ -1,18 +1,19 @@
 defmodule FluidHabitsWeb.ActivityLive.Index do
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.Activities.Activity
+  alias FluidHabits.Activities.{Activity, ActivityQueries}
   alias FluidHabits.Repo
 
   @impl true
   def mount(_params, session, socket) do
-    # get user by session token, store in socket
-
     user = FluidHabits.Accounts.get_user_by_session_token(session["user_token"])
 
     {:ok,
      assign(socket,
-       activities: Repo.all(Activity),
+       activities:
+         Activity
+         |> ActivityQueries.for_user(user)
+         |> Repo.all(),
        current_user: user
      )}
   end

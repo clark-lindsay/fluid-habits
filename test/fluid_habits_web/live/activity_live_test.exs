@@ -9,15 +9,15 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
   @update_attrs %{description: "some updated description", name: "some updated name"}
   @invalid_attrs %{description: nil, name: nil}
 
-  defp create_activity(_) do
-    activity = activity_fixture()
-    %{activity: activity}
-  end
-
   describe "Index" do
-    setup [:create_activity, :register_and_log_in_user]
+    setup context do
+      %{user: user} = login_context = register_and_log_in_user(context)
+      activity = activity_fixture(user: user)
 
-    test "lists all activities", %{conn: conn, activity: activity} do
+      Map.put(login_context, :activity, activity)
+    end
+
+    test "lists all activities for the current user", %{conn: conn, activity: activity} do
       {:ok, _index_live, html} = live(conn, ~p"/activities")
 
       assert html =~ "Listing Activities"
@@ -82,7 +82,12 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
   end
 
   describe "Show" do
-    setup [:create_activity, :register_and_log_in_user]
+    setup context do
+      %{user: user} = login_context = register_and_log_in_user(context)
+      activity = activity_fixture(user: user)
+
+      Map.put(login_context, :activity, activity)
+    end
     setup [:set_mox_from_context, :verify_on_exit!]
 
     test "displays activity", %{conn: conn, activity: activity} do

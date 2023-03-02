@@ -46,8 +46,8 @@ defmodule FluidHabits.Achievements do
 
         Broadcaster.broadcast(
           FluidHabits.PubSub,
-          "achievement",
-          {:create,
+          "user:#{achievement.activity.user_id}",
+          {:create_achievement,
            %{
              achievement: achievement
            }}

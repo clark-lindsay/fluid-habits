@@ -9,12 +9,11 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
   @impl Phoenix.LiveView
   def mount(_params, %{"user_token" => user_token} = _session, socket) do
-    if connected?(socket) do
-      PubSub.subscribe(FluidHabits.PubSub, "achievement")
-      PubSub.subscribe(FluidHabits.PubSub, "achievement_metadata")
-    end
-
     current_user = Accounts.get_user_by_session_token(user_token)
+
+    if connected?(socket) do
+      PubSub.subscribe(FluidHabits.PubSub, "user:#{current_user.id}")
+    end
 
     socket = assign(socket, :current_user, current_user)
     {:ok, socket}
@@ -78,7 +77,10 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   end
 
   @impl Phoenix.LiveView
-  def handle_info({:create, %{achievement: %{activity: %{user: user}} = achievement}}, socket) do
+  def handle_info(
+        {:create_achievement, %{achievement: %{activity: %{user: user}} = achievement}},
+        socket
+      ) do
     if user.id == socket.assigns.current_user.id do
       achievement = FluidHabits.Repo.preload(achievement, :achievement_level)
 
