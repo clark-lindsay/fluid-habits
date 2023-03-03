@@ -29,15 +29,18 @@ defmodule FluidHabitsWeb.Router do
   scope "/activities", FluidHabitsWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live "/", ActivityLive.Index, :index
-    live "/new", ActivityLive.Index, :new
-    live "/:id/edit", ActivityLive.Index, :edit
+    live_session :default,
+      on_mount: [{FluidHabitsWeb.UserAuth, :ensure_authenticated}] do
+      live "/", ActivityLive.Index, :index
+      live "/new", ActivityLive.Index, :new
+      live "/:id/edit", ActivityLive.Index, :edit
 
-    live "/:id", ActivityLive.Show, :show
-    live "/:id/show/edit", ActivityLive.Show, :edit
-    live "/:id/show/add-ach-lvl", ActivityLive.Show, :add_ach_lvl
-    live "/:id/show/add-achievement", ActivityLive.Show, :add_achievement
-    live "/:id/show/add-ach-group", ActivityLive.Show, :add_ach_group
+      live "/:id", ActivityLive.Show, :show
+      live "/:id/show/edit", ActivityLive.Show, :edit
+      live "/:id/show/add-ach-lvl", ActivityLive.Show, :add_ach_lvl
+      live "/:id/show/add-achievement", ActivityLive.Show, :add_achievement
+      live "/:id/show/add-ach-group", ActivityLive.Show, :add_ach_group
+    end
   end
 
   scope "/stats", FluidHabitsWeb do

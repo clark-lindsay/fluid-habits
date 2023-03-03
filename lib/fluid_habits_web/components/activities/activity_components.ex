@@ -53,7 +53,15 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
 
     ~H"""
     <.card class={"min-w-64 #{@class}"}>
-      <.card_content heading={if @show_name, do: @activity.name, else: nil}>
+      <.card_content>
+        <div :if={@show_name} class="pb-3">
+          <.link
+            navigate={~p"/activities/#{@activity.id}"}
+            class="text-xl font-medium text-gray-900 underline decoration-secondary-400 hover:text-secondary-400 hover:decoration-gray-500 dark:text-gray-300 dark:hover:decoration-white"
+          >
+            <%= @activity.name %>
+          </.link>
+        </div>
         <div class="flex flex-col gap-1">
           <div class="flex justify-between">
             <div class="text-primary-600">

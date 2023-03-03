@@ -5,7 +5,10 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
   import Mox
   import Phoenix.LiveViewTest
 
-  @create_attrs %{description: "some description", name: "some name"}
+  alias FluidHabits.Repo
+  alias FluidHabits.Activities.{Activity, ActivityQueries}
+
+  @create_attrs %{description: "newly created description", name: "newly created name"}
   @update_attrs %{description: "some updated description", name: "some updated name"}
   @invalid_attrs %{description: nil, name: nil}
 
@@ -17,11 +20,19 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       Map.put(login_context, :activity, activity)
     end
 
-    test "lists all activities for the current user", %{conn: conn, activity: activity} do
-      {:ok, _index_live, html} = live(conn, ~p"/activities")
+    test "lists all activities for the current user", %{conn: conn, user: user} do
+      {:ok, view, html} = live(conn, ~p"/activities")
+
+      activities =
+        Activity
+        |> ActivityQueries.for_user(user)
+        |> Repo.all()
 
       assert html =~ "Listing Activities"
-      assert html =~ activity.description
+
+      for activity <- activities do
+        assert has_element?(view, "a", activity.name)
+      end
     end
 
     test "saves new activity", %{conn: conn} do
@@ -43,41 +54,24 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         |> follow_redirect(conn, ~p"/activities")
 
       assert html =~ "Activity created successfully"
-      assert html =~ "some description"
+      assert html =~ @create_attrs.name
     end
 
     test "updates activity in listing", %{conn: conn, activity: activity} do
-      {:ok, index_live, _html} = live(conn, ~p"/activities")
+      {:ok, view, _html} = live(conn, ~p"/activities/#{activity.id}/edit")
 
-      assert index_live
-             |> element("#activity-#{activity.id} a", ~r/^\s+Edit\s+$/)
-             |> render_click() =~
-               "Edit Activity"
-
-      assert_patch(index_live, ~p"/activities/#{activity.id}/edit")
-
-      assert index_live
+      assert view
              |> form("#activity-form", activity: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
       {:ok, _, html} =
-        index_live
+        view
         |> form("#activity-form", activity: @update_attrs)
         |> render_submit()
         |> follow_redirect(conn, ~p"/activities")
 
       assert html =~ "Activity updated successfully"
-      assert html =~ "some updated description"
-    end
-
-    test "deletes activity in listing", %{conn: conn, activity: activity} do
-      {:ok, index_live, _html} = live(conn, ~p"/activities")
-
-      assert index_live
-             |> element("#activity-#{activity.id} button", ~r/^\s+Delete\s+$/)
-             |> render_click()
-
-      refute has_element?(index_live, "#activity-#{activity.id}")
+      assert html =~ @update_attrs.name
     end
   end
 
@@ -88,6 +82,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       Map.put(login_context, :activity, activity)
     end
+
     setup [:set_mox_from_context, :verify_on_exit!]
 
     test "displays activity", %{conn: conn, activity: activity} do
@@ -176,6 +171,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     end
 
     test "adds new achievement with modal", %{conn: conn, activity: activity} do
+      alias FluidHabits.Activities
       alias FluidHabits.{Activities, AchievementLevelsFixtures}
       ref = make_ref()
       test_pid = self()

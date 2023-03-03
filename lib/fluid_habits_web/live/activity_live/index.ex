@@ -1,20 +1,45 @@
 defmodule FluidHabitsWeb.ActivityLive.Index do
   use FluidHabitsWeb, :live_view
 
+  alias FluidHabits.Activities
   alias FluidHabits.Activities.{Activity, ActivityQueries}
   alias FluidHabits.Repo
 
   @impl true
   def mount(_params, session, socket) do
-    user = FluidHabits.Accounts.get_user_by_session_token(session["user_token"])
+    current_user = FluidHabits.Accounts.get_user_by_session_token(session["user_token"])
+
+    start_of_current_week =
+      Timex.now(current_user.timezone)
+      |> Timex.beginning_of_week(:mon)
+
+    activities =
+      Activity
+      |> ActivityQueries.for_user(current_user)
+      |> Repo.all()
+      |> Task.async_stream(fn activity ->
+        weekly_score =
+          Activities.scores_since(
+            activity,
+            DateTime.shift_zone!(start_of_current_week, "Etc/UTC"),
+            limit: :infinity
+          )
+          |> Enum.reduce(0, fn {_date, score}, acc -> acc + score end)
+
+        %{
+          activity: activity,
+          active_streak: Activities.active_streak(activity),
+          streak_includes_today?: Activities.has_logged_achievement_today?(activity),
+          weekly_score: weekly_score
+        }
+      end)
+      |> Enum.map(fn {:ok, activity_data} -> activity_data end)
 
     {:ok,
      assign(socket,
-       activities:
-         Activity
-         |> ActivityQueries.for_user(user)
-         |> Repo.all(),
-       current_user: user
+       activities: activities,
+       start_of_current_week: start_of_current_week,
+       current_user: current_user
      )}
   end
 
