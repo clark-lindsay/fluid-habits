@@ -303,9 +303,8 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     }
 
     is_valid_iso_date? = fn field, date_str ->
-      with {:ok, _date} <- Date.from_iso8601(date_str) do
-        []
-      else
+      case Date.from_iso8601(date_str) do
+        {:ok, _date} -> []
         _ -> [{field, "must be a valid date format"}]
       end
     end

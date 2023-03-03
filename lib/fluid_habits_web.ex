@@ -21,8 +21,7 @@ defmodule FluidHabitsWeb do
 
   def router do
     quote do
-      # TODO: , helpers: false
-      use Phoenix.Router
+      use Phoenix.Router, helpers: false
 
       import Plug.Conn
       import Phoenix.Controller
@@ -44,8 +43,6 @@ defmodule FluidHabitsWeb do
 
       import Plug.Conn
       import FluidHabitsWeb.Gettext
-      # TODO: delete this line
-      alias FluidHabitsWeb.Router.Helpers, as: Routes
 
       unquote(verified_routes())
     end

@@ -83,7 +83,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
       |> Achievement.changeset(params)
       |> Map.put(:action, :insert)
 
-    if(changeset.valid?) do
+    if changeset.valid? do
       case Achievements.create_achievement(params) do
         {:ok, _achievement_} ->
           {:noreply,
