@@ -14,7 +14,7 @@
 <% end %>
 
 <div class="flex flex-col gap-6">
-  <%= for activity_data <- @activities do %>
+  <%= for {_id, activity_data} <- Enum.sort_by(@activities, fn {_id, %{activity: activity}} -> Timex.to_gregorian_seconds(activity.inserted_at) end, :asc) do %>
     <FluidHabitsWeb.Components.ActivityComponents.activity_card
       show_name={true}
       activity={activity_data.activity}

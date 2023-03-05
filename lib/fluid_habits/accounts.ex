@@ -360,4 +360,14 @@ defmodule FluidHabits.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  @doc """
+  DateTime at the start of the week in the user's timezone, using "Monday" as the first day of a week
+  """
+  @spec start_of_week(User.t()) :: DateTime.t()
+  def start_of_week(%User{timezone: timezone}) do
+    timezone
+    |> Timex.now()
+    |> Timex.beginning_of_week(:mon)
+  end
 end

@@ -29,11 +29,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
 
     one_week_ago = Timex.shift(now, days: -7)
 
-    start_of_current_week =
-      Timex.beginning_of_week(
-        DateTime.shift_zone!(now, socket.assigns.current_user.timezone),
-        :mon
-      )
+    start_of_current_week = Accounts.start_of_week(socket.assigns.current_user)
 
     # TODO: optimize DB access
     # _LOTS_ of non-orthogonal DB calls here
