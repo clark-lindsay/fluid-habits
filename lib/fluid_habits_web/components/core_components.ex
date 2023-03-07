@@ -227,7 +227,7 @@ defmodule FluidHabitsWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-8 bg-white mt-10">
+      <div class="space-y-8 bg-white">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -341,7 +341,7 @@ defmodule FluidHabitsWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
+        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-700 focus:border-primary-700 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >

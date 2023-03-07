@@ -17,6 +17,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
      |> assign(assigns)
      |> assign(:achievement, achievement)
      |> assign(:changeset, changeset)
+     |> assign(:form, to_form(changeset))
      |> assign(:achievement_groups, achievement_groups)
      |> assign(:achievement_level_options, assigns.achievement_levels)}
   end
@@ -71,7 +72,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
       |> Achievement.changeset(achievement_params)
       |> Map.put(:action, :insert)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    {:noreply, assign(socket, changeset: changeset, form: to_form(changeset))}
   end
 
   @impl Phoenix.LiveComponent
@@ -100,7 +101,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
            |> push_patch(to: socket.assigns.return_to)}
       end
     else
-      {:noreply, assign(socket, changeset: changeset)}
+      {:noreply, assign(socket, changeset: changeset, form: to_form(changeset))}
     end
   end
 
@@ -108,34 +109,33 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.form
-        :let={f}
-        for={@changeset}
+      <.simple_form
+        for={@form}
         id="achievement-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
       >
-        <.form_field
-          type="select"
-          form={f}
-          field={:group}
+          <.input
+            field={@form[:group]}
+            label="Group"
+            type="select"
           options={[{"All", "all"} | Enum.map(@achievement_groups, &{&1.name, &1.id})]}
-        />
+          />
 
-        <.form_field
-          type="select"
-          form={f}
-          field={:achievement_level_id}
-          options={[
-            {"None", nil} | Enum.map(@achievement_level_options, &Level.to_select_option/1)
-          ]}
-        />
+        <.input
+            field={@form[:achievement_level_id]}
+            label="Achievement Level"
+            type="select"
+            options={[
+              {"None", nil} | Enum.map(@achievement_level_options, &Level.to_select_option/1)
+            ]}
+          />
 
         <Components.Buttons.button type="submit" phx_disable_with="Saving...">
           Save
         </Components.Buttons.button>
-      </.form>
+      </.simple_form>
     </div>
     """
   end
