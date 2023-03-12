@@ -10,7 +10,6 @@ module.exports = {
     '../lib/*_web.ex',
     '../lib/*_web/**/*.*ex',
     '../deps/petal_components/**/*.*ex'],
-  darkMode: "class",
   theme: {
     extend: {
       colors: {

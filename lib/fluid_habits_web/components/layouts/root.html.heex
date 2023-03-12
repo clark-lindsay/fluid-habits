@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="scrollbar-gutter: stable;">
+<html class="dark" lang="en" style="scrollbar-gutter: stable;">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,22 +13,22 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="bg-white antialiased">
-    <header class="bg-gray-100 py-4">
+  <body class="bg-white dark:bg-slate-900 antialiased">
+    <header class="bg-gray-100 dark:bg-slate-900 dark:border-b-2 dark:border-b-gray-300 py-4">
       <.container max_width="full">
         <nav class="flex w-full justify-between">
           <ul>
             <%= if @current_user do %>
               <li>
                 <.link navigate="/" class="grow-0">
-                  <div class="flex items-center  text-gray-600 hover:text-primary-400">
+                  <div class="flex items-center  text-gray-600 dark:text-white hover:text-primary-400">
                     <.icon name={:home} class="inline h-4 w-4 mr-1" />Home
                   </div>
                 </.link>
               </li>
               <li>
                 <.link navigate={~p"/activities"} class="grow-0">
-                  <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                  <div class="flex items-center  text-gray-600 dark:text-white hover:text-secondary-400">
                     <.icon name={:bolt} class="inline h-4 w-4 mr-1" />Activities
                   </div>
                 </.link>
@@ -37,29 +37,29 @@
           </ul>
           <div class="flex flex-col justify-end">
             <%= if @current_user do %>
-              <div class="text-gray-700"><%= @current_user.email %></div>
+              <div class="text-gray-700 dark:text-white"><%= @current_user.email %></div>
               <div class="flex justify-end">
                 <.link href={~p"/users/settings"} class="grow-0">
-                  <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                  <div class="flex items-center  text-gray-600 dark:text-white hover:text-secondary-400">
                     <.icon name={:cog} class="inline h-4 w-4 mr-1" />Settings
                   </div>
                 </.link>
               </div>
               <div class="flex justify-end">
                 <.link href={~p"/users/log_out"} method="delete">
-                  <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                  <div class="flex items-center  text-gray-600 dark:text-white hover:text-secondary-400">
                     <.icon name={:arrow_left_on_rectangle} class="inline h-4 w-4 mr-1" />Log out
                   </div>
                 </.link>
               </div>
             <% else %>
               <.link href={~p"/users/register"}>
-                <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                <div class="flex items-center  text-gray-600 dark:text-white hover:text-secondary-400">
                   <.icon name={:user} class="inline h-4 w-4 mr-1" />Register
                 </div>
               </.link>
               <.link href={~p"/users/log_in"}>
-                <div class="flex items-center  text-gray-600 hover:text-secondary-400">
+                <div class="flex items-center  text-gray-600 dark:text-white hover:text-secondary-400">
                   <.icon name={:lock_open} class="inline h-4 w-4 mr-1" />Log In
                 </div>
               </.link>

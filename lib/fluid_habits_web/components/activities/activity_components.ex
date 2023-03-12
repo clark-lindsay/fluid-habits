@@ -34,14 +34,16 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
           {streak_start, 1}
 
         _ ->
-          {"No Active Streak", "--"}
+          dashes = for _ <- Range.new(1, String.length("#{assigns.weekly_score}")), into: "", do: "-"
+
+          {"No Active Streak", dashes}
       end
 
     running_streak_class_name =
       case streak_includes_today? do
-        true -> "text-white font-semibold py-2 px-3 bg-primary-600 rounded-md"
-        false -> "text-gray-700 py-2 px-3 border-2 border-primary-600 rounded-md"
-        _ -> "text-gray-400 py-2 px-3 border-2 border-gray-400 rounded-md"
+        true -> "text-white font-semibold py-2 px-3 border-2 border-transparent bg-primary-600 rounded-md"
+        false -> "text-gray-700 dark:text-white py-2 px-3 border-2 border-primary-600 rounded-md"
+        _ -> "text-gray-400 dark:text-gray-50 py-2 px-3 border-2 border-gray-400 dark:border-white rounded-md"
       end
 
     assigns =
@@ -57,7 +59,7 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
         <div :if={@show_name} class="pb-3">
           <.link
             navigate={~p"/activities/#{@activity.id}"}
-            class="text-xl font-medium text-gray-900 underline decoration-secondary-400 hover:text-secondary-400 hover:decoration-gray-500 dark:text-gray-300 dark:hover:decoration-white"
+            class="text-xl font-medium text-gray-900 dark:text-white underline decoration-secondary-400 hover:text-secondary-400 hover:decoration-gray-500 dark:hover:decoration-white"
           >
             <%= @activity.name %>
           </.link>
@@ -66,7 +68,7 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
           <div class="flex justify-between">
             <div class="text-primary-600">
               Streak:
-              <div class="text-xs text-gray-400 pl-2">
+              <div class="text-xs text-gray-400 dark:text-gray-50 pl-2">
                 Since: <%= @active_streak_start %>
               </div>
             </div>
@@ -79,12 +81,12 @@ defmodule FluidHabitsWeb.Components.ActivityComponents do
             <div>
               <div class="text-primary-600">
                 Weekly Score:
-                <div class="text-xs text-gray-400 pl-2">
+                <div class="text-xs text-gray-400 dark:text-gray-50 pl-2">
                   Since: <%= DateTime.to_date(@start_of_week) %>
                 </div>
               </div>
             </div>
-            <div class="text-gray-700 py-2 px-3 border-2 border-gray-700 rounded-md">
+            <div class="text-gray-700 dark:text-gray-50 font-semibold py-2 px-3 border-2 border-gray-700 dark:border-gray-50 rounded-md">
               <%= @weekly_score %>
             </div>
           </div>
