@@ -29,8 +29,8 @@ defmodule FluidHabitsWeb.Components.AchievementComponents do
         <span class={@achievement_level_classname}>
           <%= "(#{@achievement.achievement_level.value})" %>
         </span>
-        <span><%= "#{@achievement.achievement_level.name}" %></span>
-        <span><%= "@ #{@display_datetime}" %></span>
+        <span class="dark:text-gray-100"><%= "#{@achievement.achievement_level.name}" %></span>
+        <span class="dark:text-gray-100"><%= "@ #{@display_datetime}" %></span>
       </div>
     </li>
     """
