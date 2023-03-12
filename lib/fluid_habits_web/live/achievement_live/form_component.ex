@@ -116,21 +116,21 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-          <.input
-            field={@form[:group]}
-            label="Group"
-            type="select"
+        <.input
+          field={@form[:group]}
+          label="Group"
+          type="select"
           options={[{"All", "all"} | Enum.map(@achievement_groups, &{&1.name, &1.id})]}
-          />
+        />
 
         <.input
-            field={@form[:achievement_level_id]}
-            label="Achievement Level"
-            type="select"
-            options={[
-              {"None", nil} | Enum.map(@achievement_level_options, &Level.to_select_option/1)
-            ]}
-          />
+          field={@form[:achievement_level_id]}
+          label="Achievement Level"
+          type="select"
+          options={[
+            {"None", nil} | Enum.map(@achievement_level_options, &Level.to_select_option/1)
+          ]}
+        />
 
         <Components.Buttons.button type="submit" phx_disable_with="Saving...">
           Save
