@@ -15,7 +15,7 @@ defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
   end
 
   @impl Phoenix.LiveComponent
-  def handle_event("validate", %{"achievement_level" => achivement_level_params}, socket) do
+  def handle_event("validate", %{"level" => achivement_level_params}, socket) do
     changeset =
       %Level{}
       |> Level.changeset(achivement_level_params)
