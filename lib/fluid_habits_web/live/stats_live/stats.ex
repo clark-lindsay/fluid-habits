@@ -331,12 +331,15 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   """
   @spec to_granularity_atom(String.t() | atom()) :: atom()
   defp to_granularity_atom(granularity) do
-    case String.downcase(granularity) do
-      "days" -> :days
-      "weeks" -> :weeks
-      "months" -> :months
-      "years" -> :years
-      val when is_atom(val) -> val
+    if is_atom(granularity) do
+      granularity
+    else
+      case String.downcase(granularity) do
+        "days" -> :days
+        "weeks" -> :weeks
+        "months" -> :months
+        "years" -> :years
+      end
     end
   end
 end
