@@ -2,6 +2,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.Accounts
+  alias FluidHabits.Accounts.User
 
   @impl Phoenix.LiveView
   def mount(params, %{"user_token" => user_token} = _session, socket) do
@@ -221,14 +222,16 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         </.card_content>
       </.card>
 
+      <%= example_bar_chart(@scored_intervals) %>
+
       <ul>
         <%= for {interval, score} <- @scored_intervals do %>
           <li>
-            <%= DateTime.shift_zone!(interval.from, @current_user.timezone) |> DateTime.to_date() %> -> <%= DateTime.shift_zone!(
+            <%= to_user_timezone!(interval.from, @current_user, output: :date) %> -> <%= to_user_timezone!(
               interval.until,
-              @current_user.timezone
-            )
-            |> DateTime.to_date() %> : <%= score %>
+              @current_user,
+              output: :date
+            ) %> : <%= score %>
           </li>
         <% end %>
       </ul>
@@ -243,32 +246,37 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   defp interval_scores(activity_ids, intervals) do
     activities = FluidHabits.Activities.list_activities_with_ids!(activity_ids)
 
-    Task.Supervisor.async_stream(FluidHabits.TaskSupervisor, activities, fn activity ->
-      scores_per_day =
-        FluidHabits.Activities.scores_since(
-          activity,
-          hd(intervals)[:from],
-          until: List.last(intervals)[:until]
-        )
+    Task.Supervisor.async_stream(
+      FluidHabits.TaskSupervisor,
+      activities,
+      fn activity ->
+        scores_per_day =
+          FluidHabits.Activities.scores_since(
+            activity,
+            hd(intervals)[:from],
+            until: List.last(intervals)[:until]
+          )
 
-      # match each `interval` against `scores_per_day` to reduce the scores to
-      # one total score per interval
-      Stream.map(intervals, fn interval = %{from: from, until: until} ->
-        scores_within_interval =
-          Enum.filter(scores_per_day, fn {date, _score} ->
-            date =
-              Timex.to_datetime(date)
-              |> Timex.set(hour: 12)
+        # match each `interval` against `scores_per_day` to reduce the scores to
+        # one total score per interval
+        Stream.map(intervals, fn interval = %{from: from, until: until} ->
+          scores_within_interval =
+            Enum.filter(scores_per_day, fn {date, _score} ->
+              date =
+                Timex.to_datetime(date)
+                |> Timex.set(hour: 12)
 
-            Timex.before?(from, date) and Timex.after?(until, date)
-          end)
+              Timex.before?(from, date) and Timex.after?(until, date)
+            end)
 
-        total_score_for_interval =
-          Enum.reduce(scores_within_interval, 0, fn {_date, score}, acc -> acc + score end)
+          total_score_for_interval =
+            Enum.reduce(scores_within_interval, 0, fn {_date, score}, acc -> acc + score end)
 
-        {interval, total_score_for_interval}
-      end)
-    end)
+          {interval, total_score_for_interval}
+        end)
+      end,
+      ordered: true
+    )
     |> Stream.filter(fn task_result ->
       case task_result do
         {:ok, _result} ->
@@ -341,5 +349,36 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         "years" -> :years
       end
     end
+  end
+
+  defp to_user_timezone!(date_time, %User{timezone: timezone}, opts \\ []) do
+    date_time =
+      date_time
+      |> DateTime.shift_zone!(timezone)
+
+    case opts[:output] do
+      :date -> DateTime.to_date(date_time)
+      :time -> DateTime.to_time(date_time)
+      _ -> date_time
+    end
+  end
+
+  defp example_bar_chart(intervals) do
+    data =
+      case intervals do
+        [] ->
+          [{"Needs data", 1}]
+
+        _ ->
+          intervals
+          |> Enum.map(fn {%{from: from}, score} ->
+            {DateTime.to_date(from) |> Date.to_string(), score}
+          end)
+      end
+
+    data
+    |> Contex.Dataset.new()
+    |> Contex.Plot.new(Contex.BarChart, 600, 400)
+    |> Contex.Plot.to_svg()
   end
 end
