@@ -49,7 +49,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       assign(socket,
         changeset: changeset,
         activities: activities,
-        scored_intervals: []
+        scored_intervals: %{}
       )
 
     {:ok, socket}
@@ -225,10 +225,10 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       <%= example_bar_chart(@scored_intervals) %>
 
       <ul>
-        <%= for {interval, score} <- @scored_intervals do %>
+        <%= for {_activity_id, interval: %{from: from, until: until}, score: score} <- @scored_intervals do %>
           <li>
-            <%= to_user_timezone!(interval.from, @current_user, output: :date) %> -> <%= to_user_timezone!(
-              interval.until,
+            <%= to_user_timezone!(from, @current_user, output: :date) %> -> <%= to_user_timezone!(
+              until,
               @current_user,
               output: :date
             ) %> : <%= score %>
@@ -239,8 +239,6 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     """
   end
 
-  @spec interval_scores(list(integer()), %{from: DateTime.t(), until: DateTime.t()}) ::
-          list({%{from: DateTime.t(), until: DateTime.t()}, integer()})
   defp interval_scores(_, []), do: []
 
   defp interval_scores(activity_ids, intervals) do
@@ -272,7 +270,11 @@ defmodule FluidHabitsWeb.StatsLive.Index do
           total_score_for_interval =
             Enum.reduce(scores_within_interval, 0, fn {_date, score}, acc -> acc + score end)
 
-          {interval, total_score_for_interval}
+          %{
+            interval: interval,
+            score: total_score_for_interval,
+            activity_id: activity.id
+          }
         end)
       end,
       ordered: true
@@ -287,16 +289,12 @@ defmodule FluidHabitsWeb.StatsLive.Index do
           false
       end
     end)
-    |> Stream.flat_map(fn {_tag, result} -> result end)
-    |> Enum.group_by(fn {%{from: from}, _score} -> from end)
-    |> Enum.map(fn {_from, scored_intervals} ->
-      Enum.reduce(scored_intervals, fn {_interval, score}, {interval, acc_score} ->
-        {interval, score + acc_score}
+    |> Stream.flat_map(fn {_tag, result} ->
+      Enum.sort(result, fn %{interval: %{from: from_a}}, %{interval: %{from: from_b}} ->
+        Timex.before?(from_a, from_b)
       end)
     end)
-    |> Enum.sort(fn {%{from: from_a}, _}, {%{from: from_b}, _} ->
-      Timex.before?(from_a, from_b)
-    end)
+    |> Enum.to_list()
   end
 
   defp change_stats_params(data, params) do
@@ -364,21 +362,49 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   end
 
   defp example_bar_chart(intervals) do
+    # data = [
+    #   %{"category" => "2023-03-17", "1" => 2, "2" => 4},
+    #   %{"category" => "2023-03-18", "1" => 3, "2" => 1},
+    # ]
     data =
       case intervals do
-        [] ->
+        arg when map_size(arg) == 0 ->
           [{"Needs data", 1}]
 
         _ ->
           intervals
-          |> Enum.map(fn {%{from: from}, score} ->
-            {DateTime.to_date(from) |> Date.to_string(), score}
+          |> Enum.group_by(fn %{interval: %{from: from}} -> from end)
+          |> Enum.map(fn {from, interval_data} ->
+
+            interval_score_per_activity =
+              Enum.reduce(interval_data, %{}, fn %{score: score, activity_id: activity_id}, acc ->
+                Map.update(acc, "#{activity_id}", score, &(&1 + score))
+              end)
+
+            Map.merge(
+              interval_score_per_activity,
+              %{"category" => DateTime.to_date(from) |> Date.to_string()}
+            )
           end)
       end
 
-    data
-    |> Contex.Dataset.new()
-    |> Contex.Plot.new(Contex.BarChart, 600, 400)
+    chart =
+      data
+      |> Contex.Dataset.new()
+      |> Contex.BarChart.new(
+        type: :grouped,
+        padding: 24,
+        mapping: %{
+          category_col: "category",
+          value_cols:
+            Enum.reduce(intervals, MapSet.new(), fn %{activity_id: activity_id}, acc ->
+              MapSet.put(acc, "#{activity_id}")
+            end)
+            |> MapSet.to_list()
+        }
+      )
+
+    Contex.Plot.new(600, 400, chart)
     |> Contex.Plot.to_svg()
   end
 end
