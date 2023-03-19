@@ -49,7 +49,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       assign(socket,
         changeset: changeset,
         activities: activities,
-        scored_intervals: %{}
+        scored_intervals: []
       )
 
     {:ok, socket}
@@ -222,19 +222,9 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         </.card_content>
       </.card>
 
-      <%= example_bar_chart(@scored_intervals) %>
-
-      <ul>
-        <%= for {_activity_id, interval: %{from: from, until: until}, score: score} <- @scored_intervals do %>
-          <li>
-            <%= to_user_timezone!(from, @current_user, output: :date) %> -> <%= to_user_timezone!(
-              until,
-              @current_user,
-              output: :date
-            ) %> : <%= score %>
-          </li>
-        <% end %>
-      </ul>
+      <%= if(Enum.count(@scored_intervals) > 1) do
+        example_bar_chart(@scored_intervals)
+      end %>
     </div>
     """
   end
@@ -362,31 +352,20 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   end
 
   defp example_bar_chart(intervals) do
-    # data = [
-    #   %{"category" => "2023-03-17", "1" => 2, "2" => 4},
-    #   %{"category" => "2023-03-18", "1" => 3, "2" => 1},
-    # ]
     data =
-      case intervals do
-        arg when map_size(arg) == 0 ->
-          [{"Needs data", 1}]
-
-        _ ->
-          intervals
-          |> Enum.group_by(fn %{interval: %{from: from}} -> from end)
-          |> Enum.map(fn {from, interval_data} ->
-
-            interval_score_per_activity =
-              Enum.reduce(interval_data, %{}, fn %{score: score, activity_id: activity_id}, acc ->
-                Map.update(acc, "#{activity_id}", score, &(&1 + score))
-              end)
-
-            Map.merge(
-              interval_score_per_activity,
-              %{"category" => DateTime.to_date(from) |> Date.to_string()}
-            )
+      intervals
+      |> Enum.group_by(fn %{interval: %{from: from}} -> from end)
+      |> Enum.map(fn {from, interval_data} ->
+        interval_score_per_activity =
+          Enum.reduce(interval_data, %{}, fn %{score: score, activity_id: activity_id}, acc ->
+            Map.update(acc, "#{activity_id}", score, &(&1 + score))
           end)
-      end
+
+        Map.merge(
+          interval_score_per_activity,
+          %{"category" => DateTime.to_date(from) |> Date.to_string()}
+        )
+      end)
 
     chart =
       data
@@ -401,7 +380,8 @@ defmodule FluidHabitsWeb.StatsLive.Index do
               MapSet.put(acc, "#{activity_id}")
             end)
             |> MapSet.to_list()
-        }
+        },
+        colour_palette: ["a855f7", "fde047", "06b6d4"]
       )
 
     Contex.Plot.new(600, 400, chart)
