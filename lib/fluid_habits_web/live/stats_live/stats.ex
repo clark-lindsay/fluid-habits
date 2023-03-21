@@ -223,7 +223,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       </.card>
 
       <%= if(Enum.count(@scored_intervals) > 1) do
-        example_bar_chart(@scored_intervals)
+        activity_scores_chart(@scored_intervals, @current_user)
       end %>
     </div>
     """
@@ -339,20 +339,8 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     end
   end
 
-  defp to_user_timezone!(date_time, %User{timezone: timezone}, opts \\ []) do
-    date_time =
-      date_time
-      |> DateTime.shift_zone!(timezone)
-
-    case opts[:output] do
-      :date -> DateTime.to_date(date_time)
-      :time -> DateTime.to_time(date_time)
-      _ -> date_time
-    end
-  end
-
-  defp example_bar_chart(intervals) do
-    data =
+  defp activity_scores_chart(intervals, user) do
+    dataset =
       intervals
       |> Enum.group_by(fn %{interval: %{from: from}} -> from end)
       |> Enum.map(fn {from, interval_data} ->
@@ -363,28 +351,33 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
         Map.merge(
           interval_score_per_activity,
-          %{"category" => DateTime.to_date(from) |> Date.to_string()}
+          %{"category" => to_user_timezone!(from, user, output: :date) |> Date.to_string()}
         )
       end)
-
-    chart =
-      data
+      |> Enum.sort_by(fn %{"category" => date} -> Date.from_iso8601!(date) end, &Timex.before?/2)
       |> Contex.Dataset.new()
-      |> Contex.BarChart.new(
-        type: :grouped,
-        padding: 24,
-        mapping: %{
-          category_col: "category",
-          value_cols:
-            Enum.reduce(intervals, MapSet.new(), fn %{activity_id: activity_id}, acc ->
-              MapSet.put(acc, "#{activity_id}")
-            end)
-            |> MapSet.to_list()
-        },
-        colour_palette: ["a855f7", "fde047", "06b6d4"]
-      )
 
-    Contex.Plot.new(600, 400, chart)
-    |> Contex.Plot.to_svg()
+    mapping = %{
+      category_col: "category",
+      value_cols:
+        Enum.reduce(intervals, MapSet.new(), fn %{activity_id: activity_id}, acc ->
+          MapSet.put(acc, "#{activity_id}")
+        end)
+        |> MapSet.to_list()
+    }
+
+    FluidHabits.DataViz.BarChart.new(dataset, mapping)
+  end
+
+  defp to_user_timezone!(date_time, %User{timezone: timezone}, opts \\ []) do
+    date_time =
+      date_time
+      |> DateTime.shift_zone!(timezone)
+
+    case opts[:output] do
+      :date -> DateTime.to_date(date_time)
+      :time -> DateTime.to_time(date_time)
+      _ -> date_time
+    end
   end
 end
