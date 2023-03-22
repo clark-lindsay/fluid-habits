@@ -152,7 +152,6 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
   @impl Phoenix.LiveView
   def handle_info({:create_achievement, %{achievement: %{activity: %{user: user}}}}, socket) do
-    if user.id == socket.assigns.current_user.id do
       # could find the correct interval, if it exists in the current set, and update the score
       # just going to take it easy for now and re-calculate all scores
 
@@ -164,17 +163,14 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
       intervals =
         FluidHabits.DateTime.split_into_intervals(
-          Timex.to_datetime(from_date, user.timezone),
-          Timex.to_datetime(until_date, user.timezone),
+          Timex.to_datetime(from_date, user.timezone) |> Timex.beginning_of_day(),
+          Timex.to_datetime(until_date, user.timezone) |> Timex.end_of_day(),
           to_granularity_atom(granularity)
         )
 
       scored_intervals = interval_scores(activity_ids, intervals)
 
       {:noreply, assign(socket, scored_intervals: scored_intervals)}
-    else
-      {:noreply, socket}
-    end
   end
 
   @impl Phoenix.LiveView
@@ -241,8 +237,8 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         scores_per_day =
           FluidHabits.Activities.scores_since(
             activity,
-            hd(intervals)[:from],
-            until: List.last(intervals)[:until]
+            hd(intervals)[:from] |> Timex.beginning_of_day(),
+            until: List.last(intervals)[:until] |> Timex.end_of_day()
           )
 
         # match each `interval` against `scores_per_day` to reduce the scores to
