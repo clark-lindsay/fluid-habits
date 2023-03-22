@@ -1,4 +1,9 @@
 defmodule FluidHabits.Achievements.AchievementQueries do
+  @moduledoc """
+  Composable functions for building queries to retrieve
+  information information related to `Achievement`s from the DB
+  """
+
   import Ecto.Query, only: [from: 2]
 
   def since(queryable, %DateTime{} = date_time) do

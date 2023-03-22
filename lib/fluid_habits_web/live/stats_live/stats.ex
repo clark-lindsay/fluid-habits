@@ -308,7 +308,6 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     |> Ecto.Changeset.validate_change(:until, is_valid_iso_date?)
   end
 
-
   defp activity_scores_chart(intervals, user) do
     dataset =
       intervals

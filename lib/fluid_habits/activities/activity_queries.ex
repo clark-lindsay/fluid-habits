@@ -1,4 +1,9 @@
 defmodule FluidHabits.Activities.ActivityQueries do
+  @moduledoc """
+  Composable functions for building queries to retrieve
+  information information related to `Activity`s from the DB
+  """
+
   import Ecto.Query, only: [from: 2]
 
   alias FluidHabits.Accounts.User

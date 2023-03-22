@@ -84,7 +84,6 @@ defmodule FluidHabits.DateTime do
     end
   end
 
-
   @doc """
   Convert string granularity options, like those presented in HTML, into atoms
   to conform the data to the spec for the options of date-time manipulation functions

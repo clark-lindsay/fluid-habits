@@ -9,7 +9,7 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
   def mount(_params, session, socket) do
     current_user = FluidHabits.Accounts.get_user_by_session_token(session["user_token"])
 
-    if(connected?(socket)) do
+    if connected?(socket) do
       Phoenix.PubSub.subscribe(FluidHabits.PubSub, "user:#{current_user.id}")
     end
 
