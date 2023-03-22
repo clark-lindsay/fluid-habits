@@ -83,4 +83,34 @@ defmodule FluidHabits.DateTime do
       end)
     end
   end
+
+
+  @doc """
+  Convert string granularity options, like those presented in HTML, into atoms
+  to conform the data to the spec for the options of date-time manipulation functions
+
+  Passes atoms through unchanged.
+
+    ## Examples
+
+    iex > to_granularity_atom("Days")
+    # => :days
+    iex > to_granularity_atom("months")
+    # => :months
+    iex > to_granularity_atom(:weeks)
+    # => :weeks
+  """
+  @spec to_granularity_atom(String.t() | atom()) :: atom()
+  def to_granularity_atom(granularity) do
+    if is_atom(granularity) do
+      granularity
+    else
+      case String.downcase(granularity) do
+        "days" -> :days
+        "weeks" -> :weeks
+        "months" -> :months
+        "years" -> :years
+      end
+    end
+  end
 end

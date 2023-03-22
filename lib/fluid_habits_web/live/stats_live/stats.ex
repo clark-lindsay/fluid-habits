@@ -88,7 +88,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
       FluidHabits.DateTime.split_into_intervals(
         from,
         until,
-        to_granularity_atom(granularity)
+        FluidHabits.DateTime.to_granularity_atom(granularity)
       )
 
     scored_intervals = interval_scores(activity_ids, intervals)
@@ -152,25 +152,25 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
   @impl Phoenix.LiveView
   def handle_info({:create_achievement, %{achievement: %{activity: %{user: user}}}}, socket) do
-      # could find the correct interval, if it exists in the current set, and update the score
-      # just going to take it easy for now and re-calculate all scores
+    # could find the correct interval, if it exists in the current set, and update the score
+    # just going to take it easy for now and re-calculate all scores
 
-      %{granularity: granularity, activities: activity_ids, from: from, until: until} =
-        socket.assigns.changeset.changes
+    %{granularity: granularity, activities: activity_ids, from: from, until: until} =
+      socket.assigns.changeset.changes
 
-      {:ok, from_date} = Date.from_iso8601(from)
-      {:ok, until_date} = Date.from_iso8601(until)
+    {:ok, from_date} = Date.from_iso8601(from)
+    {:ok, until_date} = Date.from_iso8601(until)
 
-      intervals =
-        FluidHabits.DateTime.split_into_intervals(
-          Timex.to_datetime(from_date, user.timezone) |> Timex.beginning_of_day(),
-          Timex.to_datetime(until_date, user.timezone) |> Timex.end_of_day(),
-          to_granularity_atom(granularity)
-        )
+    intervals =
+      FluidHabits.DateTime.split_into_intervals(
+        Timex.to_datetime(from_date, user.timezone) |> Timex.beginning_of_day(),
+        Timex.to_datetime(until_date, user.timezone) |> Timex.end_of_day(),
+        FluidHabits.DateTime.to_granularity_atom(granularity)
+      )
 
-      scored_intervals = interval_scores(activity_ids, intervals)
+    scored_intervals = interval_scores(activity_ids, intervals)
 
-      {:noreply, assign(socket, scored_intervals: scored_intervals)}
+    {:noreply, assign(socket, scored_intervals: scored_intervals)}
   end
 
   @impl Phoenix.LiveView
@@ -218,9 +218,9 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         </.card_content>
       </.card>
 
-      <%= if(Enum.count(@scored_intervals) > 1) do
-        activity_scores_chart(@scored_intervals, @current_user)
-      end %>
+      <.card :if={Enum.count(@scored_intervals) > 1} class="py-8">
+        <%= activity_scores_chart(@scored_intervals, @current_user) %>
+      </.card>
     </div>
     """
   end
@@ -308,32 +308,6 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     |> Ecto.Changeset.validate_change(:until, is_valid_iso_date?)
   end
 
-  @doc """
-  Convert the granularity options presented in the HTML as strings into atoms
-  to conform the value for the options of date-time manipulation functions
-
-  Passes atoms through unchanged.
-
-    ## Examples
-
-    iex > to_granularity_atom("Days")
-    # => :days
-    iex > to_granularity_atom(:weeks)
-    # => :weeks
-  """
-  @spec to_granularity_atom(String.t() | atom()) :: atom()
-  defp to_granularity_atom(granularity) do
-    if is_atom(granularity) do
-      granularity
-    else
-      case String.downcase(granularity) do
-        "days" -> :days
-        "weeks" -> :weeks
-        "months" -> :months
-        "years" -> :years
-      end
-    end
-  end
 
   defp activity_scores_chart(intervals, user) do
     dataset =
