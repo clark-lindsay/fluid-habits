@@ -1,22 +1,28 @@
-<%= if @live_action in ~w(edit add_achievement add_ach_lvl add_ach_group)a do %>
-  <.modal title={@page_title}>
-    <.live_component
-      module={
-        case @live_action do
-          :edit -> FluidHabitsWeb.ActivityLive.FormComponent
-          :add_achievement -> FluidHabitsWeb.AchievementLive.FormComponent
-          :add_ach_lvl -> FluidHabitsWeb.AchievementLevelLive.FormComponent
-          :add_ach_group -> FluidHabitsWeb.AchievementGroupLive.FormComponent
-        end
-      }
-      id={@activity.id}
-      action={@live_action}
-      activity={@activity}
-      achievement_levels={@achievement_levels}
-      return_to={~p"/activities/#{@activity.id}"}
-    />
-  </.modal>
-<% end %>
+<.core_modal
+  :if={@live_action in ~w(edit add_achievement add_ach_lvl add_ach_group)a}
+  id="activity-form-modal"
+  show={true}
+  on_cancel={JS.hide(to: "#activity-form-modal") |> JS.patch(~p"/activities/#{@activity.id}")}
+>
+  <:title>
+    <.header class="pb-4"><%= @page_title %></.header>
+  </:title>
+  <.live_component
+    module={
+      case @live_action do
+        :edit -> FluidHabitsWeb.ActivityLive.FormComponent
+        :add_achievement -> FluidHabitsWeb.AchievementLive.FormComponent
+        :add_ach_lvl -> FluidHabitsWeb.AchievementLevelLive.FormComponent
+        :add_ach_group -> FluidHabitsWeb.AchievementGroupLive.FormComponent
+      end
+    }
+    id={@activity.id}
+    action={@live_action}
+    activity={@activity}
+    achievement_levels={@achievement_levels}
+    return_to={~p"/activities/#{@activity.id}"}
+  />
+</.core_modal>
 
 <div class="flex flex-col justify-start">
   <div class="flex flex-row gap-2">

@@ -1,17 +1,26 @@
 <.h2>Activities</.h2>
 
-<%= if @live_action in [:new, :edit] do %>
-  <.modal title={@page_title}>
-    <.live_component
-      module={FluidHabitsWeb.ActivityLive.FormComponent}
-      current_user={@current_user}
-      id={@activity.id || :new}
-      action={@live_action}
-      activity={@activity}
-      return_to={~p"/activities"}
-    />
-  </.modal>
-<% end %>
+<.core_modal
+  :if={@live_action in [:new, :edit]}
+  show={true}
+  on_cancel={
+    JS.hide(to: "#activity-edit-modal", transition: "fade-out-scale")
+    |> JS.patch(~p"/activities")
+  }
+  id="activity-edit-modal"
+>
+  <:title>
+    <.header class="pb-4"><%= @page_title %></.header>
+  </:title>
+  <.live_component
+    module={FluidHabitsWeb.ActivityLive.FormComponent}
+    current_user={@current_user}
+    id={@activity.id || :new}
+    action={@live_action}
+    activity={@activity}
+    return_to={~p"/activities"}
+  />
+</.core_modal>
 
 <div class="flex flex-col gap-6">
   <%= for {_id, activity_data} <- Enum.sort_by(@activities, fn {_id, %{activity: activity}} -> Timex.to_gregorian_seconds(activity.inserted_at) end, :asc) do %>

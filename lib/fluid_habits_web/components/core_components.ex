@@ -19,20 +19,20 @@ defmodule FluidHabitsWeb.CoreComponents do
 
   ## Examples
 
-      <.modal id="confirm-modal">
+      <.core_modal id="confirm-modal">
         Are you sure?
         <:confirm>OK</:confirm>
         <:cancel>Cancel</:cancel>
-      </.modal>
+      </.core_modal>
 
   JS commands may be passed to the `:on_cancel` and `on_confirm` attributes
   for the caller to react to each button press, for example:
 
-      <.modal id="confirm" on_confirm={JS.push("delete")} on_cancel={JS.navigate(~p"/posts")}>
+      <.core_modal id="confirm" on_confirm={JS.push("delete")} on_cancel={JS.navigate(~p"/posts")}>
         Are you sure you?
         <:confirm>OK</:confirm>
         <:cancel>Cancel</:cancel>
-      </.modal>
+      </.core_modal>
   """
   attr :id, :string, required: true
   attr :show, :boolean, default: false

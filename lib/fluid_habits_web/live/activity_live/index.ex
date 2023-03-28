@@ -59,7 +59,7 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, "Listing Activities")
-    |> assign(:activity, nil)
+    |> assign(:activity, %Activity{})
   end
 
   @impl Phoenix.LiveView
