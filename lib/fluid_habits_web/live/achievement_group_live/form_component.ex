@@ -119,26 +119,29 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
             Save
           </Components.Buttons.button>
         <% else %>
-          <.h3>Group Membership Changes</.h3>
-          <%= for ach_lvl <- @achievement_levels, !is_nil(ach_lvl.group), ach_lvl.id in Enum.map(@changeset.changes.achievement_levels, & &1.data.id) do %>
-            <div>
-              <%= ach_lvl.name %>: <%= ach_lvl.group.name %> -> <%= @changeset.changes[:name] ||
-                "New Group" %>
-            </div>
-          <% end %>
-          <.button
-            type="button"
-            phx-click="confirm_group_membership_changes"
-            phx-value-ids={
-              Enum.map(@changeset.changes.achievement_levels, &Integer.to_string(&1.data.id))
-              |> Enum.join(",")
-              |> URI.encode()
-            }
-            phx-target={@myself}
-            disabled={length(@changeset.changes.achievement_levels) < 1}
-            label="Confirm"
-            color="primary"
-          />
+          <div class="flex flex-col gap-1">
+            <.header level={3}>Group Membership Changes</.header>
+            <%= for ach_lvl <- @achievement_levels, !is_nil(ach_lvl.group), ach_lvl.id in Enum.map(@changeset.changes.achievement_levels, & &1.data.id) do %>
+              <div>
+                <%= ach_lvl.name %>: <%= ach_lvl.group.name %> -> <%= @changeset.changes[:name] ||
+                  "New Group" %>
+              </div>
+            <% end %>
+            <.button
+              class="mt-1"
+              type="button"
+              phx-click="confirm_group_membership_changes"
+              phx-value-ids={
+                Enum.map(@changeset.changes.achievement_levels, &Integer.to_string(&1.data.id))
+                |> Enum.join(",")
+                |> URI.encode()
+              }
+              phx-target={@myself}
+              disabled={length(@changeset.changes.achievement_levels) < 1}
+              label="Confirm"
+              color="primary"
+            />
+          </div>
         <% end %>
       </.form>
     </div>

@@ -427,20 +427,49 @@ defmodule FluidHabitsWeb.CoreComponents do
 
   @doc """
   Renders a header with title.
+
+  Any header level 1-6 can be passed; All will render the semantically correct tag,
+  but 4-6 will all use the same styling while 1-4 will decrease in size and bold-ness.
   """
   attr :class, :string, default: nil
+  attr :level, :integer, default: 1, values: [1, 2, 3, 4, 5, 6]
 
   slot :inner_block, required: true
   slot :subtitle
   slot :actions
 
   def header(assigns) do
+    assigns = assign(assigns, text_color: "text-zinc-800 dark:text-gray-100")
+
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800 dark:text-gray-100">
-          <%= render_slot(@inner_block) %>
-        </h1>
+        <%= case @level do %>
+          <% 1 -> %>
+            <h1 class={"text-xxl font-bold leading-8 #{@text_color}"}>
+              <%= render_slot(@inner_block) %>
+            </h1>
+          <% 2 -> %>
+            <h2 class={"text-xl font-bold leading-6 #{@text_color}"}>
+              <%= render_slot(@inner_block) %>
+            </h2>
+          <% 3 -> %>
+            <h3 class={"text-lg font-bold leading-6 #{@text_color}"}>
+              <%= render_slot(@inner_block) %>
+            </h3>
+          <% 4 -> %>
+            <h4 class={"text-md font-semibold leading-6 #{@text_color}"}>
+              <%= render_slot(@inner_block) %>
+            </h4>
+          <% 5 -> %>
+            <h5 class={"text-md font-semibold leading-6 #{@text_color}"}>
+              <%= render_slot(@inner_block) %>
+            </h5>
+          <% _ -> %>
+            <h6 class={"text-md font-semibold leading-6 #{@text_color}"}>
+              <%= render_slot(@inner_block) %>
+            </h6>
+        <% end %>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600 dark:text-gray-200">
           <%= render_slot(@subtitle) %>
         </p>

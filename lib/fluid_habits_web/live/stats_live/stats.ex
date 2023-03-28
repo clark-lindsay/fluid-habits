@@ -177,7 +177,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col gap-2">
-      <.h2>Stats!</.h2>
+      <.header level={2}>Stats!</.header>
 
       <.card class="p-2 w-full">
         <.card_content heading="Form">
