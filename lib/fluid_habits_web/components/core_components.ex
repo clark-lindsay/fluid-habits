@@ -9,6 +9,8 @@ defmodule FluidHabitsWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com), using the
   [heroicons_elixir](https://github.com/mveytsman/heroicons_elixir) project.
   """
+
+  use FluidHabitsWeb, :verified_routes
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
@@ -256,14 +258,58 @@ defmodule FluidHabitsWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-md bg-primary-500 hover:bg-primary-600 py-2 px-3",
+        "font-semibold leading-6 text-white active:text-white/80",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
         @class
       ]}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
     </button>
+    """
+  end
+
+  attr :class, :string, default: nil
+  attr :navigate, :string
+  attr :patch, :string
+  attr :rest, :global, include: ~w(disabled form name value)
+
+  slot :inner_block, required: true
+
+  @doc """
+  Renders a link element with the style of a button
+  """
+  def button_link(assigns) do
+    assigns =
+      if is_nil(assigns[:navigate]) do
+        assign(assigns, patch: Map.get(assigns, :patch, ~p"/"), navigate: nil)
+      else
+        assign(assigns,
+          navigate: Map.get(assigns, :navigate, ~p"/"),
+          patch: nil
+        )
+      end
+
+    ~H"""
+    <.link
+      patch={@patch}
+      navigate={@navigate}
+      class={[
+        "phx-submit-loading:opacity-75",
+        "bg-primary-600",
+        "hover:bg-primary-700",
+        "active:bg-primary-800",
+        "focus:shadow-outline-primary focus:outline-none",
+        "py-2 px-4 rounded-md border-transparent",
+        "font-medium leading-6 text-white active:text-white/80",
+        "inline-flex items-center justify-center border transition duration-150 ease-in-out",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </.link>
     """
   end
 

@@ -132,9 +132,9 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
           ]}
         />
 
-        <Components.Buttons.button type="submit" phx_disable_with="Saving...">
+        <.core_button type="submit" phx-disable-with="Saving...">
           Save
-        </Components.Buttons.button>
+        </.core_button>
       </.simple_form>
     </div>
     """

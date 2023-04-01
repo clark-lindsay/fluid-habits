@@ -115,9 +115,9 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
         <.form_field_error form={f} field={:achievement_levels} class="mt-1" />
 
         <%= if (@has_confirmed_group_membership_changes) do %>
-          <Components.Buttons.button type="submit" phx_disable_with="Saving...">
+          <.core_button type="submit" phx-disable-with="Saving...">
             Save
-          </Components.Buttons.button>
+          </.core_button>
         <% else %>
           <div class="flex flex-col gap-1">
             <.header level={3}>Group Membership Changes</.header>
@@ -127,9 +127,9 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
                   "New Group" %>
               </div>
             <% end %>
-            <.button
+
+            <.core_button
               class="mt-1"
-              type="button"
               phx-click="confirm_group_membership_changes"
               phx-value-ids={
                 Enum.map(@changeset.changes.achievement_levels, &Integer.to_string(&1.data.id))
@@ -138,9 +138,9 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
               }
               phx-target={@myself}
               disabled={length(@changeset.changes.achievement_levels) < 1}
-              label="Confirm"
-              color="primary"
-            />
+            >
+              Confirm
+            </.core_button>
           </div>
         <% end %>
       </.form>

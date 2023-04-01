@@ -26,9 +26,9 @@ defmodule FluidHabitsWeb.UserLoginLive do
           </.link>
         </:actions>
         <:actions>
-          <.button phx-disable-with="Signing in..." class="w-full">
+          <.core_button phx-disable-with="Signing in..." class="w-full">
             Sign in <span aria-hidden="true">→</span>
-          </.button>
+          </.core_button>
         </:actions>
       </.simple_form>
     </div>

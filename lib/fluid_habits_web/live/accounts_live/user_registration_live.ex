@@ -43,7 +43,9 @@ defmodule FluidHabitsWeb.UserRegistrationLive do
         />
 
         <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
+          <.core_button type="submit" phx-disable-with="Creating account..." class="w-full">
+            Create an account
+          </.core_button>
         </:actions>
       </.simple_form>
     </div>

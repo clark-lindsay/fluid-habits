@@ -26,7 +26,9 @@ defmodule FluidHabitsWeb.UserResetPasswordLive do
           required
         />
         <:actions>
-          <.button phx-disable-with="Resetting..." class="w-full">Reset Password</.button>
+          <.core_button phx-disable-with="Resetting..." class="w-full">
+            Reset Password
+          </.core_button>
         </:actions>
       </.simple_form>
 

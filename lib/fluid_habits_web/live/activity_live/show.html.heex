@@ -58,34 +58,21 @@
     </div>
 
     <div class="flex flex-col gap-2">
-      <% # have to render two buttons because `petal_components` does not respect `disabled` for link-buttons %>
       <%= if @eligible_for_achievements? do %>
-        <.button
-          label="Add Achievement"
-          link_type="live_patch"
-          to={~p"/activities/#{@activity.id}/show/add-achievement"}
-          color="primary"
-        />
+        <.button_link patch={~p"/activities/#{@activity.id}/show/add-achievement"}>
+          Add Achievement
+        </.button_link>
       <% else %>
-        <.button disabled label="Add Achievement" color="primary" />
+        <.core_button disabled>Add Achievement</.core_button>
       <% end %>
 
       <div class="flex flex-row gap-2 justify-between">
-        <.button
-          label="Add Achievement Level"
-          link_type="live_patch"
-          to={~p"/activities/#{@activity.id}/show/add-ach-lvl"}
-          color="primary"
-          class="grow"
-        />
-
-        <.button
-          label="Add Achievement Group"
-          link_type="live_patch"
-          to={~p"/activities/#{@activity.id}/show/add-ach-group"}
-          color="primary"
-          class="grow"
-        />
+        <.button_link patch={~p"/activities/#{@activity.id}/show/add-ach-lvl"} class="grow">
+          Add Achievement Level
+        </.button_link>
+        <.button_link patch={~p"/activities/#{@activity.id}/show/add-ach-group"} class="grow">
+          Add Achievement Group
+        </.button_link>
       </div>
     </div>
   </div>

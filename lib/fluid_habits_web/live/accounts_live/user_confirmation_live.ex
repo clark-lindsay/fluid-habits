@@ -11,7 +11,9 @@ defmodule FluidHabitsWeb.UserConfirmationLive do
       <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
         <.input field={@form[:token]} type="hidden" />
         <:actions>
-          <.button phx-disable-with="Confirming..." class="w-full">Confirm my account</.button>
+          <.core_button type="submit" phx-disable-with="Confirming..." class="w-full">
+            Confirm my account
+          </.core_button>
         </:actions>
       </.simple_form>
 

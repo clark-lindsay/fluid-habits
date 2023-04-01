@@ -10,7 +10,9 @@ defmodule FluidHabitsWeb.UserConfirmationInstructionsLive do
     <.simple_form for={@form} id="resend_confirmation_form" phx-submit="send_instructions">
       <.input field={@form[:email]} type="email" label="Email" required />
       <:actions>
-        <.button phx-disable-with="Sending...">Resend confirmation instructions</.button>
+        <.core_button phx-disable-with="Sending...">
+          Resend confirmation instructions
+        </.core_button>
       </:actions>
     </.simple_form>
 

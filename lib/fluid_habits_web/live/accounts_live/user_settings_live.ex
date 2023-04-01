@@ -25,7 +25,9 @@ defmodule FluidHabitsWeb.UserSettingsLive do
         required
       />
       <:actions>
-        <.button phx-disable-with="Changing...">Change Email</.button>
+        <.core_button phx-disable-with="Changing..." class="w-full">
+          Change Email
+        </.core_button>
       </:actions>
     </.simple_form>
 
@@ -57,7 +59,9 @@ defmodule FluidHabitsWeb.UserSettingsLive do
         required
       />
       <:actions>
-        <.button phx-disable-with="Changing...">Change Password</.button>
+        <.core_button type="submit" phx-disable-with="Changing..." class="w-full">
+          Change Password
+        </.core_button>
       </:actions>
     </.simple_form>
 
@@ -81,9 +85,9 @@ defmodule FluidHabitsWeb.UserSettingsLive do
       />
 
       <:actions>
-        <Components.Buttons.button type="submit" phx_disable_with="Changing timezone...">
+        <.core_button type="submit" phx-disable-with="Changing timezone..." class="w-full">
           Change timezone
-        </Components.Buttons.button>
+        </.core_button>
       </:actions>
     </.simple_form>
     """
