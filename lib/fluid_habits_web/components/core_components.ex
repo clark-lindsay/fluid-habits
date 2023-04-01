@@ -55,7 +55,11 @@ defmodule FluidHabitsWeb.CoreComponents do
       phx-remove={hide_modal(@id)}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="fixed inset-0 z-50 transition-opacity bg-zinc-900 animate-fade-in dark:bg-gray-900 bg-opacity-30 dark:bg-opacity-70" aria-hidden="true" />
+      <div
+        id={"#{@id}-bg"}
+        class="fixed inset-0 z-50 transition-opacity bg-zinc-900 animate-fade-in dark:bg-gray-900 bg-opacity-30 dark:bg-opacity-70"
+        aria-hidden="true"
+      />
       <div
         class="fixed z-50 inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -86,7 +90,10 @@ defmodule FluidHabitsWeb.CoreComponents do
               </div>
               <div id={"#{@id}-content"}>
                 <header :if={@title != []}>
-                  <h1 id={"#{@id}-title"} class="text-lg font-semibold leading-8 text-zinc-800 dark:text-gray-100">
+                  <h1
+                    id={"#{@id}-title"}
+                    class="text-lg font-semibold leading-8 text-zinc-800 dark:text-gray-100"
+                  >
                     <%= render_slot(@title) %>
                   </h1>
                   <p
@@ -111,8 +118,10 @@ defmodule FluidHabitsWeb.CoreComponents do
                   <.link
                     :for={cancel <- @cancel}
                     phx-click={hide_modal(@on_cancel, @id)}
-                    class={["text-sm font-semibold leading-6", 
-                      "text-zinc-900 hover:text-zinc-700 dark:text-gray-100 dark:hover:text-gray-50"]}
+                    class={[
+                      "text-sm font-semibold leading-6",
+                      "text-zinc-900 hover:text-zinc-700 dark:text-gray-100 dark:hover:text-gray-50"
+                    ]}
                   >
                     <%= render_slot(cancel) %>
                   </.link>
