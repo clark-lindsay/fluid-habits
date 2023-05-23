@@ -1,8 +1,11 @@
 defmodule FluidHabitsWeb.ActivityLive.Show do
+  @moduledoc false
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.{Accounts, Activities, Repo}
+  alias FluidHabits.Accounts
+  alias FluidHabits.Activities
   alias FluidHabits.Activities.Activity
+  alias FluidHabits.Repo
   alias Phoenix.PubSub
 
   @max_recent_achievements 10
@@ -37,15 +40,13 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
          eligible_for_achievements? <- Activities.eligible_for_achievements?(activity),
          achievement_levels <- Activities.list_achievement_levels(activity),
          recent_achievements <-
-           Activities.list_achievements_since(activity, one_week_ago,
-             limit: @max_recent_achievements
-           ),
+           Activities.list_achievements_since(activity, one_week_ago, limit: @max_recent_achievements),
          achievement_groups <- Repo.preload(activity, :achievement_groups).achievement_groups,
          active_streak <- Activities.active_streak(activity),
          streak_includes_today? <- Activities.has_logged_achievement_today?(activity),
          weekly_score <-
-           Activities.scores_since(
-             activity,
+           activity
+           |> Activities.scores_since(
              DateTime.shift_zone!(start_of_current_week, "Etc/UTC"),
              limit: :infinity
            )
@@ -73,10 +74,7 @@ defmodule FluidHabitsWeb.ActivityLive.Show do
   end
 
   @impl Phoenix.LiveView
-  def handle_info(
-        {:create_achievement, %{achievement: %{activity: %{user: user}} = achievement}},
-        socket
-      ) do
+  def handle_info({:create_achievement, %{achievement: %{activity: %{user: user}} = achievement}}, socket) do
     if user.id == socket.assigns.current_user.id do
       achievement = FluidHabits.Repo.preload(achievement, :achievement_level)
 

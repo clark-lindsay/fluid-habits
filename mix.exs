@@ -52,6 +52,7 @@ defmodule FluidHabits.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
       {:stream_data, "~> 0.5.0", only: :test, runtime: false},
+      {:styler, "~> 0.7", only: [:dev, :test], runtime: false},
       {:swoosh, "~> 1.3"},
       {:tailwind, "~> 0.1.6", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},

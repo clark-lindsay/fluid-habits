@@ -1,8 +1,11 @@
 defmodule FluidHabitsWeb.ActivityLive.Index do
+  @moduledoc false
   use FluidHabitsWeb, :live_view
 
-  alias FluidHabits.{Accounts, Activities}
-  alias FluidHabits.Activities.{Activity, ActivityQueries}
+  alias FluidHabits.Accounts
+  alias FluidHabits.Activities
+  alias FluidHabits.Activities.Activity
+  alias FluidHabits.Activities.ActivityQueries
   alias FluidHabits.Repo
 
   @impl true
@@ -27,7 +30,7 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
           weekly_score: total_score_since(activity, start_of_current_week)
         }
       end)
-      |> Enum.into(%{}, fn {:ok, %{activity: %{id: id}} = activity_data} ->
+      |> Map.new(fn {:ok, %{activity: %{id: id}} = activity_data} ->
         {id, activity_data}
       end)
 
@@ -78,16 +81,14 @@ defmodule FluidHabitsWeb.ActivityLive.Index do
       weekly_score: total_score_since(activity, socket.assigns.start_of_current_week)
     }
 
-    socket =
-      socket
-      |> assign(activities: Map.put(socket.assigns.activities, activity.id, activity_data))
+    socket = assign(socket, activities: Map.put(socket.assigns.activities, activity.id, activity_data))
 
     {:noreply, socket}
   end
 
   defp total_score_since(activity, since) do
-    Activities.scores_since(
-      activity,
+    activity
+    |> Activities.scores_since(
       DateTime.shift_zone!(since, "Etc/UTC"),
       limit: :infinity
     )

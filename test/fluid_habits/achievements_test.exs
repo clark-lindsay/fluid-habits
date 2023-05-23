@@ -1,16 +1,17 @@
 defmodule FluidHabits.AchievementsTest do
   use FluidHabits.DataCase, async: true
 
+  alias FluidHabits.AchievementLevelsFixtures
   alias FluidHabits.Achievements
   alias FluidHabits.Achievements.Achievement
-  alias FluidHabits.{ActivitiesFixtures, Activities, AchievementLevelsFixtures}
+  alias FluidHabits.Activities
+  alias FluidHabits.ActivitiesFixtures
 
   describe "achievements" do
     setup do
       activity = ActivitiesFixtures.activity_fixture()
 
-      achievement_level =
-        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      achievement_level = AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
 
       # create additional achievement_levels to meet
       # achievement eligibility requirements
@@ -31,8 +32,7 @@ defmodule FluidHabits.AchievementsTest do
     test "create_achievement/1 errors when the associated activity is not eligible for achievements" do
       activity = ActivitiesFixtures.activity_fixture()
 
-      achievement_level =
-        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      achievement_level = AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
 
       assert {:error, _} =
                Achievements.create_achievement(%{

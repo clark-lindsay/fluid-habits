@@ -1,12 +1,13 @@
 defmodule FluidHabits.AchievementLevelsTest do
   use FluidHabits.DataCase, async: true
 
-  alias FluidHabits.{AchievementLevels, Repo}
+  alias FluidHabits.AchievementLevels
+  alias FluidHabits.Repo
 
   describe "achievement_levels" do
-    alias FluidHabits.Achievements.Level
-
     import FluidHabits.AchievementLevelsFixtures
+
+    alias FluidHabits.Achievements.Level
 
     @invalid_attrs %{description: nil, name: nil, value: nil}
     @valid_attrs %{description: "some description", name: "some name", value: 2}
@@ -29,20 +30,16 @@ defmodule FluidHabits.AchievementLevelsTest do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
 
       assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(
-                 Map.put(@invalid_attrs, :activity_id, activity.id)
-               )
+               AchievementLevels.create_achievement_level(Map.put(@invalid_attrs, :activity_id, activity.id))
     end
 
     test "create_achievement_level/1 with value < 1 or > 3 returns error changeset" do
       activity = FluidHabits.ActivitiesFixtures.activity_fixture()
       valid_attrs = Map.merge(@valid_attrs, %{activity_id: activity.id})
 
-      assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 0}))
+      assert {:error, %Ecto.Changeset{}} = AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 0}))
 
-      assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 4}))
+      assert {:error, %Ecto.Changeset{}} = AchievementLevels.create_achievement_level(Map.merge(valid_attrs, %{value: 4}))
     end
 
     test "create_achievement_level/1 with non-integer value returns error changeset" do
@@ -73,8 +70,7 @@ defmodule FluidHabits.AchievementLevelsTest do
     test "update_achievement_level/2 with invalid data returns error changeset" do
       achievement_level = achievement_level_fixture()
 
-      assert {:error, %Ecto.Changeset{}} =
-               AchievementLevels.update_achievement_level(achievement_level, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = AchievementLevels.update_achievement_level(achievement_level, @invalid_attrs)
 
       assert achievement_level == Repo.get!(Level, achievement_level.id)
     end

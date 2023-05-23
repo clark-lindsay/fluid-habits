@@ -4,8 +4,8 @@ defmodule FluidHabitsWeb.AchievementLevelComponentsTest do
   import Phoenix.Component
   import Phoenix.LiveViewTest
 
-  alias FluidHabitsWeb.Components.AchievementLevelComponents
   alias FluidHabits.AchievementLevelsFixtures
+  alias FluidHabitsWeb.Components.AchievementLevelComponents
 
   describe "to_list_item/1" do
     test "renders the name and description time for the achievement_level" do

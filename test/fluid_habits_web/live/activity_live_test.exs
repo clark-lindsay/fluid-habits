@@ -5,8 +5,9 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
   import Mox
   import Phoenix.LiveViewTest
 
+  alias FluidHabits.Activities.Activity
+  alias FluidHabits.Activities.ActivityQueries
   alias FluidHabits.Repo
-  alias FluidHabits.Activities.{Activity, ActivityQueries}
 
   @create_attrs %{description: "newly created description", name: "newly created name"}
   @update_attrs %{description: "some updated description", name: "some updated name"}
@@ -136,8 +137,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     end
 
     test "adds new achievement group with modal", %{conn: conn, activity: activity} do
-      min_ach_levels_for_ach_eligibility =
-        FluidHabits.Activities.min_ach_levels_for_ach_eligibility()
+      min_ach_levels_for_ach_eligibility = FluidHabits.Activities.min_ach_levels_for_ach_eligibility()
 
       for iteration <- Range.new(1, min_ach_levels_for_ach_eligibility) do
         FluidHabits.AchievementLevelsFixtures.achievement_level_fixture(%{
@@ -171,8 +171,9 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
     end
 
     test "adds new achievement with modal", %{conn: conn, activity: activity} do
+      alias FluidHabits.AchievementLevelsFixtures
       alias FluidHabits.Activities
-      alias FluidHabits.{Activities, AchievementLevelsFixtures}
+
       ref = make_ref()
       test_pid = self()
 
@@ -182,8 +183,7 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
         :ok
       end)
 
-      achievement_level =
-        AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
+      achievement_level = AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
 
       for _iteration <- Range.new(1, Activities.min_ach_levels_for_ach_eligibility()) do
         AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
@@ -191,7 +191,8 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
 
       {:ok, show_live, html} = live(conn, ~p"/activities/#{activity.id}")
 
-      refute Floki.parse_document!(html)
+      refute html
+             |> Floki.parse_document!()
              |> Floki.find("span")
              |> Floki.text() =~ achievement_level.name
 
@@ -219,7 +220,8 @@ defmodule FluidHabitsWeb.ActivityLiveTest do
       {:ok, _live, html} = live(conn, ~p"/activities/#{activity.id}")
 
       add_achievement_button =
-        Floki.parse_document!(html)
+        html
+        |> Floki.parse_document!()
         |> Floki.find("button")
         |> Enum.filter(fn elem ->
           Regex.match?(~r/^\s*Add\s+Achievement\s*$/, Floki.text(elem))

@@ -4,16 +4,15 @@ defmodule FluidHabitsWeb.AchievementComponentsTest do
   import Phoenix.Component
   import Phoenix.LiveViewTest
 
-  alias FluidHabitsWeb.Components.AchievementComponents
   alias FluidHabits.AchievementsFixtures
+  alias FluidHabitsWeb.Components.AchievementComponents
 
   describe "to_list_item/1" do
     setup context, do: Mox.set_mox_from_context(context)
 
     test "renders the name and inserted_at time for the achievement" do
       %{inserted_at: inserted_at, achievement_level: achievement_level} =
-        achievement =
-        AchievementsFixtures.achievement_fixture() |> FluidHabits.Repo.preload(:achievement_level)
+        achievement = FluidHabits.Repo.preload(AchievementsFixtures.achievement_fixture(), :achievement_level)
 
       assigns = %{achievement: achievement}
 

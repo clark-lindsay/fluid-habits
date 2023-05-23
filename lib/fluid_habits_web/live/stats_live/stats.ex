@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.StatsLive.Index do
+  @moduledoc false
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.Accounts
@@ -6,33 +7,32 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
   @impl Phoenix.LiveView
   def mount(params, %{"user_token" => user_token} = _session, socket) do
+    import Ecto.Query, only: [from: 2]
+
     current_user = Accounts.get_user_by_session_token(user_token)
 
     if(connected?(socket)) do
       Phoenix.PubSub.subscribe(FluidHabits.PubSub, "user:#{current_user.id}")
     end
 
-    socket =
-      socket
-      |> assign(:current_user, current_user)
-
-    import Ecto.Query, only: [from: 2]
+    socket = assign(socket, :current_user, current_user)
 
     activities =
-      from(act in FluidHabits.Activities.Activity,
-        where: act.user_id == ^socket.assigns.current_user.id
+      FluidHabits.Repo.all(
+        from(act in FluidHabits.Activities.Activity, where: act.user_id == ^socket.assigns.current_user.id)
       )
-      |> FluidHabits.Repo.all()
 
     default_from =
-      Timex.now(current_user.timezone)
+      current_user.timezone
+      |> Timex.now()
       |> Timex.shift(months: -1)
       |> Timex.beginning_of_month()
       |> Timex.to_date()
       |> Date.to_iso8601()
 
     default_until =
-      Timex.now(current_user.timezone)
+      current_user.timezone
+      |> Timex.now()
       |> Timex.end_of_month()
       |> Timex.to_date()
       |> Date.to_iso8601()
@@ -57,28 +57,19 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
   @impl Phoenix.LiveView
   def handle_params(
-        %{
-          "granularity" => granularity,
-          "activities" => activity_ids,
-          "from" => from,
-          "until" => until
-        },
+        %{"granularity" => granularity, "activities" => activity_ids, "from" => from, "until" => until},
         _uri,
         socket
       ) do
     from =
-      Timex.parse!(
-        from,
-        "{YYYY}-{0M}-{D}"
-      )
+      from
+      |> Timex.parse!("{YYYY}-{0M}-{D}")
       |> Timex.to_datetime(socket.assigns.current_user.timezone)
       |> Timex.beginning_of_day()
 
     until =
-      Timex.parse!(
-        until,
-        "{YYYY}-{0M}-{D}"
-      )
+      until
+      |> Timex.parse!("{YYYY}-{0M}-{D}")
       |> Timex.to_datetime(socket.assigns.current_user.timezone)
       |> Timex.end_of_day()
 
@@ -111,18 +102,11 @@ defmodule FluidHabitsWeb.StatsLive.Index do
         "period_parameters_change",
         %{
           "stats_params" =>
-            params = %{
-              "granularity" => granularity,
-              "activities" => activity_ids,
-              "from" => from,
-              "until" => until
-            }
+            %{"granularity" => granularity, "activities" => activity_ids, "from" => from, "until" => until} = params
         },
         socket
       ) do
-    changeset =
-      socket.assigns.changeset
-      |> change_stats_params(params)
+    changeset = change_stats_params(socket.assigns.changeset, params)
 
     socket = assign(socket, changeset: changeset)
 
@@ -141,8 +125,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
       {:noreply, socket}
     else
-      {:error, changeset_with_action} =
-        Ecto.Changeset.apply_action(socket.assigns.changeset, :insert)
+      {:error, changeset_with_action} = Ecto.Changeset.apply_action(socket.assigns.changeset, :insert)
 
       socket = assign(socket, changeset: changeset_with_action)
 
@@ -155,16 +138,15 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     # could find the correct interval, if it exists in the current set, and update the score
     # just going to take it easy for now and re-calculate all scores
 
-    %{granularity: granularity, activities: activity_ids, from: from, until: until} =
-      socket.assigns.changeset.changes
+    %{granularity: granularity, activities: activity_ids, from: from, until: until} = socket.assigns.changeset.changes
 
     {:ok, from_date} = Date.from_iso8601(from)
     {:ok, until_date} = Date.from_iso8601(until)
 
     intervals =
       FluidHabits.DateTime.split_into_intervals(
-        Timex.to_datetime(from_date, user.timezone) |> Timex.beginning_of_day(),
-        Timex.to_datetime(until_date, user.timezone) |> Timex.end_of_day(),
+        from_date |> Timex.to_datetime(user.timezone) |> Timex.beginning_of_day(),
+        until_date |> Timex.to_datetime(user.timezone) |> Timex.end_of_day(),
         FluidHabits.DateTime.to_granularity_atom(granularity)
       )
 
@@ -230,31 +212,31 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   defp interval_scores(activity_ids, intervals) do
     activities = FluidHabits.Activities.list_activities_with_ids!(activity_ids)
 
-    Task.Supervisor.async_stream(
-      FluidHabits.TaskSupervisor,
+    FluidHabits.TaskSupervisor
+    |> Task.Supervisor.async_stream(
       activities,
       fn activity ->
         scores_per_day =
           FluidHabits.Activities.scores_since(
             activity,
-            hd(intervals)[:from] |> Timex.beginning_of_day(),
-            until: List.last(intervals)[:until] |> Timex.end_of_day()
+            Timex.beginning_of_day(hd(intervals)[:from]),
+            until: Timex.end_of_day(List.last(intervals)[:until])
           )
 
         # match each `interval` against `scores_per_day` to reduce the scores to
         # one total score per interval
-        Stream.map(intervals, fn interval = %{from: from, until: until} ->
+        Stream.map(intervals, fn %{from: from, until: until} = interval ->
           scores_within_interval =
             Enum.filter(scores_per_day, fn {date, _score} ->
               date =
-                Timex.to_datetime(date)
+                date
+                |> Timex.to_datetime()
                 |> Timex.set(hour: 12)
 
               Timex.before?(from, date) and Timex.after?(until, date)
             end)
 
-          total_score_for_interval =
-            Enum.reduce(scores_within_interval, 0, fn {_date, score}, acc -> acc + score end)
+          total_score_for_interval = Enum.reduce(scores_within_interval, 0, fn {_date, score}, acc -> acc + score end)
 
           %{
             interval: interval,
@@ -320,7 +302,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
 
         Map.merge(
           interval_score_per_activity,
-          %{"category" => to_user_timezone!(from, user, output: :date) |> Date.to_string()}
+          %{"category" => from |> to_user_timezone!(user, output: :date) |> Date.to_string()}
         )
       end)
       |> Enum.sort_by(fn %{"category" => date} -> Date.from_iso8601!(date) end, &Timex.before?/2)
@@ -329,7 +311,8 @@ defmodule FluidHabitsWeb.StatsLive.Index do
     mapping = %{
       category_col: "category",
       value_cols:
-        Enum.reduce(intervals, MapSet.new(), fn %{activity_id: activity_id}, acc ->
+        intervals
+        |> Enum.reduce(MapSet.new(), fn %{activity_id: activity_id}, acc ->
           MapSet.put(acc, "#{activity_id}")
         end)
         |> MapSet.to_list()
@@ -339,9 +322,7 @@ defmodule FluidHabitsWeb.StatsLive.Index do
   end
 
   defp to_user_timezone!(date_time, %User{timezone: timezone}, opts \\ []) do
-    date_time =
-      date_time
-      |> DateTime.shift_zone!(timezone)
+    date_time = DateTime.shift_zone!(date_time, timezone)
 
     case opts[:output] do
       :date -> DateTime.to_date(date_time)

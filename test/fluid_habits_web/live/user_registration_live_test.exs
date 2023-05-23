@@ -1,8 +1,8 @@
 defmodule FluidHabitsWeb.UserRegistrationLiveTest do
   use FluidHabitsWeb.ConnCase
 
-  import Phoenix.LiveViewTest
   import FluidHabits.AccountsFixtures
+  import Phoenix.LiveViewTest
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do

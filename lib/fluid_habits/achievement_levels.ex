@@ -4,9 +4,9 @@ defmodule FluidHabits.AchievementLevels do
   """
 
   import Ecto.Query, warn: false
-  alias FluidHabits.Repo
 
   alias FluidHabits.Achievements.Level
+  alias FluidHabits.Repo
 
   @doc """
   Creates an `Achievements.Level`

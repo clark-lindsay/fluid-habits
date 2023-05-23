@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.AchievementLevelLive.FormComponent do
+  @moduledoc false
   use FluidHabitsWeb, :live_component
 
   alias FluidHabits.AchievementLevels

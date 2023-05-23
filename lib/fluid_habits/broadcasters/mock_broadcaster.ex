@@ -1,4 +1,5 @@
 defmodule FluidHabits.Broadcasters.MockBroadcaster do
+  @moduledoc false
   @behaviour FluidHabits.Broadcasters.Broadcaster
 
   @impl FluidHabits.Broadcasters.Broadcaster

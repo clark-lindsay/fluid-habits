@@ -5,12 +5,14 @@ defmodule FluidHabits.DateTimeTest do
   describe "split_into_intervals/3" do
     test "returns an empty list when start is after end" do
       period_start =
-        Timex.from_iso_day(2, 2022)
+        2
+        |> Timex.from_iso_day(2022)
         |> Timex.to_datetime()
         |> Timex.beginning_of_day()
 
       period_end =
-        Timex.from_iso_day(1, 2022)
+        1
+        |> Timex.from_iso_day(2022)
         |> Timex.to_datetime()
         |> Timex.end_of_day()
 
@@ -19,7 +21,7 @@ defmodule FluidHabits.DateTimeTest do
     end
 
     test "start and end must have the same time_zone" do
-      now_eastern = Timex.now() |> DateTime.shift_zone!("US/Eastern")
+      now_eastern = DateTime.shift_zone!(Timex.now(), "US/Eastern")
       tomorrow_pacific = Timex.now() |> Timex.shift(days: 1) |> DateTime.shift_zone!("US/Pacific")
 
       assert_raise FunctionClauseError,
@@ -38,25 +40,23 @@ defmodule FluidHabits.DateTimeTest do
               year_2 <- StreamData.integer(2020..2025),
               day_2 <- StreamData.integer(1..365),
               time_zone <-
-                StreamData.member_of(
-                  Timex.timezones()
-                  |> Enum.filter(fn tz -> !String.contains?(tz, "Etc") end)
-                )
+                StreamData.member_of(Enum.filter(Timex.timezones(), fn tz -> !String.contains?(tz, "Etc") end))
             ) do
         period_start =
-          Timex.from_iso_day(day_1, year_1)
+          day_1
+          |> Timex.from_iso_day(year_1)
           |> Timex.to_datetime()
           |> DateTime.shift_zone!(time_zone)
 
         period_end =
-          Timex.from_iso_day(day_2, year_2)
+          day_2
+          |> Timex.from_iso_day(year_2)
           |> Timex.to_datetime()
           |> DateTime.shift_zone!(time_zone)
 
         [period_start, period_end] = Enum.sort([period_start, period_end], &Timex.before?/2)
 
-        {period_start, period_end} =
-          {Timex.beginning_of_day(period_start), Timex.end_of_day(period_end)}
+        {period_start, period_end} = {Timex.beginning_of_day(period_start), Timex.end_of_day(period_end)}
 
         intervals = FluidHabits.DateTime.split_into_intervals(period_start, period_end)
 
@@ -74,19 +74,22 @@ defmodule FluidHabits.DateTimeTest do
               time_zone <- StreamData.member_of(Timex.timezones())
             ) do
         period_start =
-          Timex.from_iso_day(day_1, year_1)
+          day_1
+          |> Timex.from_iso_day(year_1)
           |> Timex.to_datetime(time_zone)
           |> Timex.beginning_of_day()
 
         period_end =
-          Timex.from_iso_day(day_2, year_2)
+          day_2
+          |> Timex.from_iso_day(year_2)
           |> Timex.to_datetime(time_zone)
           |> Timex.end_of_day()
 
         [period_start, period_end] = Enum.sort([period_start, period_end], &Timex.before?/2)
 
         intervals =
-          FluidHabits.DateTime.split_into_intervals(period_start, period_end)
+          period_start
+          |> FluidHabits.DateTime.split_into_intervals(period_end)
           |> Enum.chunk_every(2, 1, :discard)
 
         Enum.each(intervals, fn [
@@ -121,16 +124,19 @@ defmodule FluidHabits.DateTimeTest do
                 ])
             ) do
         period_start =
-          Timex.from_iso_day(day_1, year_1)
+          day_1
+          |> Timex.from_iso_day(year_1)
           |> Timex.to_datetime(time_zone)
 
         period_end =
-          Timex.from_iso_day(day_2, year_2)
+          day_2
+          |> Timex.from_iso_day(year_2)
           |> Timex.to_datetime(time_zone)
 
         [period_start, period_end] = Enum.sort([period_start, period_end], &Timex.before?/2)
 
-        FluidHabits.DateTime.split_into_intervals(period_start, period_end, granularity)
+        period_start
+        |> FluidHabits.DateTime.split_into_intervals(period_end, granularity)
         |> Enum.each(fn %{from: from, until: until} ->
           assert max_interval_length_in_hours >= Timex.diff(until, from, :hours)
         end)

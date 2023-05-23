@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.Components.AchievementLevelComponents do
+  @moduledoc false
   use Phoenix.Component
 
   def to_list_item(assigns) do

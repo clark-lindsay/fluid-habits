@@ -1,9 +1,10 @@
 defmodule FluidHabitsWeb.UserSettingsLiveTest do
   use FluidHabitsWeb.ConnCase
 
-  alias FluidHabits.Accounts
-  import Phoenix.LiveViewTest
   import FluidHabits.AccountsFixtures
+  import Phoenix.LiveViewTest
+
+  alias FluidHabits.Accounts
 
   describe "Settings page" do
     test "renders settings page", %{conn: conn} do
@@ -166,7 +167,7 @@ defmodule FluidHabitsWeb.UserSettingsLiveTest do
     end
 
     test "updates the user timezone", %{conn: conn} do
-      timezone = Timex.timezones() |> Enum.random()
+      timezone = Enum.random(Timex.timezones())
 
       {:ok, lv, _html} = live(conn, ~p"/users/settings")
 

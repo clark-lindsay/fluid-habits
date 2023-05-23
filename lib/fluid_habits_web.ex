@@ -23,9 +23,9 @@ defmodule FluidHabitsWeb do
     quote do
       use Phoenix.Router, helpers: false
 
-      import Plug.Conn
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+      import Plug.Conn
     end
   end
 
@@ -41,8 +41,8 @@ defmodule FluidHabitsWeb do
         formats: [:html, :json],
         layouts: [html: FluidHabitsWeb.Layouts]
 
-      import Plug.Conn
       import FluidHabitsWeb.Gettext
+      import Plug.Conn
 
       unquote(verified_routes())
     end
@@ -84,21 +84,24 @@ defmodule FluidHabitsWeb do
       use Phoenix.HTML
 
       # Core UI components and translation
-      import FluidHabitsWeb.CoreComponents
-      import FluidHabitsWeb.Gettext
 
       # Shortcut for generating JS commands
-      alias Phoenix.LiveView.JS
 
       # Route generation with the `~p` sigil
-      unquote(verified_routes())
 
       # use all Petal Components
       use PetalComponents
+
+      import FluidHabitsWeb.CoreComponents
+      import FluidHabitsWeb.Gettext
+
       # alias FluidHabitsWeb.PC
 
       # alias all components to reduce namespace clutter
       alias FluidHabitsWeb.Components
+      alias Phoenix.LiveView.JS
+
+      unquote(verified_routes())
     end
   end
 

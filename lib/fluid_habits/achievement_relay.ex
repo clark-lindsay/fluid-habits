@@ -1,8 +1,9 @@
 defmodule FluidHabits.AchievementRelay do
-  alias FluidHabits.Broadcasters.Broadcaster
-  alias FluidHabits.Activities
-
+  @moduledoc false
   use GenServer
+
+  alias FluidHabits.Activities
+  alias FluidHabits.Broadcasters.Broadcaster
 
   def start_link(_any) do
     GenServer.start_link(__MODULE__, %{})

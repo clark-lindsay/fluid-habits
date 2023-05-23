@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
+  @moduledoc false
   use FluidHabitsWeb, :live_component
 
   alias FluidHabits.Achievements
@@ -6,13 +7,14 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
 
   @impl Phoenix.LiveComponent
   def update(%{activity: activity} = assigns, socket) do
-    changeset = Group.changeset(%Group{}, %{activity_id: activity.id})
-
     import Ecto.Query, only: [from: 2]
 
+    changeset = Group.changeset(%Group{}, %{activity_id: activity.id})
+
     achievement_levels =
-      (assigns.achievement_levels || FluidHabits.Activities.list_achievement_levels(activity))
-      |> FluidHabits.Repo.preload(group: from(g in Group, select: %{name: g.name}))
+      FluidHabits.Repo.preload(assigns.achievement_levels || FluidHabits.Activities.list_achievement_levels(activity),
+        group: from(g in Group, select: %{name: g.name})
+      )
 
     {:ok,
      socket
@@ -25,7 +27,7 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
 
   @impl Phoenix.LiveComponent
   def handle_event("confirm_group_membership_changes", %{"ids" => ids}, socket) do
-    new_selections = String.split(ids, ",") |> Enum.map(&String.to_integer/1)
+    new_selections = ids |> String.split(",") |> Enum.map(&String.to_integer/1)
 
     {:noreply,
      socket
@@ -40,11 +42,11 @@ defmodule FluidHabitsWeb.AchievementGroupLive.FormComponent do
     # see if the selected ach_lvl ids match the ones that the user has already confirmed,
     # and reset the membership confirmation section if they do not
     socket =
-      socket
-      |> assign(
+      assign(
+        socket,
         :has_confirmed_group_membership_changes,
-        Enum.sort(achievement_level_ids) |> Enum.join() ==
-          Enum.sort(socket.assigns.confirmed_ach_lvl_ids_to_change) |> Enum.join()
+        achievement_level_ids |> Enum.sort() |> Enum.join() ==
+          socket.assigns.confirmed_ach_lvl_ids_to_change |> Enum.sort() |> Enum.join()
       )
 
     selected_ach_levels =

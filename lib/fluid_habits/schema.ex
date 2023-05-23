@@ -1,4 +1,5 @@
 defmodule FluidHabits.Schema do
+  @moduledoc false
   defmacro __using__(_) do
     quote do
       use TypedEctoSchema

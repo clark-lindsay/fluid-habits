@@ -1,5 +1,7 @@
 defmodule FluidHabits.Accounts.User do
+  @moduledoc false
   use FluidHabits.Schema
+
   import Ecto.Changeset
 
   typed_schema "users" do
@@ -165,8 +167,6 @@ defmodule FluidHabits.Accounts.User do
   end
 
   defp validate_timezone(changeset) do
-    validate_inclusion(changeset, :timezone, Timex.timezones(),
-      message: "must be included in the official Olson database"
-    )
+    validate_inclusion(changeset, :timezone, Timex.timezones(), message: "must be included in the official Olson database")
   end
 end

@@ -7,6 +7,7 @@ defmodule FluidHabits.Achievements.Group do
   """
 
   use FluidHabits.Schema
+
   import Ecto.Changeset
 
   typed_schema "achievement_groups" do

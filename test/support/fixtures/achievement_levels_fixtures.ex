@@ -13,16 +13,9 @@ defmodule FluidHabits.AchievementLevelsFixtures do
     activity = attrs[:activity] || ActivitiesFixtures.activity_fixture()
 
     achievement_level_attrs =
-      attrs
-      |> Enum.into(%{
-        activity_id: activity.id,
-        description: "some description",
-        name: "some name",
-        value: 2
-      })
+      Enum.into(attrs, %{activity_id: activity.id, description: "some description", name: "some name", value: 2})
 
-    {:ok, achievement_level} =
-      FluidHabits.AchievementLevels.create_achievement_level(achievement_level_attrs)
+    {:ok, achievement_level} = FluidHabits.AchievementLevels.create_achievement_level(achievement_level_attrs)
 
     achievement_level
   end

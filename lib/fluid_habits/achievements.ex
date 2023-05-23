@@ -6,9 +6,10 @@ defmodule FluidHabits.Achievements do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
-  alias FluidHabits.Repo
-  alias FluidHabits.Achievements.{Achievement, Group}
+  alias FluidHabits.Achievements.Achievement
+  alias FluidHabits.Achievements.Group
   alias FluidHabits.Broadcasters.Broadcaster
+  alias FluidHabits.Repo
 
   @doc """
   Creates an achievement.
@@ -31,8 +32,7 @@ defmodule FluidHabits.Achievements do
 
     Multi.new()
     |> Multi.insert(:achievement_insert, changeset)
-    |> Multi.run(:is_activity_eligible, fn _repo,
-                                           %{achievement_insert: %{activity_id: activity_id}} ->
+    |> Multi.run(:is_activity_eligible, fn _repo, %{achievement_insert: %{activity_id: activity_id}} ->
       if FluidHabits.Activities.eligible_for_achievements?(%{id: activity_id}) do
         {:ok, true}
       else
@@ -67,7 +67,8 @@ defmodule FluidHabits.Achievements do
   """
   @spec create_group(map()) :: {:ok, Group.t()} | {:error, Ecto.Changeset.t()}
   def create_group(attrs \\ %{}) do
-    FluidHabits.Achievements.Group.changeset(%FluidHabits.Achievements.Group{}, attrs)
+    %FluidHabits.Achievements.Group{}
+    |> FluidHabits.Achievements.Group.changeset(attrs)
     |> Repo.insert()
   end
 end

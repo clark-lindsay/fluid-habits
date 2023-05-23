@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.UserRegistrationLive do
+  @moduledoc false
   use FluidHabitsWeb, :live_view
 
   alias FluidHabits.Accounts

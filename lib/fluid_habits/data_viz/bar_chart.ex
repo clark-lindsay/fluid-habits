@@ -1,5 +1,7 @@
 defmodule FluidHabits.DataViz.BarChart do
-  alias Contex.{BarChart, Plot}
+  @moduledoc false
+  alias Contex.BarChart
+  alias Contex.Plot
 
   @doc """
   Takes in a `Contex.DataSet` and the `:mapping` option for a `Contex.BarChart` 
@@ -15,7 +17,8 @@ defmodule FluidHabits.DataViz.BarChart do
         colour_palette: ["a855f7", "fde047", "06b6d4"]
       )
 
-    Plot.new(600, 400, chart)
+    600
+    |> Plot.new(400, chart)
     |> Plot.to_svg()
   end
 end

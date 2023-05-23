@@ -4,12 +4,12 @@ defmodule FluidHabits.Activities do
   """
 
   import Ecto.Query, warn: false
-  alias FluidHabits.Repo
 
-  alias FluidHabits.Activities.Activity
-  alias FluidHabits.Achievements.Level
   alias FluidHabits.Accounts
   alias FluidHabits.Accounts.User
+  alias FluidHabits.Achievements.Level
+  alias FluidHabits.Activities.Activity
+  alias FluidHabits.Repo
 
   @min_ach_levels_for_ach_eligibility 3
 
@@ -20,11 +20,7 @@ defmodule FluidHabits.Activities do
   """
   @spec list_activities_with_ids!(list(integer())) :: list(Activity.t())
   def list_activities_with_ids!(ids) do
-    activities =
-      from(act in Activity,
-        where: act.id in ^ids
-      )
-      |> Repo.all()
+    activities = Repo.all(from(act in Activity, where: act.id in ^ids))
 
     if length(ids) != length(activities) do
       raise("All IDs must be found in the database")
@@ -53,7 +49,8 @@ defmodule FluidHabits.Activities do
     - `until`: `DateTime.utc_now()`
   """
   def list_achievements_since(%Activity{} = activity, since, options \\ []) do
-    alias FluidHabits.Achievements.{Achievement, AchievementQueries}
+    alias FluidHabits.Achievements.Achievement
+    alias FluidHabits.Achievements.AchievementQueries
 
     default_options = [limit: 50, until: DateTime.utc_now()]
 
@@ -143,7 +140,8 @@ defmodule FluidHabits.Activities do
       |> Timex.end_of_day()
       |> DateTime.shift_zone!("Etc/UTC")
 
-    list_achievements_since(activity, start_of_day, until: end_of_day, limit: 1)
+    activity
+    |> list_achievements_since(start_of_day, until: end_of_day, limit: 1)
     |> Enum.count() >= 1
   end
 
@@ -167,11 +165,11 @@ defmodule FluidHabits.Activities do
   def active_streak(%Activity{} = activity) do
     import Ecto.Query, only: [from: 2]
 
-    alias FluidHabits.Achievements.Achievement
     alias FluidHabits.Accounts.User
+    alias FluidHabits.Achievements.Achievement
 
     timezone = Repo.one(from(u in User, where: u.id == ^activity.user_id, select: u.timezone))
-    yesterday_origin = Timex.now(timezone) |> Timex.shift(days: -1) |> Timex.beginning_of_day()
+    yesterday_origin = timezone |> Timex.now() |> Timex.shift(days: -1) |> Timex.beginning_of_day()
 
     {:ok, streak} =
       Repo.transaction(fn ->
@@ -185,7 +183,7 @@ defmodule FluidHabits.Activities do
         |> Stream.transform(yesterday_origin, fn inserted_at, day_origin ->
           if Timex.after?(inserted_at, day_origin) or
                Timex.equal?(inserted_at, day_origin, :microseconds) do
-            {[inserted_at], Timex.shift(inserted_at, days: -1) |> Timex.beginning_of_day()}
+            {[inserted_at], inserted_at |> Timex.shift(days: -1) |> Timex.beginning_of_day()}
           else
             {:halt, day_origin}
           end
@@ -222,12 +220,14 @@ defmodule FluidHabits.Activities do
   """
   @spec scores_since(Activity.t(), DateTime.t(), keyword()) :: keyword()
   def scores_since(activity, since, opts \\ []) do
-    alias FluidHabits.{Accounts.User, Achievements.Achievement}
+    alias FluidHabits.Accounts.User
+    alias FluidHabits.Achievements.Achievement
 
     timezone = Repo.one(from(u in User, where: u.id == ^activity.user_id, select: u.timezone))
 
-    list_achievements_since(activity, since, opts)
-    |> Enum.map(fn achievement = %Achievement{inserted_at: inserted_at} ->
+    activity
+    |> list_achievements_since(since, opts)
+    |> Enum.map(fn %Achievement{inserted_at: inserted_at} = achievement ->
       %{achievement | inserted_at: DateTime.shift_zone!(inserted_at, timezone)}
     end)
     |> Enum.group_by(
@@ -239,5 +239,5 @@ defmodule FluidHabits.Activities do
     end)
   end
 
-  def min_ach_levels_for_ach_eligibility(), do: @min_ach_levels_for_ach_eligibility
+  def min_ach_levels_for_ach_eligibility, do: @min_ach_levels_for_ach_eligibility
 end

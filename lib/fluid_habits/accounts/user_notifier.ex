@@ -1,4 +1,5 @@
 defmodule FluidHabits.Accounts.UserNotifier do
+  @moduledoc false
   import Swoosh.Email
 
   alias FluidHabits.Mailer

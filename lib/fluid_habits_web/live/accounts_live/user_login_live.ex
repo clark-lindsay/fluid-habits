@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.UserLoginLive do
+  @moduledoc false
   use FluidHabitsWeb, :live_view
 
   def render(assigns) do

@@ -1,5 +1,7 @@
 defmodule FluidHabits.Achievements.Achievement do
+  @moduledoc false
   use FluidHabits.Schema
+
   import Ecto.Changeset
 
   typed_schema "achievements" do

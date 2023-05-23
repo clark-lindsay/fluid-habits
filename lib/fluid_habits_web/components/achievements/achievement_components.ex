@@ -1,9 +1,11 @@
 defmodule FluidHabitsWeb.Components.AchievementComponents do
+  @moduledoc false
   use Phoenix.Component
 
   def to_list_item(assigns) do
     display_datetime =
-      DateTime.shift_zone!(assigns.achievement.inserted_at, assigns.timezone)
+      assigns.achievement.inserted_at
+      |> DateTime.shift_zone!(assigns.timezone)
       |> Timex.format!("{WDshort} {M}-{D} {h24}:{m}")
 
     # important to write the entire utility class name out so that tailwind does not

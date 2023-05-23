@@ -1,8 +1,8 @@
 defmodule FluidHabitsWeb.UserLoginLiveTest do
   use FluidHabitsWeb.ConnCase
 
-  import Phoenix.LiveViewTest
   import FluidHabits.AccountsFixtures
+  import Phoenix.LiveViewTest
 
   describe "Log in page" do
     test "renders log in page", %{conn: conn} do
@@ -31,8 +31,7 @@ defmodule FluidHabitsWeb.UserLoginLiveTest do
 
       {:ok, lv, _html} = live(conn, ~p"/users/log_in")
 
-      form =
-        form(lv, "#login_form", user: %{email: user.email, password: password, remember_me: true})
+      form = form(lv, "#login_form", user: %{email: user.email, password: password, remember_me: true})
 
       conn = submit_form(form, conn)
 
@@ -44,10 +43,7 @@ defmodule FluidHabitsWeb.UserLoginLiveTest do
     } do
       {:ok, lv, _html} = live(conn, ~p"/users/log_in")
 
-      form =
-        form(lv, "#login_form",
-          user: %{email: "test@email.com", password: "123456", remember_me: true}
-        )
+      form = form(lv, "#login_form", user: %{email: "test@email.com", password: "123456", remember_me: true})
 
       conn = submit_form(form, conn)
 

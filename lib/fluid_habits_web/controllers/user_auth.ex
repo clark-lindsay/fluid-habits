@@ -1,10 +1,11 @@
 defmodule FluidHabitsWeb.UserAuth do
-  import Plug.Conn
+  @moduledoc false
+  use FluidHabitsWeb, :verified_routes
+
   import Phoenix.Controller
+  import Plug.Conn
 
   alias FluidHabits.Accounts
-
-  use FluidHabitsWeb, :verified_routes
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change

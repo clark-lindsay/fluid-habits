@@ -8,7 +8,7 @@ defmodule FluidHabits.AccountsFixtures do
   def valid_user_password, do: "hello world!"
 
   def valid_user_attributes(attrs \\ %{}) do
-    attrs = Enum.into(attrs, %{})
+    attrs = Map.new(attrs)
 
     Map.merge(
       %{

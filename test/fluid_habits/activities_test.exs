@@ -2,10 +2,13 @@ defmodule FluidHabits.ActivitiesTest do
   use FluidHabits.DataCase, async: true
 
   describe "activities" do
-    alias FluidHabits.Activities.Activity
-    alias FluidHabits.{Activities, AccountsFixtures, Repo}
+    import FluidHabits.AchievementsFixtures
+    import FluidHabits.ActivitiesFixtures
 
-    import FluidHabits.{ActivitiesFixtures, AchievementsFixtures}
+    alias FluidHabits.AccountsFixtures
+    alias FluidHabits.Activities
+    alias FluidHabits.Activities.Activity
+    alias FluidHabits.Repo
 
     @invalid_attrs %{description: nil, name: nil}
 
@@ -22,8 +25,7 @@ defmodule FluidHabits.ActivitiesTest do
       %{id: associated_achievement_id} = achievement_fixture(%{activity: activity})
       _unrelated_achievement = achievement_fixture()
 
-      assert [%{id: ^associated_achievement_id}] =
-               Activities.list_achievements_since(activity, ~U[2000-01-01 00:00:00Z])
+      assert [%{id: ^associated_achievement_id}] = Activities.list_achievements_since(activity, ~U[2000-01-01 00:00:00Z])
     end
 
     test "list_achievements_since/2 returns only `limit` # of achievements" do
@@ -33,8 +35,8 @@ defmodule FluidHabits.ActivitiesTest do
         achievement_fixture(%{activity: activity})
       end
 
-      assert Activities.list_achievements_since(
-               activity,
+      assert activity
+             |> Activities.list_achievements_since(
                ~U[2000-01-01 00:00:00Z],
                limit: 1
              )
@@ -94,7 +96,8 @@ defmodule FluidHabits.ActivitiesTest do
         achievement_fixture(
           activity: activity,
           inserted_at:
-            Timex.now(user.timezone)
+            user.timezone
+            |> Timex.now()
             |> Timex.shift(days: -2)
             |> Timex.set(hour: 23)
             |> DateTime.shift_zone!("Etc/UTC")
@@ -106,7 +109,8 @@ defmodule FluidHabits.ActivitiesTest do
         achievement_fixture(
           activity: activity,
           inserted_at:
-            Timex.now(user.timezone)
+            user.timezone
+            |> Timex.now()
             |> Timex.shift(days: -1)
             |> Timex.set(hour: 23)
             |> DateTime.shift_zone!("Etc/UTC")
@@ -122,8 +126,7 @@ defmodule FluidHabits.ActivitiesTest do
 
       achievement_insertion_times =
         for days_ago <- [0, 1, 2, 3, 5] do
-          Timex.now()
-          |> Timex.shift(days: -days_ago)
+          Timex.shift(Timex.now(), days: -days_ago)
         end
 
       [most_recent, _, _, streak_starter, _] =
@@ -149,8 +152,7 @@ defmodule FluidHabits.ActivitiesTest do
 
       [one_day_ago, two_days_ago, three_days_ago] =
         for days_ago <- 1..3 do
-          Timex.now()
-          |> Timex.shift(days: -days_ago)
+          Timex.shift(Timex.now(), days: -days_ago)
         end
 
       _today_achievement = achievement_fixture(activity: activity, achievement_level: level_one)
@@ -250,7 +252,8 @@ defmodule FluidHabits.ActivitiesTest do
       # 04:00 in Tokyo would have the same Date as today for the user,
       # before conversion to UTC
       four_am_today_in_tokyo =
-        Timex.now(utc_user.timezone)
+        utc_user.timezone
+        |> Timex.now()
         |> Timex.to_date()
         |> DateTime.new!(~T[04:00:00.000], "Japan")
 

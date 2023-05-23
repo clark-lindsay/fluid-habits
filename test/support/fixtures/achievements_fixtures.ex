@@ -9,8 +9,10 @@ defmodule FluidHabits.AchievementsFixtures do
   For more information on "eligibility", see the `Achievements` module
   """
 
-  alias FluidHabits.{Activities, Achievements}
-  alias FluidHabits.{ActivitiesFixtures, AchievementLevelsFixtures}
+  alias FluidHabits.AchievementLevelsFixtures
+  alias FluidHabits.Achievements
+  alias FluidHabits.Activities
+  alias FluidHabits.ActivitiesFixtures
 
   @doc """
   Generate a achievement.
@@ -26,9 +28,7 @@ defmodule FluidHabits.AchievementsFixtures do
       AchievementLevelsFixtures.achievement_level_fixture(%{activity: activity})
     end
 
-    achievement_attrs =
-      attrs
-      |> Enum.into(%{activity_id: activity.id, achievement_level_id: achievement_level.id})
+    achievement_attrs = Enum.into(attrs, %{activity_id: activity.id, achievement_level_id: achievement_level.id})
 
     {:ok, achievement} = Achievements.create_achievement(achievement_attrs)
 

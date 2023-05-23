@@ -1,16 +1,17 @@
 defmodule FluidHabitsWeb.AchievementLive.FormComponent do
+  @moduledoc false
   use FluidHabitsWeb, :live_component
 
   alias FluidHabits.Achievements
-  alias FluidHabits.Achievements.{Achievement, Level}
+  alias FluidHabits.Achievements.Achievement
+  alias FluidHabits.Achievements.Level
 
   @impl Phoenix.LiveComponent
   def update(%{activity: activity} = assigns, socket) do
     achievement = %Achievement{}
     changeset = Achievement.changeset(achievement, %{activity_id: activity.id})
 
-    achievement_groups =
-      FluidHabits.Repo.preload(activity, :achievement_groups).achievement_groups
+    achievement_groups = FluidHabits.Repo.preload(activity, :achievement_groups).achievement_groups
 
     {:ok,
      socket
@@ -23,11 +24,7 @@ defmodule FluidHabitsWeb.AchievementLive.FormComponent do
   end
 
   @impl Phoenix.LiveComponent
-  def handle_event(
-        "validate",
-        %{"achievement" => achievement_params},
-        socket
-      ) do
+  def handle_event("validate", %{"achievement" => achievement_params}, socket) do
     socket =
       case achievement_params["group"] do
         nil ->

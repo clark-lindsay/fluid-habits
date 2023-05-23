@@ -1,4 +1,5 @@
 defmodule FluidHabitsWeb.Components.Buttons do
+  @moduledoc false
   use Phoenix.Component
 
   slot(:inner_block, required: true)

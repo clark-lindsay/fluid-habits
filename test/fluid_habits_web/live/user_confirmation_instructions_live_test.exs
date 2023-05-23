@@ -1,8 +1,8 @@
 defmodule FluidHabitsWeb.UserConfirmationInstructionsLiveTest do
   use FluidHabitsWeb.ConnCase
 
-  import Phoenix.LiveViewTest
   import FluidHabits.AccountsFixtures
+  import Phoenix.LiveViewTest
 
   alias FluidHabits.Accounts
   alias FluidHabits.Repo
